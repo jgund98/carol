@@ -32,7 +32,7 @@ export default function Home() {
       <section className="relative min-h-[100svh] overflow-hidden bg-[radial-gradient(90%_70%_at_70%_20%,#fff_0%,#fbf9f5_55%,#f4efe7_100%)] pt-[var(--header-h)]" aria-label="Carol Calicchio">
         <PaintBlob of="crystal" shape={1} size="clamp(120px,16vw,250px)" className="-right-[10%] top-[30%] lg:-right-[3%] lg:top-[9%]" focus={[0.3, 0.4]} speed={0.35} base={12} />
         <PaintBlob of="hummingbirds" shape={2} size="clamp(110px,14vw,220px)" className="hidden lg:block lg:left-[40%] lg:bottom-[8%]" focus={[0.6, 0.5]} speed={0.55} rotate={-0.6} base={-14} />
-        <PaintBlob of="galaxy-of-love" shape={3} size="clamp(70px,8vw,120px)" className="left-[3%] bottom-[12%] hidden lg:block" focus={[0.5, 0.5]} speed={0.7} base={30} opacity={0.95} />
+        <PaintBlob of="galaxy-of-love" shape={3} size="clamp(70px,8vw,120px)" className="left-[50%] top-[9%] hidden lg:block" focus={[0.5, 0.5]} speed={0.7} base={30} opacity={0.95} />
         <div className="wrap relative grid min-h-[calc(100svh-var(--header-h))] grid-cols-1 content-center gap-y-4 py-6 lg:grid-cols-[1.05fr_1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-10 lg:py-6">
           <div className="lg:col-start-1 lg:self-end">
             <p className="display-light text-[1.05rem] italic text-ink/60">Carol Calicchio Art Studio, Delray Beach</p>

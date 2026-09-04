@@ -1,0 +1,27 @@
+const { createRequire } = require("module");
+const puppeteer = createRequire("C:/Users/Lucky/gus-renny/package.json")("puppeteer");
+(async () => {
+  const b = await puppeteer.launch({ headless: true, executablePath: "C:/Users/Lucky/.cache/puppeteer/chrome/win64-150.0.7871.24/chrome-win64/chrome.exe", args: ["--no-sandbox"] });
+  const p = await b.newPage(); await p.setViewport({ width: 1440, height: 900 });
+  const w = (ms) => new Promise((r) => setTimeout(r, ms));
+  await p.goto("http://localhost:3541/", { waitUntil: "networkidle2" }); await w(400);
+  await p.hover('a[href="/collections"]'); await w(600);
+  await p.screenshot({ path: "shots/mega.png" });
+  await p.goto("http://localhost:3541/contact", { waitUntil: "networkidle2" }); await w(400);
+  await p.evaluate(() => window.scrollTo({ top: 420, behavior: "instant" })); await w(900);
+  await p.screenshot({ path: "shots/contact-form.png" });
+  await p.goto("http://localhost:3541/commissions", { waitUntil: "networkidle2" }); await w(400);
+  await p.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight - 900, behavior: "instant" })); await w(900);
+  await p.screenshot({ path: "shots/commission-form.png" });
+  await p.goto("http://localhost:3541/studio", { waitUntil: "networkidle2" }); await w(400);
+  await p.screenshot({ path: "shots/studio-hero.png" });
+  await p.evaluate(() => document.getElementById("visit").scrollIntoView({ block: "center" })); await w(900);
+  await p.screenshot({ path: "shots/visit-form.png" });
+  await p.goto("http://localhost:3541/", { waitUntil: "networkidle2" }); await w(300);
+  const top = await p.evaluate(() => document.querySelector(".wall").getBoundingClientRect().top + window.scrollY);
+  await p.evaluate((y) => window.scrollTo({ top: y + 900, behavior: "instant" }), top); await w(900);
+  await p.screenshot({ path: "shots/wall.png" });
+  await p.evaluate(() => window.scrollTo({ top: 1500, behavior: "instant" })); await w(1500);
+  await p.screenshot({ path: "shots/collections-home.png" });
+  await b.close();
+})();
