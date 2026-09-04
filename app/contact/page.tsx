@@ -24,10 +24,13 @@ export default function ContactPage() {
               <Image src="/photos/carol-studio-seated.jpg" alt="Carol Calicchio in her studio" fill sizes="(min-width:1024px) 35vw, 100vw" className="object-cover object-top" />
             </div>
           </Reveal>
-          <Reveal delay={100} className="flex flex-col rounded-2xl bg-paper p-6 md:p-10">
-            <Suspense>
-              <ContactForm />
-            </Suspense>
+          <Reveal delay={100} className="flex flex-col rounded-sm bg-paper p-6 shadow-[0_30px_60px_-40px_rgba(18,23,43,0.35)] md:p-12">
+            <p className="display-light text-[1.4rem] italic leading-snug text-ink/80">Write to Carol the way you would leave a note on the studio door.</p>
+            <div className="mt-8">
+              <Suspense>
+                <ContactForm />
+              </Suspense>
+            </div>
             <dl className="mt-10 grid gap-6 border-t border-ink/10 pt-8 text-[0.95rem] sm:grid-cols-2">
               <div>
                 <dt className="label text-muted">Studio</dt>

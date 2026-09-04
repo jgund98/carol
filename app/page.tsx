@@ -179,10 +179,10 @@ export default function Home() {
           <Reveal className="order-1 lg:order-2">
             <p className="display-light text-[1.05rem] italic text-ink/60">The studio, Delray Beach</p>
             <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">
-              A gallery of her own, <Scribble>finished</Scribble> this summer.
+A gallery of <Scribble>her own.</Scribble>
             </h2>
             <p className="pretty mt-5 text-[1.02rem] leading-relaxed text-ink/75">
-              In August 2026 Carol opened Carol Calicchio Art Studio at {site.studio.street}, {site.studio.city}: a white, light-filled gallery with Ketra lighting in the ceiling tracks, a working studio behind it, and room to hang the oversized canvases the way they are meant to be seen.
+              Carol Calicchio Art Studio, {site.studio.street}, {site.studio.city}: a white, light-filled gallery with Ketra lighting in the ceiling tracks, a working studio behind it, and room to hang the oversized canvases the way they are meant to be seen.
             </p>
             <p className="pretty mt-4 text-[1.02rem] leading-relaxed text-ink/75">
               Collectors, designers and art enthusiasts are welcome by appointment. Bring the room in your head; Carol will show you what changes it.

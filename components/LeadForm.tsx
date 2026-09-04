@@ -1,9 +1,14 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { site } from "@/lib/site";
 
 type Field = { name: string; label: string; type?: string; required?: boolean; placeholder?: string; textarea?: boolean; half?: boolean; default?: string };
 
+/**
+ * The studio's form language: a sheet of paper, hand-set italic labels, one ink line per answer,
+ * and Carol's signature at the bottom. No boxes.
+ */
 export default function LeadForm({
   formType,
   subject,
@@ -12,6 +17,7 @@ export default function LeadForm({
   extra = {},
   success,
   dark = false,
+  note = "Carol reads every note herself and replies personally.",
 }: {
   formType: string;
   subject?: string;
@@ -20,6 +26,7 @@ export default function LeadForm({
   extra?: Record<string, string>;
   success: { title: string; text: string };
   dark?: boolean;
+  note?: string;
 }) {
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [t0] = useState(() => Date.now());
@@ -27,8 +34,8 @@ export default function LeadForm({
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    if (fd.get("_honey")) return; // bot
-    if (Date.now() - t0 < 2500) return; // too fast to be a person
+    if (fd.get("_honey")) return;
+    if (Date.now() - t0 < 2500) return;
     setState("sending");
     const body: Record<string, unknown> = { formType, subject, fields: { ...extra } };
     for (const f of fields) {
@@ -45,11 +52,15 @@ export default function LeadForm({
     }
   }
 
+  const ink = dark ? "text-white" : "text-ink";
+  const soft = dark ? "text-white/60" : "text-ink/55";
+
   if (state === "done")
     return (
-      <div id="form-success" className={`rounded-2xl p-8 text-center ${dark ? "bg-white/10 text-white" : "bg-white shadow-sm"}`}>
-        <p className="display text-3xl">{success.title}</p>
-        <p className={`pretty mx-auto mt-3 max-w-md ${dark ? "text-white/75" : "text-muted"}`}>{success.text}</p>
+      <div id="form-success" className="py-10 text-center">
+        <Image src={dark ? "/brand/sig-white.png" : "/brand/sig-ink.png"} alt="" aria-hidden width={220} height={70} className="mx-auto h-auto w-[180px] opacity-90" />
+        <p className={`display mt-6 text-3xl ${ink}`}>{success.title}</p>
+        <p className={`pretty mx-auto mt-3 max-w-md ${soft}`}>{success.text}</p>
         <a href={site.phoneHref} className={`btn mt-6 ${dark ? "btn-white" : "btn-ink"}`}>
           Or call {site.phone}
         </a>
@@ -57,26 +68,37 @@ export default function LeadForm({
     );
 
   return (
-    <form onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={submit} className={`sheet grid gap-x-10 gap-y-7 sm:grid-cols-2 ${dark ? "sheet-dark" : ""}`}>
       <input type="text" name="_honey" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
       {fields.map((f) => (
         <label key={f.name} className={`block ${f.half ? "" : "sm:col-span-2"}`}>
-          <span className={`label mb-2 block ${dark ? "text-white/60" : "text-muted"}`}>
+          <span className={`display-light block text-[1.05rem] italic ${soft}`}>
             {f.label}
-            {f.required ? "" : " · optional"}
+            {f.required ? "" : <span className="not-italic text-[0.72rem]"> · optional</span>}
           </span>
           {f.textarea ? (
-            <textarea name={f.name} required={f.required} placeholder={f.placeholder} rows={4} className="field resize-y" defaultValue={f.default} />
+            <textarea name={f.name} required={f.required} placeholder={f.placeholder} rows={3} className={`line resize-none ${ink}`} defaultValue={f.default} />
           ) : (
-            <input name={f.name} type={f.type || "text"} required={f.required} placeholder={f.placeholder} className="field" defaultValue={f.default} autoComplete={f.name === "email" ? "email" : f.name === "phone" ? "tel" : f.name === "name" ? "name" : undefined} />
+            <input
+              name={f.name}
+              type={f.type || "text"}
+              required={f.required}
+              placeholder={f.placeholder}
+              className={`line ${ink}`}
+              defaultValue={f.default}
+              autoComplete={f.name === "email" ? "email" : f.name === "phone" ? "tel" : f.name === "name" ? "name" : undefined}
+            />
           )}
         </label>
       ))}
-      <div className="sm:col-span-2 flex flex-wrap items-center gap-4">
-        <button type="submit" disabled={state === "sending"} className={`btn ${dark ? "btn-white" : "btn-pink"}`}>
-          {state === "sending" ? "Sending…" : submitLabel}
-        </button>
-        <span className={`text-xs ${dark ? "text-white/60" : "text-muted"}`}>Carol replies personally. Nothing is shared.</span>
+      <div className="sm:col-span-2 mt-2 flex flex-wrap items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <button type="submit" disabled={state === "sending"} className={`btn ${dark ? "btn-white" : "btn-ink"}`}>
+            {state === "sending" ? "Sending…" : submitLabel}
+          </button>
+          <span className={`max-w-[16rem] text-xs leading-snug ${soft}`}>{note}</span>
+        </div>
+        <Image src={dark ? "/brand/sig-white.png" : "/brand/sig-ink.png"} alt="Carol Calicchio" width={200} height={63} className="h-auto w-[150px] opacity-80" />
       </div>
       {state === "error" && (
         <p className="sm:col-span-2 text-sm text-coral">

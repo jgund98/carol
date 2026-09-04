@@ -35,7 +35,7 @@ export default function CommissionsPage() {
                 <Image src="/photos/white-series-gallery.jpg" alt="Two White Series paintings installed in a gallery" fill sizes="20vw" className="object-cover" />
               </div>
               <div className="wrap-edge relative aspect-[3/4] overflow-hidden bg-linen">
-                <Image src="/photos/carol-living-room.jpg" alt="Carol Calicchio beneath a landscape painting in a living room" fill sizes="20vw" className="object-cover" />
+                <Image src="/art/midnight-bliss.jpg" alt="Midnight Bliss, 72 by 60 inches, acrylic and mixed media" fill sizes="(min-width:1024px) 22vw, 40vw" className="object-cover" />
               </div>
             </div>
           </Reveal>

@@ -30,7 +30,7 @@ export default function StudioPage() {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(180deg,rgba(251,249,245,0),#fbf9f5)]" />
         <PaintBlob of="gardenia-goddess" shape={3} size="clamp(110px,14vw,220px)" className="right-[6%] top-[14%] hidden lg:block" focus={[0.5, 0.5]} speed={0.35} base={-12} />
         <div className="wrap relative flex min-h-[92svh] flex-col justify-center pb-16 pt-[calc(var(--header-h)+2rem)]">
-          <p className="display-light text-[1.05rem] italic text-ink/60">Carol Calicchio Art Studio, opened August 2026</p>
+          <p className="display-light text-[1.05rem] italic text-ink/60">Carol Calicchio Art Studio, Delray Beach</p>
           <h1 className="display mt-4 max-w-3xl text-[clamp(2.8rem,6.6vw,5.8rem)] leading-[0.96]">A white room, built for <Scribble>color.</Scribble></h1>
           <p className="pretty mt-6 max-w-lg text-[1.05rem] leading-relaxed text-ink/75">
             {site.studio.street}, {site.studio.city}. Gallery in front, working studio behind, Ketra lighting in the tracks overhead. Open to collectors, designers and friends of the work, by appointment.
@@ -48,10 +48,10 @@ export default function StudioPage() {
       <section className="wrap section">
         <div className="grid gap-12 lg:grid-cols-[1fr_1fr]">
           <Reveal>
-            <p className="display-light text-[1.05rem] italic text-ink/60">From construction to first hang</p>
-            <h2 className="display mt-3 text-[clamp(2rem,4vw,3.6rem)]">Watched over a summer.</h2>
+            <p className="display-light text-[1.05rem] italic text-ink/60">Inside</p>
+            <h2 className="display mt-3 text-[clamp(2rem,4vw,3.6rem)]">Built for the work.</h2>
             <p className="pretty mt-5 text-[1.02rem] leading-relaxed text-ink/75">
-              Carol shared the build all season: bare walls in May, scaffolding and lighting tracks in June, the kitchen in July, and in August the reveal, a gallery with room to hang 60 and 72 inch canvases at eye level. It is where the paintings now live between shows, and where commissions begin.
+              Gallery in front, working studio behind. Bare white walls, lighting tracks overhead, and room to hang 60 and 72 inch canvases at eye level. It is where the paintings live between shows, where the loaded brush does its work, and where commissions begin.
             </p>
             <ul className="mt-6 grid gap-3 text-[0.95rem] text-ink/75 sm:grid-cols-2">
               {["Private viewings by appointment", "Commission consultations", "Paint & Sip workshops and events", "Designer and trade visits welcome"].map((t) => (
@@ -86,7 +86,7 @@ export default function StudioPage() {
               </div>
             </div>
           </Reveal>
-          <Reveal delay={100} id="visit" as="div" className="scroll-mt-28 rounded-2xl bg-white p-6 shadow-sm md:p-10">
+          <Reveal delay={100} id="visit" as="div" className="scroll-mt-28 border-t-2 border-ink/80 pt-8 md:pl-6">
             <p className="display-light text-[1.05rem] italic text-ink/60">Visit</p>
             <h2 className="display mt-3 text-[clamp(1.8rem,3vw,2.6rem)]">Book a private viewing.</h2>
             <p className="mt-3 text-sm text-muted">
