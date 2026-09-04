@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import Easel from "@/components/Easel";
+import StudioHero from "@/components/StudioHero";
 import Reveal, { Rise } from "@/components/Reveal";
 import Marquee from "@/components/Marquee";
 import BrushReveal from "@/components/BrushReveal";
@@ -23,35 +23,30 @@ export default function Home() {
     <>
       {/* HERO */}
       <section className="relative min-h-[100svh] overflow-hidden bg-[radial-gradient(90%_70%_at_70%_20%,#fff_0%,#fbf9f5_55%,#f4efe7_100%)] pt-[var(--header-h)]" aria-label="Carol Calicchio">
-        <div className="wrap grid min-h-[calc(100svh-var(--header-h))] grid-cols-1 content-center gap-y-5 py-6 lg:grid-cols-[1.05fr_1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-10 lg:py-6">
+        <div className="wrap grid min-h-[calc(100svh-var(--header-h))] grid-cols-1 content-center gap-y-4 py-6 lg:grid-cols-[0.9fr_1.1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-6 lg:py-4">
           <div className="lg:col-start-1 lg:self-end">
-            <p className="label text-hibiscus">Abstract artist · Palm Beach, Florida</p>
-            <h1 className="display mt-3 text-[clamp(2.9rem,7.2vw,6.4rem)] leading-[0.98] lg:mt-4">
-              Light,<br className="hidden lg:block" /> <em>in bloom.</em>
+            <p className="display-light text-[1.05rem] italic text-ink/60">Carol Calicchio Art Studio, Delray Beach</p>
+            <h1 className="display mt-3 text-[clamp(2.7rem,5.6vw,5rem)] leading-[0.98] lg:mt-5">
+              Art that changes the <em className="text-ink">energy</em> of a room.
             </h1>
           </div>
           <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
-            <Easel works={hero} className="mx-auto w-full max-w-[min(100%,300px)] sm:max-w-[420px] lg:max-w-[560px]" />
+            <StudioHero works={hero} />
           </div>
           <div className="lg:col-start-1 lg:self-start">
-            <p className="pretty max-w-[34rem] text-[1.02rem] leading-relaxed text-ink/75 md:text-[1.15rem]">
-              Original abstract florals and seascapes painted in Delray Beach and collected from Palm Beach to New York. Turn the canvas to read its label. Hover to see it breathe.
+            <p className="pretty max-w-[30rem] text-[1.02rem] leading-relaxed text-ink/75 md:text-[1.12rem]">
+              Carol paints abstract florals and seascapes on the Intracoastal in Delray Beach. Sixty-inch canvases, thick paint, South Florida light. The one on the easel is real; turn it around.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href="/shop" className="btn btn-ink">
-                Explore the collection
+                See the collection
               </Link>
-              <Link href="/studio#visit" className="btn btn-line">
-                Visit the new studio
+              <Link href="/studio#visit" className="group inline-flex items-center gap-2 text-[0.95rem] font-semibold text-ink">
+                Book a studio visit
+                <span className="h-px w-8 bg-ink/40 transition-all group-hover:w-12 group-hover:bg-ink" />
               </Link>
             </div>
-            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.8rem] text-muted">
-              <span>Flower Power · Blue Series · White Series</span>
-              <span className="hidden h-1 w-1 rounded-full bg-hibiscus sm:block" />
-              <span>Two published volumes</span>
-              <span className="hidden h-1 w-1 rounded-full bg-hibiscus sm:block" />
-              <span>Studio visits by appointment</span>
-            </div>
+            <p className="display-light mt-7 text-[1rem] italic text-ink/55">The new gallery at 2559 Webb Avenue opened this August. Come see the paint in person.</p>
           </div>
         </div>
       </section>

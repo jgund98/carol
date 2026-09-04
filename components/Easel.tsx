@@ -9,7 +9,7 @@ import { dims, img } from "@/lib/catalog";
  * Hover tilts the canvas in 3D, click (or tap) flips it to read the label on the back;
  * click again and it turns to the next painting. It also turns on its own when idle.
  */
-export default function Easel({ works, autoplay = true, className = "" }: { works: Work[]; autoplay?: boolean; className?: string }) {
+export default function Easel({ works, autoplay = true, className = "", controls = true, glow = true }: { works: Work[]; autoplay?: boolean; className?: string; controls?: boolean; glow?: boolean }) {
   const [turns, setTurns] = useState(0); // each turn is 180°; even = a painting faces you
   const [idle, setIdle] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -79,7 +79,7 @@ export default function Easel({ works, autoplay = true, className = "" }: { work
   return (
     <div className={`relative ${className}`} style={{ containerType: "inline-size" }}>
       {/* Light on the wall */}
-      <div className="pointer-events-none absolute inset-x-[-10%] top-[-12%] h-[80%] rounded-[50%] bg-[radial-gradient(50%_60%_at_50%_30%,rgba(255,250,236,0.95),rgba(255,250,236,0)_70%)]" />
+      {glow && <div className="pointer-events-none absolute inset-x-[-10%] top-[-12%] h-[80%] rounded-[50%] bg-[radial-gradient(50%_60%_at_50%_30%,rgba(255,250,236,0.95),rgba(255,250,236,0)_70%)]" />}
 
       <div
         ref={sceneRef}
@@ -154,7 +154,8 @@ export default function Easel({ works, autoplay = true, className = "" }: { work
       </div>
 
       {/* Controls */}
-      <div className="mt-2 flex items-center justify-center gap-4 text-[0.78rem] text-muted">
+      {controls && (
+      <div className="mt-2 flex items-center justify-center gap-4 whitespace-nowrap text-[0.78rem] text-muted">
         <button type="button" onClick={turn} className="inline-flex items-center gap-2 font-semibold text-ink underline-offset-4 hover:underline">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg>
           {showingBack ? "Next painting" : "Turn the canvas"}
@@ -162,6 +163,7 @@ export default function Easel({ works, autoplay = true, className = "" }: { work
         <span aria-hidden>·</span>
         <span>{showingBack ? labelWork.name : faceWork.name}</span>
       </div>
+      )}
     </div>
   );
 }

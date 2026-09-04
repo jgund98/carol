@@ -919,9 +919,9 @@ export const works: Work[] = [
   "sold": true,
   "available": false,
   "medium": "NOMAD Surfboard made from \"Paradiso Grand\" Painting",
-  "width": null,
-  "height": null,
-  "iw": 1067,
+  "width": 20,
+  "height": 72,
+  "iw": 753,
   "ih": 1600,
   "color": "#cecad5",
   "collections": [
