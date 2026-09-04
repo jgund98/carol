@@ -32,6 +32,10 @@ export default function SmoothScroll() {
     };
   }, []);
 
+  useEffect(() => {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  }, []);
+
   // Every route opens at the top; Lenis otherwise eats Next's scroll reset.
   useEffect(() => {
     const hash = window.location.hash;
@@ -42,8 +46,20 @@ export default function SmoothScroll() {
         return;
       }
     }
-    if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true });
-    else window.scrollTo(0, 0);
+    const top = () => {
+      window.scrollTo(0, 0);
+      window.__lenis?.scrollTo(0, { immediate: true, force: true });
+    };
+    top();
+    const r1 = requestAnimationFrame(() => {
+      top();
+      requestAnimationFrame(top);
+    });
+    const t = setTimeout(top, 120);
+    return () => {
+      cancelAnimationFrame(r1);
+      clearTimeout(t);
+    };
   }, [pathname]);
 
   return null;

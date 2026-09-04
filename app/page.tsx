@@ -2,28 +2,38 @@ import Link from "next/link";
 import Image from "next/image";
 import Easel from "@/components/Easel";
 import Reveal, { Rise } from "@/components/Reveal";
-import Marquee from "@/components/Marquee";
+import Ribbon from "@/components/Ribbon";
 import BrushReveal from "@/components/BrushReveal";
 import LightReveal from "@/components/LightReveal";
 import GalleryWall from "@/components/GalleryWall";
 import VideoPlayer from "@/components/VideoPlayer";
 import WorkCard from "@/components/WorkCard";
-import { site } from "@/lib/site";
-import { bySlug, heroSlugs, wallSlugs, inCollection, img } from "@/lib/catalog";
+import PaintBlob from "@/components/PaintBlob";
+import Scribble from "@/components/Scribble";
+import { site, money } from "@/lib/site";
+import { bySlug, heroSlugs, wallSlugs, inCollection, img, dims } from "@/lib/catalog";
 import { collections, quotes, statement, process as processSteps, books } from "@/lib/content";
 
 export default function Home() {
   const hero = heroSlugs.map(bySlug).filter(Boolean) as NonNullable<ReturnType<typeof bySlug>>[];
   const wall = wallSlugs.map(bySlug).filter(Boolean) as NonNullable<ReturnType<typeof bySlug>>[];
-  const recent = inCollection("recent").filter((w) => !w.sold).slice(0, 4);
+  const recent = inCollection("recent").filter((w) => !w.sold).slice(0, 5);
   const celestial = bySlug("celestial-moonlight")!;
   const featured = collections.slice(0, 3);
+  const leans = [
+    { rot: -6, y: "lg:mt-16", w: "lg:w-[30%]" },
+    { rot: 3, y: "lg:-mt-6", w: "lg:w-[34%]" },
+    { rot: -2.5, y: "lg:mt-24", w: "lg:w-[30%]" },
+  ];
 
   return (
     <>
       {/* HERO */}
       <section className="relative min-h-[100svh] overflow-hidden bg-[radial-gradient(90%_70%_at_70%_20%,#fff_0%,#fbf9f5_55%,#f4efe7_100%)] pt-[var(--header-h)]" aria-label="Carol Calicchio">
-        <div className="wrap grid min-h-[calc(100svh-var(--header-h))] grid-cols-1 content-center gap-y-4 py-6 lg:grid-cols-[1.05fr_1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-10 lg:py-6">
+        <PaintBlob of="crystal" shape={1} size="clamp(120px,16vw,250px)" className="-right-[10%] top-[30%] lg:-right-[3%] lg:top-[9%]" focus={[0.3, 0.4]} speed={0.35} base={12} />
+        <PaintBlob of="hummingbirds" shape={2} size="clamp(110px,14vw,220px)" className="hidden lg:block lg:left-[40%] lg:bottom-[8%]" focus={[0.6, 0.5]} speed={0.55} rotate={-0.6} base={-14} />
+        <PaintBlob of="galaxy-of-love" shape={3} size="clamp(70px,8vw,120px)" className="left-[3%] bottom-[12%] hidden lg:block" focus={[0.5, 0.5]} speed={0.7} base={30} opacity={0.95} />
+        <div className="wrap relative grid min-h-[calc(100svh-var(--header-h))] grid-cols-1 content-center gap-y-4 py-6 lg:grid-cols-[1.05fr_1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-10 lg:py-6">
           <div className="lg:col-start-1 lg:self-end">
             <p className="display-light text-[1.05rem] italic text-ink/60">Carol Calicchio Art Studio, Delray Beach</p>
             <h1 className="display mt-3 text-[clamp(2.7rem,5.6vw,5rem)] leading-[0.98] lg:mt-5">
@@ -50,14 +60,18 @@ export default function Home() {
         </div>
       </section>
 
-      <Marquee label="Featured in" items={[...site.featuredIn.map((f) => `Featured in ${f}`), ...site.onView.map((v) => `On view at ${v}`)]} />
+      <Ribbon items={[...site.featuredIn.map((f) => `Featured in ${f}`), ...site.onView.map((v) => `On view at ${v}`)]} />
 
       {/* MEET CAROL */}
-      <section className="bg-paper">
-        <div className="wrap section grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <Reveal variant="scale" className="mx-auto w-full max-w-[420px]">
-            <VideoPlayer src="carol-talks" sound className="wrap-edge aspect-[4/5]" />
-            <p className="mt-3 text-center text-xs text-muted">Carol in the studio, loading the brush. Tap for sound.</p>
+      <section className="relative overflow-hidden bg-paper">
+        <PaintBlob of="palm-beach-blooms" shape={0} size="clamp(160px,22vw,340px)" className="-right-[8%] -top-[6%]" focus={[0.4, 0.3]} speed={0.3} base={-8} />
+        <PaintBlob of="morning-white" shape={2} size="clamp(90px,12vw,180px)" className="left-[-4%] bottom-[8%] hidden md:block" focus={[0.5, 0.6]} speed={0.5} base={20} />
+        <div className="wrap section relative grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+          <Reveal variant="scale" className="relative mx-auto w-full max-w-[420px]">
+            <div className="rotate-[-2deg]">
+              <VideoPlayer src="carol-talks" sound className="wrap-edge aspect-[4/5]" />
+            </div>
+            <p className="mt-4 text-center text-xs text-muted">Carol in the studio, loading the brush. Tap for sound.</p>
           </Reveal>
           <Reveal delay={100}>
             <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[260px] md:w-[340px]" priority />
@@ -81,35 +95,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* COLLECTIONS */}
-      <section className="section">
-        <div className="wrap">
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div>
-              <p className="label text-hibiscus">The collections</p>
-              <Rise text="Three ways into the light." className="display mt-3 text-[clamp(2.3rem,5vw,4.4rem)]" />
-            </div>
-            <Link href="/collections" className="btn btn-line self-start lg:self-auto">
-              All collections
-            </Link>
+      {/* COLLECTIONS: canvases leaning against the wall */}
+      <section className="relative overflow-hidden">
+        <PaintBlob of="the-provider" shape={3} size="clamp(110px,16vw,240px)" className="-right-[8%] top-[1%] md:right-[2%] md:top-[4%]" focus={[0.5, 0.4]} speed={0.45} base={16} />
+        <div className="wrap section relative">
+          <div className="max-w-3xl">
+            <p className="display-light text-[1.05rem] italic text-ink/60">The collections</p>
+            <h2 className="display mt-3 text-[clamp(2.3rem,5vw,4.4rem)]">
+              Three ways into the <Scribble>light.</Scribble>
+            </h2>
+            <p className="pretty mt-4 max-w-xl text-[1.02rem] leading-relaxed text-ink/70">Leaning against the studio wall, the way they wait between shows. Pick one up.</p>
           </div>
 
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
+          <div className="mt-14 flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-0">
             {featured.map((c, i) => {
               const w = bySlug(c.hero)!;
+              const L = leans[i];
               return (
-                <Reveal key={c.slug} delay={i * 120}>
-                  <Link href={`/collections/${c.slug}`} className="group block" data-cursor="Enter" data-cursor-color={w.color}>
+                <Reveal key={c.slug} delay={i * 140} className={`${L.w} ${L.y}`}>
+                  <Link href={`/collections/${c.slug}`} className="lean group block" style={{ transform: `rotate(${L.rot}deg)` }} data-cursor="Enter" data-cursor-color={w.color}>
                     <div className="wrap-edge overflow-hidden bg-linen" style={{ aspectRatio: "4 / 5" }}>
-                      <BrushReveal src={img(w)} alt={`${w.name}, from the ${c.name} collection`} className="h-full w-full transition-transform duration-[1600ms] ease-out group-hover:scale-[1.03]" />
+                      <BrushReveal src={img(w)} alt={`${w.name}, from the ${c.name} collection`} className="h-full w-full" />
                     </div>
-                    <p className="label mt-6 text-muted">{c.kicker}</p>
-                    <h3 className="display mt-2 text-[2rem] leading-none">{c.name}</h3>
+                    <div className="mt-5 flex items-baseline justify-between gap-3">
+                      <h3 className="display text-[2rem] leading-none">{c.name}</h3>
+                      <span className="text-xs font-semibold tracking-[0.16em] text-muted">{c.kicker.toUpperCase()}</span>
+                    </div>
                     <p className="pretty mt-3 text-[0.95rem] leading-relaxed text-ink/70">{c.blurb}</p>
-                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-ink">
-                      Enter the series
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-                    </span>
                   </Link>
                 </Reveal>
               );
@@ -119,10 +131,11 @@ export default function Home() {
       </section>
 
       {/* LIGHT */}
-      <section className="relative bg-[#0b1226] text-white">
-        <div className="wrap section grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="relative overflow-hidden bg-[#0b1226] text-white">
+        <PaintBlob of="celestial-seasons" shape={1} size="clamp(140px,18vw,300px)" className="-left-[6%] -bottom-[6%]" focus={[0.5, 0.5]} speed={0.35} base={-18} opacity={0.9} />
+        <div className="wrap section relative grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <Reveal>
-            <p className="label text-gold-2">Her philosophy on light</p>
+            <p className="display-light text-[1.05rem] italic text-gold-2">Her philosophy on light</p>
             <blockquote className="display-light mt-5 text-[clamp(1.7rem,3.2vw,2.8rem)] leading-[1.15] text-white">“{statement.quote}”</blockquote>
             <p className="mt-5 text-sm text-white/60">{statement.by}</p>
             <p className="pretty mt-8 max-w-md text-[0.98rem] leading-relaxed text-white/70">
@@ -145,22 +158,29 @@ export default function Home() {
       </section>
 
       {/* STUDIO */}
-      <section className="section">
-        <div className="wrap grid items-center gap-12 lg:grid-cols-[1fr_1fr]">
+      <section className="relative overflow-hidden">
+        <PaintBlob of="southern-cross" shape={0} size="clamp(120px,16vw,260px)" className="-right-[5%] top-[10%]" focus={[0.5, 0.3]} speed={0.4} base={8} />
+        <div className="wrap section relative grid items-center gap-12 lg:grid-cols-[1fr_1fr]">
           <Reveal className="order-2 lg:order-1">
             <div className="grid grid-cols-[1fr_0.7fr] gap-4">
-              <VideoPlayer src="studio-tour" sound className="wrap-edge aspect-[9/16] rounded-sm" caption="Studio tour, August 2026" />
-              <div className="grid gap-4">
-                <div className="wrap-edge relative aspect-[4/5] overflow-hidden">
+              <div className="rotate-[-1.5deg]">
+                <VideoPlayer src="studio-tour" sound className="wrap-edge aspect-[9/16] rounded-sm" caption="Studio tour" />
+              </div>
+              <div className="grid gap-4 pt-8">
+                <div className="wrap-edge relative aspect-[4/5] rotate-[2deg] overflow-hidden">
                   <Image src="/photos/carol-easel-portrait.jpg" alt="Carol Calicchio beside a painting on her easel" fill sizes="(min-width:1024px) 20vw, 35vw" className="object-cover" />
                 </div>
-                <VideoPlayer src="paint-close" className="wrap-edge aspect-[4/5]" />
+                <div className="rotate-[-2deg]">
+                  <VideoPlayer src="paint-close" className="wrap-edge aspect-[4/5]" />
+                </div>
               </div>
             </div>
           </Reveal>
           <Reveal className="order-1 lg:order-2">
-            <p className="label text-hibiscus">The studio · Delray Beach</p>
-            <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">A gallery of her own, finished this summer.</h2>
+            <p className="display-light text-[1.05rem] italic text-ink/60">The studio, Delray Beach</p>
+            <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">
+              A gallery of her own, <Scribble>finished</Scribble> this summer.
+            </h2>
             <p className="pretty mt-5 text-[1.02rem] leading-relaxed text-ink/75">
               In August 2026 Carol opened Carol Calicchio Art Studio at {site.studio.street}, {site.studio.city}: a white, light-filled gallery with Ketra lighting in the ceiling tracks, a working studio behind it, and room to hang the oversized canvases the way they are meant to be seen.
             </p>
@@ -180,10 +200,11 @@ export default function Home() {
       </section>
 
       {/* PROCESS */}
-      <section className="bg-midnight text-white">
-        <div className="wrap section">
+      <section className="relative overflow-hidden bg-midnight text-white">
+        <PaintBlob of="golden-gardenia" shape={2} size="clamp(120px,15vw,240px)" className="-right-[6%] -bottom-[10%]" focus={[0.5, 0.5]} speed={0.4} base={-10} />
+        <div className="wrap section relative">
           <div className="max-w-2xl">
-            <p className="label text-gold-2">In the studio</p>
+            <p className="display-light text-[1.05rem] italic text-gold-2">In the studio</p>
             <Rise text="Thick paint, loaded brush, healing stones." className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]" />
             <p className="pretty mt-5 text-[1rem] leading-relaxed text-white/70">
               The White Series is sculpted rather than painted: gardenias and butterflies built in impasto with rose quartz and amethyst set into the surface. The florals are a loaded brush over museum-quality Fredrix canvas. Watch how a canvas comes to life.
@@ -191,9 +212,11 @@ export default function Home() {
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {processSteps.map((p, i) => (
-              <Reveal key={p.video} delay={i * 100}>
-                <VideoPlayer src={p.video} sound={p.video === "loaded-brush"} className="aspect-[9/16] rounded-md" />
-                <h3 className="display mt-5 text-[1.5rem]">{p.title}</h3>
+              <Reveal key={p.video} delay={i * 100} className={i === 1 ? "md:mt-12" : ""}>
+                <div style={{ transform: `rotate(${[-1.5, 1.2, -1][i]}deg)` }}>
+                  <VideoPlayer src={p.video} sound={p.video === "loaded-brush"} className="wrap-edge aspect-[9/16] rounded-md" />
+                </div>
+                <h3 className="display mt-6 text-[1.5rem]">{p.title}</h3>
                 <p className="pretty mt-2 text-[0.95rem] leading-relaxed text-white/65">{p.text}</p>
               </Reveal>
             ))}
@@ -201,21 +224,40 @@ export default function Home() {
         </div>
       </section>
 
-      {/* RECENT WORK */}
-      <section className="section">
-        <div className="wrap">
+      {/* RECENT WORK: broken grid */}
+      <section className="relative overflow-hidden">
+        <PaintBlob of="alluring-light" shape={3} size="clamp(110px,14vw,220px)" className="-left-[5%] top-[30%]" focus={[0.5, 0.4]} speed={0.5} base={22} />
+        <div className="wrap section relative">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="label text-hibiscus">Recent work</p>
-              <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">Fresh off the easel.</h2>
+              <p className="display-light text-[1.05rem] italic text-ink/60">Recent work</p>
+              <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">
+                Fresh off the <Scribble>easel.</Scribble>
+              </h2>
             </div>
             <Link href="/collections/recent-work" className="btn btn-line">
               See all recent work
             </Link>
           </div>
-          <div className="mt-12 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-            {recent.map((w, i) => (
-              <Reveal key={w.slug} delay={i * 90}>
+          <div className="mt-12 grid gap-8 md:grid-cols-12 md:gap-x-8 md:gap-y-4">
+            {recent[0] && (
+              <Reveal className="md:col-span-7 md:row-span-2">
+                <Link href={`/shop/${recent[0].slug}`} className="group block" data-cursor="View" data-cursor-color={recent[0].color}>
+                  <div className="wrap-edge relative overflow-hidden bg-linen" style={{ aspectRatio: `${recent[0].iw} / ${recent[0].ih}` }}>
+                    <Image src={img(recent[0])} alt={`${recent[0].name} by Carol Calicchio`} fill sizes="(min-width:768px) 55vw, 100vw" className="object-cover transition-transform duration-[1400ms] group-hover:scale-[1.03]" />
+                  </div>
+                  <div className="mt-4 flex items-baseline justify-between gap-4">
+                    <p className="display text-[1.6rem] leading-tight">{recent[0].name}</p>
+                    <p className="text-sm font-semibold">{money(recent[0].price)}</p>
+                  </div>
+                  <p className="text-xs text-muted">
+                    {dims(recent[0])} · {recent[0].medium}
+                  </p>
+                </Link>
+              </Reveal>
+            )}
+            {recent.slice(1, 5).map((w, i) => (
+              <Reveal key={w.slug} delay={i * 90} className={`md:col-span-5 ${i === 0 ? "md:mt-16" : i === 2 ? "md:-mt-10" : ""} ${i % 2 === 1 ? "md:ml-12" : "md:mr-12"}`}>
                 <WorkCard work={w} />
               </Reveal>
             ))}
@@ -224,12 +266,14 @@ export default function Home() {
       </section>
 
       {/* SURFBOARDS + BOOKS */}
-      <section className="bg-paper">
-        <div className="wrap section grid gap-14 lg:grid-cols-2">
+      <section className="relative overflow-hidden bg-paper">
+        <div className="wrap section relative grid gap-14 lg:grid-cols-2">
           <Reveal className="grid gap-6 sm:grid-cols-[0.8fr_1fr] sm:items-center">
-            <VideoPlayer src="breakers" sound className="wrap-edge aspect-[9/16] rounded-sm" caption="The Breakers, Palm Beach" />
+            <div className="rotate-[-2deg]">
+              <VideoPlayer src="breakers" sound className="wrap-edge aspect-[9/16] rounded-sm" caption="The Breakers, Palm Beach" />
+            </div>
             <div>
-              <p className="label text-hibiscus">Surfboards · with Nomad Surf Shop</p>
+              <p className="display-light text-[1.05rem] italic text-ink/60">Surfboards, with Nomad Surf Shop</p>
               <h2 className="display mt-3 text-[clamp(2rem,3.4vw,3rem)]">Paintings you can ride.</h2>
               <p className="pretty mt-4 text-[0.98rem] leading-relaxed text-ink/75">
                 Limited-edition boards made with Boynton Beach&rsquo;s Nomad Surf Shop, open since 1968, printed from the Flower Power paintings. Displayed at The Shops at The Breakers this past season, and built to be surfed by anyone who prefers a chic and stylish ride.
@@ -249,7 +293,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <p className="label text-hibiscus">Two volumes</p>
+              <p className="display-light text-[1.05rem] italic text-ink/60">Two volumes</p>
               <h2 className="display mt-3 text-[clamp(2rem,3.4vw,3rem)]">Flower Power &amp; Ocean Power.</h2>
               <p className="pretty mt-4 text-[0.98rem] leading-relaxed text-ink/75">
                 Hardcover monographs written by Bruce Helander with essays by British critic Anthony Haden-Guest and Elizabeth Sobieski, published with the Historical Society of Palm Beach County. The Palm Beach signing sold out.
@@ -263,39 +307,48 @@ export default function Home() {
       </section>
 
       {/* WORDS */}
-      <section className="section">
-        <div className="wrap">
-          <p className="label text-center text-hibiscus">In their words</p>
+      <section className="relative overflow-hidden">
+        <PaintBlob of="hummingbird-bliss" shape={0} size="clamp(140px,18vw,280px)" className="-right-[6%] -top-[4%]" focus={[0.5, 0.5]} speed={0.35} base={-12} />
+        <PaintBlob of="crystal" shape={2} size="clamp(90px,11vw,170px)" className="left-[3%] bottom-[6%]" focus={[0.4, 0.6]} speed={0.55} base={24} />
+        <div className="wrap section relative">
+          <p className="display-light text-center text-[1.05rem] italic text-ink/60">In their words</p>
           <div className="mt-10 grid gap-10 md:grid-cols-3">
             {[quotes[2], quotes[4], quotes[0]].map((q, i) => (
-              <Reveal key={i} delay={i * 100} className="border-t border-ink/15 pt-6">
-                <p className="display-light text-[1.35rem] leading-snug">“{q.text}”</p>
-                <p className="mt-4 text-sm font-semibold">{q.by}</p>
-                <p className="text-xs text-muted">{q.source}</p>
+              <Reveal key={i} delay={i * 100} className={`rounded-sm bg-white/70 p-7 shadow-[0_20px_50px_-30px_rgba(18,23,43,0.35)] backdrop-blur-sm ${i === 1 ? "md:-mt-8" : "md:mt-6"}`}>
+                <div style={{ transform: `rotate(${[-1.2, 0.8, -0.6][i]}deg)` }}>
+                  <p className="display-light text-[1.35rem] leading-snug">“{q.text}”</p>
+                  <p className="mt-4 text-sm font-semibold">{q.by}</p>
+                  <p className="text-xs text-muted">{q.source}</p>
+                </div>
               </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* COMMISSION BAND */}
-      <section className="relative overflow-hidden bg-ink text-white">
-        <Image src="/photos/carol-living-room.jpg" alt="" fill sizes="100vw" className="object-cover opacity-30" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,23,43,0.95),rgba(18,23,43,0.6))]" />
-        <div className="wrap section relative grid items-center gap-10 lg:grid-cols-[1.2fr_1fr]">
-          <Reveal>
-            <p className="label text-gold-2">Commissions</p>
-            <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">The painting your wall has been waiting for.</h2>
-            <p className="pretty mt-5 max-w-xl text-[1.02rem] leading-relaxed text-white/75">
-              Oversized oil and acrylic canvases painted to your room, your light and your palette, from 48 inches to a 74 × 96 in. Fredrix canvas. Recent commissions include Wave of Time, a 48 × 60 seascape, and HOME, a 72 × 48 White Series with embedded amethyst and rose quartz.
-            </p>
+      {/* COMMISSIONS */}
+      <section className="relative overflow-hidden bg-paper">
+        <PaintBlob of="gardenia-goddess" shape={1} size="clamp(110px,14vw,220px)" className="-left-[6%] top-[8%] hidden md:block" focus={[0.5, 0.5]} speed={0.3} base={10} />
+        <div className="wrap section relative grid items-center gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
+          <Reveal variant="scale" className="relative mx-auto w-full max-w-[560px]">
+            <div className="wrap-edge relative aspect-[4/3] rotate-[-1.5deg] overflow-hidden bg-linen">
+              <Image src="/photos/bedroom-install.jpg" alt="A commissioned Carol Calicchio painting hung above a bed in a collector's home" fill sizes="(min-width:1024px) 45vw, 100vw" className="object-cover object-[60%_50%]" />
+            </div>
+            <p className="mt-4 text-center text-xs text-muted">A White Series commission, at home.</p>
           </Reveal>
-          <Reveal delay={120} className="flex flex-wrap gap-3 lg:justify-end">
-            <Link href="/commissions" className="btn btn-pink">
+          <Reveal delay={100}>
+            <p className="display-light text-[1.05rem] italic text-ink/60">Commissions</p>
+            <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">Painted for <Scribble>your</Scribble> wall.</h2>
+            <p className="pretty mt-5 max-w-xl text-[1.02rem] leading-relaxed text-ink/75">
+              Send Carol a photo of the room. She paints oversized oil and acrylic canvases to its light and palette, from 48 inches to a 74 × 96 in. Fredrix canvas. Recent commissions include Wave of Time, a 48 × 60 seascape, and HOME, a 72 × 48 White Series with amethyst and rose quartz set into the paint.
+            </p>
+            <blockquote className="mt-6 border-l-2 border-hibiscus pl-5">
+              <p className="display-light text-[1.25rem] leading-snug">&ldquo;{quotes[4].text}&rdquo;</p>
+              <p className="mt-1 text-xs text-muted">{quotes[4].by}, on receiving Wave of Time</p>
+            </blockquote>
+            <Link href="/commissions" className="group mt-8 inline-flex items-center gap-3 text-[1.05rem] font-semibold text-ink">
               Start a commission
-            </Link>
-            <Link href="/contact" className="btn btn-line-white">
-              Talk to Carol
+              <span className="h-px w-10 bg-ink/40 transition-all group-hover:w-16 group-hover:bg-ink" />
             </Link>
           </Reveal>
         </div>

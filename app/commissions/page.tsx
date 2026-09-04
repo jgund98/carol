@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Suspense } from "react";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
-import VideoPlayer from "@/components/VideoPlayer";
 import CommissionForm from "@/components/CommissionForm";
 import { quotes } from "@/lib/content";
 
@@ -23,16 +22,18 @@ const steps = [
 export default function CommissionsPage() {
   return (
     <>
-      <PageHero kicker="Commissions" title="Painted for your wall." text="Oversized oil and acrylic canvases painted on a commission basis, for homes, hotels and offices. Tell Carol about the room and she will tell you what belongs on it." />
+      <PageHero art={["the-provider", "golden-gardenia"]} kicker="Commissions" title="Painted for your wall." text="Oversized oil and acrylic canvases painted on a commission basis, for homes, hotels and offices. Tell Carol about the room and she will tell you what belongs on it." />
 
       <section className="wrap pb-16">
         <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
-          <Reveal variant="scale" className="grid grid-cols-[1fr_0.75fr] gap-4">
-            <div className="wrap-edge relative aspect-[3/4] overflow-hidden bg-linen">
-              <Image src="/photos/bedroom-install.jpg" alt="A Carol Calicchio painting installed above a bed in a collector's home" fill priority sizes="(min-width:1024px) 30vw, 60vw" className="object-cover" />
+          <Reveal variant="scale" className="grid grid-cols-[1fr_0.75fr] items-stretch gap-4">
+            <div className="wrap-edge relative min-h-[420px] overflow-hidden bg-linen">
+              <Image src="/photos/bedroom-install.jpg" alt="A Carol Calicchio painting installed above a bed in a collector's home" fill priority sizes="(min-width:1024px) 30vw, 60vw" className="object-cover object-[60%_50%]" />
             </div>
             <div className="grid gap-4">
-              <VideoPlayer src="white-detail" className="wrap-edge aspect-[3/4]" />
+              <div className="wrap-edge relative aspect-[3/4] overflow-hidden bg-linen">
+                <Image src="/photos/white-series-gallery.jpg" alt="Two White Series paintings installed in a gallery" fill sizes="20vw" className="object-cover" />
+              </div>
               <div className="wrap-edge relative aspect-[3/4] overflow-hidden bg-linen">
                 <Image src="/photos/carol-living-room.jpg" alt="Carol Calicchio beneath a landscape painting in a living room" fill sizes="20vw" className="object-cover" />
               </div>
@@ -62,7 +63,7 @@ export default function CommissionsPage() {
       <section className="bg-midnight text-white">
         <div className="wrap section grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>
-            <p className="label text-gold-2">Start here</p>
+            <p className="display-light text-[1.05rem] italic text-gold-2">Start here</p>
             <h2 className="display mt-3 text-[clamp(2rem,4vw,3.6rem)]">Tell Carol about the room.</h2>
             <p className="pretty mt-5 text-[1rem] leading-relaxed text-white/70">A few lines is enough. She will call to talk it through, and the first reference images follow within days.</p>
           </Reveal>

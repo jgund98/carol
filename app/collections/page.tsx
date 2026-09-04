@@ -24,8 +24,8 @@ export default function CollectionsPage() {
             return (
               <Reveal key={c.slug} delay={(i % 3) * 100}>
                 <Link href={`/collections/${c.slug}`} className="group block" data-cursor="Enter" data-cursor-color={w.color}>
-                  <div className="wrap-edge overflow-hidden bg-linen" style={{ aspectRatio: "4 / 5" }}>
-                    <BrushReveal src={img(w)} alt={`${w.name}, ${c.name}`} className="h-full w-full transition-transform duration-[1600ms] ease-out group-hover:scale-[1.03]" />
+                  <div className={`wrap-edge overflow-hidden ${c.key === "surfboards" ? "plaster" : "bg-linen"}`} style={{ aspectRatio: "4 / 5" }}>
+                    <BrushReveal src={img(w)} alt={`${w.name}, ${c.name}`} fit={c.key === "surfboards" ? "contain" : "cover"} className="h-full w-full transition-transform duration-[1600ms] ease-out group-hover:scale-[1.03]" />
                   </div>
                   <div className="mt-5 flex items-baseline justify-between gap-4">
                     <div>

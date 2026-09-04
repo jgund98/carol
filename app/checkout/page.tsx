@@ -51,7 +51,7 @@ export default function CheckoutPage() {
     return (
       <section className="grid min-h-[100svh] place-items-center pt-[var(--header-h)]">
         <div className="wrap max-w-2xl py-16 text-center">
-          <p className="label text-hibiscus">Order request {orderRef}</p>
+          <p className="display-light text-[1.05rem] italic text-ink/60">Order request {orderRef}</p>
           <h1 className="display mt-4 text-[clamp(2.4rem,5vw,4.4rem)]">Thank you. Carol has it.</h1>
           <p className="pretty mx-auto mt-5 max-w-lg text-ink/70">She will confirm the piece is still available, settle payment your way, and arrange delivery or installation with you personally. Expect to hear from her within one business day.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -75,7 +75,7 @@ export default function CheckoutPage() {
   return (
     <section className="pt-[calc(var(--header-h)+3rem)] pb-24">
       <div className="wrap">
-        <p className="label text-hibiscus">Checkout</p>
+        <p className="display-light text-[1.05rem] italic text-ink/60">Checkout</p>
         <h1 className="display mt-4 text-[clamp(2.4rem,5vw,4.4rem)]">Almost yours.</h1>
         <p className="pretty mt-4 max-w-2xl text-ink/70">
           Original art is not a click-and-ship purchase and we do not pretend it is. Tell Carol where the piece is going and how you would like to pay. She confirms availability, takes payment securely by card, PayPal or wire, and arranges delivery herself.

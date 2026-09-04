@@ -90,7 +90,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
             </div>
 
             <div className="lg:sticky lg:top-[calc(var(--header-h)+1rem)] lg:self-start">
-              <p className="label text-hibiscus">{colls.map((c) => c.name).join(" · ") || (w.kind === "painting" ? "Original painting" : w.kind)}</p>
+              <p className="display-light text-[1.05rem] italic text-ink/60">{colls.map((c) => c.name).join(" · ") || (w.kind === "painting" ? "Original painting" : w.kind)}</p>
               <h1 className="display mt-3 text-[clamp(2.4rem,5vw,4.2rem)] leading-[0.98]">{w.name}</h1>
               <p className="mt-4 text-[1rem] text-ink/75">
                 {d && <span>{d}</span>}

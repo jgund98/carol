@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
+import PaintTrail from "@/components/PaintTrail";
 import { CartProvider } from "@/components/cart/CartProvider";
 import CartDrawer from "@/components/cart/CartDrawer";
 
@@ -96,6 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <CartProvider>
           <SmoothScroll />
           <Cursor />
+          <PaintTrail />
           <Header />
           <main id="main">{children}</main>
           <Footer />

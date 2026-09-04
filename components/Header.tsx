@@ -11,7 +11,7 @@ export default function Header() {
   const [menu, setMenu] = useState(false);
   const pathname = usePathname();
   const { count, setOpen } = useCart();
-  const dark = pathname === "/studio";
+  const dark = false;
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24);

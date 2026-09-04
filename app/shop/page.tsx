@@ -23,7 +23,7 @@ export default function ShopPage() {
   const sorted = [...works].sort((a, b) => rank(a) - rank(b) || (a.sold === b.sold ? 0 : a.sold ? 1 : -1));
   return (
     <>
-      <PageHero kicker="The shop" title="Originals, one of each." text="Every painting here is the only one. Add it to your selection to check out, or send an inquiry and Carol will call you back about the piece, the room and delivery." />
+      <PageHero art={["hummingbirds", "crystal"]} kicker="The shop" title="Originals, one of each." text="Every painting here is the only one. Add it to your selection to check out, or send an inquiry and Carol will call you back about the piece, the room and delivery." />
       <section className="wrap pb-24">
         <Suspense>
           <ShopGrid works={sorted} />

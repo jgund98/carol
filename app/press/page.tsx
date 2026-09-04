@@ -20,7 +20,7 @@ export default function PressPage() {
         <div className="grid gap-x-10 gap-y-12 md:grid-cols-2">
           {press.map((p, i) => (
             <Reveal key={p.title} delay={(i % 2) * 100} className="border-t border-ink/15 pt-6">
-              <p className="label text-hibiscus">{p.outlet}</p>
+              <p className="display-light text-[1.05rem] italic text-ink/60">{p.outlet}</p>
               <h2 className="display mt-3 text-[1.7rem] leading-tight">{p.title}</h2>
               <p className="mt-1 text-sm text-muted">{p.date}</p>
               <p className="pretty mt-4 text-[0.98rem] leading-relaxed text-ink/75">{p.text}</p>

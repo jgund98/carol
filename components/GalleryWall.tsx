@@ -51,7 +51,7 @@ export default function GalleryWall({ works }: { works: Work[] }) {
         <div className="wrap pt-6 lg:absolute lg:left-0 lg:right-0 lg:top-[calc(var(--header-h)+8px)] lg:z-10">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="label text-hibiscus">Walk the wall</p>
+              <p className="display-light text-[1.05rem] italic text-ink/60">Walk the wall</p>
               <h2 className="display mt-2 text-[clamp(2rem,4.2vw,3.6rem)]">Hung to scale, the way they hang at home.</h2>
             </div>
             <p className="hidden max-w-xs text-sm text-muted lg:block">Keep scrolling and the wall glides past. Every canvas is drawn in true proportion to its neighbors.</p>

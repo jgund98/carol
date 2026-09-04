@@ -10,7 +10,7 @@ export default function CartPage() {
   return (
     <section className="pt-[calc(var(--header-h)+3rem)] pb-24">
       <div className="wrap">
-        <p className="label text-hibiscus">Your selection</p>
+        <p className="display-light text-[1.05rem] italic text-ink/60">Your selection</p>
         <h1 className="display mt-4 text-[clamp(2.6rem,6vw,5rem)]">{count === 0 ? "Nothing here yet." : `${count} piece${count === 1 ? "" : "s"}, waiting on you.`}</h1>
 
         {items.length === 0 ? (

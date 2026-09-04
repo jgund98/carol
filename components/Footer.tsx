@@ -27,7 +27,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="label text-gold-2">Explore</p>
+            <p className="display-light text-[1.05rem] italic text-gold-2">Explore</p>
             <ul className="mt-5 space-y-3 text-[0.95rem] text-white/80">
               {nav.map((n) => (
                 <li key={n.href}>
@@ -41,7 +41,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="label text-gold-2">Collections</p>
+            <p className="display-light text-[1.05rem] italic text-gold-2">Collections</p>
             <ul className="mt-5 space-y-3 text-[0.95rem] text-white/80">
               {collections.map((c) => (
                 <li key={c.slug}>
@@ -52,7 +52,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="label text-gold-2">The studio</p>
+            <p className="display-light text-[1.05rem] italic text-gold-2">The studio</p>
             <address className="mt-5 not-italic text-[0.95rem] leading-relaxed text-white/80">
               {site.studio.name}
               <br />

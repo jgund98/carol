@@ -5,7 +5,7 @@ import { useEffect, useId, useRef } from "react";
  * The image is painted in with six loaded brushstrokes when it scrolls into view.
  * Uses an SVG mask of thick round-capped paths whose dashoffset animates in CSS.
  */
-export default function BrushReveal({ src, alt, className = "", sizes, priority = false }: { src: string; alt: string; className?: string; sizes?: string; priority?: boolean }) {
+export default function BrushReveal({ src, alt, className = "", sizes, priority = false, fit = "cover" }: { src: string; alt: string; className?: string; sizes?: string; priority?: boolean; fit?: "cover" | "contain" }) {
   const id = useId().replace(/:/g, "");
   const ref = useRef<SVGSVGElement>(null);
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function BrushReveal({ src, alt, className = "", sizes, priority 
           ))}
         </mask>
       </defs>
-      <image href={src} width="100" height="100" preserveAspectRatio="xMidYMid slice" mask={`url(#m-${id})`} {...(priority ? {} : { loading: "lazy" as never })} data-sizes={sizes} />
+      <image href={src} x={fit === "contain" ? 8 : 0} y={fit === "contain" ? 8 : 0} width={fit === "contain" ? 84 : 100} height={fit === "contain" ? 84 : 100} preserveAspectRatio={fit === "contain" ? "xMidYMid meet" : "xMidYMid slice"} mask={`url(#m-${id})`} {...(priority ? {} : { loading: "lazy" as never })} data-sizes={sizes} />
     </svg>
   );
 }

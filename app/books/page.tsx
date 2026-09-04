@@ -27,7 +27,7 @@ export default function BooksPage() {
                   <Image src={img(w)} alt={`${b.title}: ${b.subtitle}`} fill priority={i === 0} sizes="(min-width:1024px) 45vw, 100vw" className="object-cover" />
                 </div>
                 <div>
-                  <p className="label text-hibiscus">{b.publisher}</p>
+                  <p className="display-light text-[1.05rem] italic text-ink/60">{b.publisher}</p>
                   <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">{b.title}</h2>
                   <p className="display-light mt-1 text-[1.3rem] text-ink/70">{b.subtitle}</p>
                   <p className="pretty mt-5 text-[1.02rem] leading-relaxed text-ink/75">{b.text}</p>

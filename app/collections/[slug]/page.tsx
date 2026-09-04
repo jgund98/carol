@@ -48,7 +48,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         <section className="wrap pb-16">
           <div className="grid items-center gap-8 rounded-2xl bg-paper p-6 md:grid-cols-[1fr_1fr] md:p-12">
             <div>
-              <p className="label text-hibiscus">On the easel</p>
+              <p className="display-light text-[1.05rem] italic text-ink/60">On the easel</p>
               <h2 className="display mt-3 text-[clamp(1.9rem,3.4vw,3rem)]">Turn through the series.</h2>
               <p className="pretty mt-4 text-[0.98rem] leading-relaxed text-ink/70">Hover to tilt, tap to flip. The back of every canvas carries its label, size and medium.</p>
             </div>

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <PageHero kicker="About the artist" title="Carol Calicchio" text="Fairfield County native. New York School of Interior Design, then the School of Visual Arts. Now painting the light of South Florida from a studio on the Intracoastal." />
+      <PageHero art={["palm-beach-blooms", "morning-white"]} kicker="About the artist" title="Carol Calicchio" text="Fairfield County native. New York School of Interior Design, then the School of Visual Arts. Now painting the light of South Florida from a studio on the Intracoastal." />
 
       <section className="wrap pb-20">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
@@ -33,7 +33,7 @@ export default function AboutPage() {
               </Reveal>
             ))}
             <Reveal className="rounded-2xl bg-paper p-6 md:p-8">
-              <p className="label text-hibiscus">Also</p>
+              <p className="display-light text-[1.05rem] italic text-ink/60">Also</p>
               <ul className="mt-3 space-y-2 text-[0.98rem]">
                 <li>Author of Flower Power and Ocean Power, two hardcover monographs published with the Historical Society of Palm Beach County.</li>
                 <li>Named one of Palm Beach County&rsquo;s top ten influencers by Schneps Media and Dan&rsquo;s Papers.</li>
@@ -48,7 +48,7 @@ export default function AboutPage() {
       <section className="bg-[#0b1226] text-white">
         <div className="wrap section grid items-center gap-12 lg:grid-cols-[1fr_0.8fr]">
           <Reveal>
-            <p className="label text-gold-2">Artist statement</p>
+            <p className="display-light text-[1.05rem] italic text-gold-2">Artist statement</p>
             <blockquote className="display-light mt-5 text-[clamp(1.8rem,3.6vw,3.2rem)] leading-[1.12]">“{statement.quote}”</blockquote>
             <p className="mt-6 text-white/60">{statement.by}</p>
             <div className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -75,7 +75,7 @@ export default function AboutPage() {
             <Image src="/photos/carol-living-room.jpg" alt="Carol Calicchio seated beneath one of her landscape paintings in a collector's living room" fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" />
           </Reveal>
           <Reveal delay={100} className="flex flex-col justify-center">
-            <p className="label text-hibiscus">Collectors</p>
+            <p className="display-light text-[1.05rem] italic text-ink/60">Collectors</p>
             <h2 className="display mt-3 text-[clamp(2rem,3.6vw,3.2rem)]">Art that changes the energy of a room.</h2>
             <p className="pretty mt-4 text-[1.02rem] leading-relaxed text-ink/75">
               Carol&rsquo;s work hangs in private homes from Palm Beach to Nantucket and New York, in hotels including Canopy by Hilton West Palm Beach, and in showrooms and galleries across South Florida. She welcomes collectors and designers to the studio, by appointment.

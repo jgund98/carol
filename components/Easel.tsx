@@ -116,7 +116,7 @@ export default function Easel({ works, autoplay = true, className = "", controls
           {/* Painting face */}
           <div className="absolute inset-0 overflow-hidden bg-linen [backface-visibility:hidden]" style={{ transform: "translateZ(14px)" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img key={faceWork.slug} src={img(faceWork)} alt={`${faceWork.name} by Carol Calicchio`} className="h-full w-full object-cover" draggable={false} />
+            <img key={faceWork.slug} src={img(faceWork)} alt={`${faceWork.name} by Carol Calicchio`} className="h-full w-full object-cover" draggable={false} fetchPriority={turns === 0 ? "high" : "auto"} decoding="async" />
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.18),rgba(255,255,255,0)_38%,rgba(0,0,0,0.05)_100%)]" />
           </div>
           {/* Gallery-wrap edges */}
@@ -144,10 +144,10 @@ export default function Easel({ works, autoplay = true, className = "", controls
                 {labelWork.medium}
               </p>
             </div>
-            <div className="relative z-10 flex items-end justify-between gap-3">
+            <div className="relative z-10 flex h-[12%] items-center justify-between gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/sig-ink.png" alt="Signed, Carol Calicchio" className="w-[38%] opacity-70" draggable={false} />
-              <p className="label text-[0.55rem] text-ink/50">Original · Delray Beach</p>
+              <img src="/brand/sig-ink.png" alt="Signed, Carol Calicchio" width={2160} height={680} className="block h-auto w-[38%] opacity-70" draggable={false} />
+              <p className="label whitespace-nowrap text-[0.55rem] leading-none text-ink/50">Delray Beach</p>
             </div>
           </div>
         </motion.div>

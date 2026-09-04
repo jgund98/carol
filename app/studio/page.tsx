@@ -5,6 +5,8 @@ import VideoPlayer from "@/components/VideoPlayer";
 import LeadForm from "@/components/LeadForm";
 import { site } from "@/lib/site";
 import { faqs } from "@/lib/content";
+import PaintBlob from "@/components/PaintBlob";
+import Scribble from "@/components/Scribble";
 
 export const metadata: Metadata = {
   title: "The Studio | Carol Calicchio Art Studio, Delray Beach",
@@ -21,19 +23,24 @@ export default function StudioPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
-      {/* Dark cinematic hero with the studio tour */}
-      <section className="relative min-h-[100svh] overflow-hidden bg-ink text-white">
-        <video className="absolute inset-0 h-full w-full object-cover opacity-70" src="/video/studio-tour.mp4" poster="/video/studio-tour.jpg" autoPlay muted loop playsInline preload="auto" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,23,43,0.55)_0%,rgba(18,23,43,0.15)_45%,rgba(18,23,43,0.9)_100%)]" />
-        <div className="wrap relative flex min-h-[100svh] flex-col justify-end pb-16 pt-[calc(var(--header-h)+3rem)]">
-          <p className="label text-gold-2">Carol Calicchio Art Studio · opened August 2026</p>
-          <h1 className="display mt-4 max-w-4xl text-[clamp(2.8rem,7vw,6.2rem)] leading-[0.96]">A white room, built for color.</h1>
-          <p className="pretty mt-6 max-w-xl text-[1.05rem] leading-relaxed text-white/80">
+      {/* Light, photo-led hero: the gallery itself */}
+      <section className="relative min-h-[92svh] overflow-hidden bg-gallery">
+        <Image src="/photos/white-series-gallery.jpg" alt="Two White Series paintings installed on the gallery wall" fill priority sizes="100vw" className="object-cover object-[68%_50%]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(251,249,245,0.96)_0%,rgba(251,249,245,0.9)_34%,rgba(251,249,245,0.35)_60%,rgba(251,249,245,0)_100%)] lg:bg-[linear-gradient(90deg,rgba(251,249,245,0.97)_0%,rgba(251,249,245,0.92)_30%,rgba(251,249,245,0.2)_58%,rgba(251,249,245,0)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(180deg,rgba(251,249,245,0),#fbf9f5)]" />
+        <PaintBlob of="gardenia-goddess" shape={3} size="clamp(110px,14vw,220px)" className="right-[6%] top-[14%] hidden lg:block" focus={[0.5, 0.5]} speed={0.35} base={-12} />
+        <div className="wrap relative flex min-h-[92svh] flex-col justify-center pb-16 pt-[calc(var(--header-h)+2rem)]">
+          <p className="display-light text-[1.05rem] italic text-ink/60">Carol Calicchio Art Studio, opened August 2026</p>
+          <h1 className="display mt-4 max-w-3xl text-[clamp(2.8rem,6.6vw,5.8rem)] leading-[0.96]">A white room, built for <Scribble>color.</Scribble></h1>
+          <p className="pretty mt-6 max-w-lg text-[1.05rem] leading-relaxed text-ink/75">
             {site.studio.street}, {site.studio.city}. Gallery in front, working studio behind, Ketra lighting in the tracks overhead. Open to collectors, designers and friends of the work, by appointment.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#visit" className="btn btn-white">Book a private viewing</a>
-            <a href={site.studio.mapsHref} target="_blank" rel="noopener" className="btn btn-line-white">Directions</a>
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a href="#visit" className="btn btn-ink">Book a private viewing</a>
+            <a href={site.studio.mapsHref} target="_blank" rel="noopener" className="group inline-flex items-center gap-2 text-[0.95rem] font-semibold text-ink">
+              Directions
+              <span className="h-px w-8 bg-ink/40 transition-all group-hover:w-12 group-hover:bg-ink" />
+            </a>
           </div>
         </div>
       </section>
@@ -41,7 +48,7 @@ export default function StudioPage() {
       <section className="wrap section">
         <div className="grid gap-12 lg:grid-cols-[1fr_1fr]">
           <Reveal>
-            <p className="label text-hibiscus">From construction to first hang</p>
+            <p className="display-light text-[1.05rem] italic text-ink/60">From construction to first hang</p>
             <h2 className="display mt-3 text-[clamp(2rem,4vw,3.6rem)]">Watched over a summer.</h2>
             <p className="pretty mt-5 text-[1.02rem] leading-relaxed text-ink/75">
               Carol shared the build all season: bare walls in May, scaffolding and lighting tracks in June, the kitchen in July, and in August the reveal, a gallery with room to hang 60 and 72 inch canvases at eye level. It is where the paintings now live between shows, and where commissions begin.
@@ -53,10 +60,10 @@ export default function StudioPage() {
             </ul>
           </Reveal>
           <Reveal variant="scale" className="grid grid-cols-3 gap-3">
-            <VideoPlayer src="gesso" className="wrap-edge aspect-[9/16]" />
-            <VideoPlayer src="white-detail" className="wrap-edge aspect-[9/16]" />
-            <div className="wrap-edge relative aspect-[9/16] overflow-hidden">
-              <Image src="/photos/white-series-gallery.jpg" alt="Two White Series paintings installed in a gallery" fill sizes="20vw" className="object-cover" />
+            <div className="rotate-[-1.5deg]"><VideoPlayer src="gesso" className="wrap-edge aspect-[9/16]" /></div>
+            <div className="rotate-[1.2deg] pt-6"><VideoPlayer src="studio-tour" sound className="wrap-edge aspect-[9/16]" caption="The tour" /></div>
+            <div className="wrap-edge relative aspect-[9/16] rotate-[-1deg] overflow-hidden">
+              <Image src="/photos/carol-easel-portrait.jpg" alt="Carol Calicchio beside her easel" fill sizes="20vw" className="object-cover" />
             </div>
           </Reveal>
         </div>
@@ -65,7 +72,7 @@ export default function StudioPage() {
       <section className="bg-paper">
         <div className="wrap section grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <Reveal>
-            <p className="label text-hibiscus">Workshops &amp; events</p>
+            <p className="display-light text-[1.05rem] italic text-ink/60">Workshops &amp; events</p>
             <h2 className="display mt-3 text-[clamp(2rem,4vw,3.6rem)]">Paint with Carol.</h2>
             <p className="pretty mt-5 text-[1.02rem] leading-relaxed text-ink/75">
               Carol hosts Paint &amp; Sip evenings and pop-up workshops with the Delray Beach Historical Society and around Palm Beach County, from Sip into Color at the West Palm Beach GreenMarket to Twilight in the Garden, the Society&rsquo;s premier fundraiser. Join the list below to hear about the next one first.
@@ -80,7 +87,7 @@ export default function StudioPage() {
             </div>
           </Reveal>
           <Reveal delay={100} id="visit" as="div" className="scroll-mt-28 rounded-2xl bg-white p-6 shadow-sm md:p-10">
-            <p className="label text-hibiscus">Visit</p>
+            <p className="display-light text-[1.05rem] italic text-ink/60">Visit</p>
             <h2 className="display mt-3 text-[clamp(1.8rem,3vw,2.6rem)]">Book a private viewing.</h2>
             <p className="mt-3 text-sm text-muted">
               {site.studio.street}, {site.studio.city}, {site.studio.state} {site.studio.zip} · {site.studio.note} · <a href={site.phoneHref} className="font-semibold text-ink">{site.phone}</a>
@@ -104,7 +111,7 @@ export default function StudioPage() {
       </section>
 
       <section className="wrap section">
-        <p className="label text-hibiscus">Good to know</p>
+        <p className="display-light text-[1.05rem] italic text-ink/60">Good to know</p>
         <h2 className="display mt-3 text-[clamp(2rem,4vw,3.4rem)]">Questions collectors ask.</h2>
         <div className="mt-10 grid gap-x-12 gap-y-8 md:grid-cols-2">
           {faqs.map((f) => (

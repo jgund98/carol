@@ -13,16 +13,15 @@ export default function Cursor() {
       ty = e.clientY;
       if (!on) {
         on = true;
-        el.classList.add("on");
         x = tx;
         y = ty;
       }
       const t = (e.target as HTMLElement | null)?.closest?.("[data-cursor]") as HTMLElement | null;
       if (t) {
-        el.classList.add("big");
+        el.classList.add("big", "on");
         el.dataset.label = t.dataset.cursor || "View";
         el.style.setProperty("--cursor-color", t.dataset.cursorColor || "");
-      } else el.classList.remove("big");
+      } else el.classList.remove("big", "on");
     };
     const loop = () => {
       x += (tx - x) * 0.22;
