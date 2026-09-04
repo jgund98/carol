@@ -10,14 +10,16 @@ import { money } from "@/lib/site";
  */
 export default function WorkCard({ work, priority = false, size = "md" }: { work: Work; priority?: boolean; size?: "md" | "lg" }) {
   const a = work.iw / work.ih;
-  const widthPct = a >= 0.8 ? 86 : 107.5 * a;
+  // Surfboards fill the frame edge to edge (zoomed in); paintings hang on the wall swatch.
+  const board = work.kind === "surfboard";
+  const widthPct = board ? 100 : a >= 0.8 ? 86 : 107.5 * a;
   return (
     <Link href={`/shop/${work.slug}`} className="group block" data-cursor={work.sold ? "Sold" : "View"} data-cursor-color={work.color}>
       <div className="plaster relative flex aspect-[4/5] items-center justify-center overflow-hidden rounded-sm border border-ink/[0.06]">
         <div className="spot pointer-events-none absolute -top-[30%] left-1/2 h-[60%] w-[140%] -translate-x-1/2 opacity-70" />
         <div
           className="wrap-edge relative overflow-hidden bg-linen transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:-translate-y-1.5"
-          style={{ width: `${widthPct}%`, aspectRatio: `${work.iw} / ${work.ih}` }}
+          style={board ? { width: "100%", height: "100%" } : { width: `${widthPct}%`, aspectRatio: `${work.iw} / ${work.ih}` }}
         >
           <Image
             src={img(work, size === "lg" ? "full" : "sm")}

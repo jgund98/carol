@@ -144,7 +144,7 @@ export default function Header() {
               return (
                 <Link key={c.slug} href={`/collections/${c.slug}`} className="group" tabIndex={mega ? 0 : -1}>
                   <div className="plaster flex aspect-[5/4] items-center justify-center overflow-hidden rounded-sm">
-                    <div className="wrap-edge relative overflow-hidden transition-transform duration-500 group-hover:-translate-y-1" style={{ width: a >= 1.25 ? "84%" : `${Math.min(84, 68 * a)}%`, aspectRatio: `${w.iw} / ${w.ih}` }}>
+                    <div className="wrap-edge relative overflow-hidden transition-transform duration-500 group-hover:-translate-y-1" style={c.key === "surfboards" ? { width: "100%", height: "100%" } : { width: a >= 1.25 ? "84%" : `${Math.min(84, 68 * a)}%`, aspectRatio: `${w.iw} / ${w.ih}` }}>
                       <Image src={img(w, "sm")} alt="" fill sizes="200px" className="object-cover" />
                     </div>
                   </div>
