@@ -24,10 +24,10 @@ export default function Easel({ works, autoplay = true, className = "", controls
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [-0.5, 0.5], [12, -6]), { stiffness: 120, damping: 18 });
+  const rx = useSpring(useTransform(my, [-0.5, 0.5], [9, -9]), { stiffness: 120, damping: 18 });
   const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-12, 12]), { stiffness: 120, damping: 18 });
   const flip = useSpring(0, { stiffness: 46, damping: 13, mass: 1.1 });
-  const rotY = useTransform(() => ry.get() + flip.get() - 16);
+  const rotY = useTransform(() => ry.get() + flip.get());
 
   useEffect(() => {
     flip.set(turns * 180);
@@ -94,10 +94,10 @@ export default function Easel({ works, autoplay = true, className = "", controls
         onPointerMove={onMove}
         onPointerLeave={onLeave}
       >
-        {/* Walnut floor easel, seen from three-quarter front */}
-        <div className="absolute inset-0" style={{ transform: "perspective(1100px) rotateY(-19deg) rotateX(2deg)", transformOrigin: "50% 82%" }}>
-          <WalnutEasel />
-        </div>
+        {/* A real wooden easel, photographed (CC0), paint still on the tray */}
+        <div className="pointer-events-none absolute inset-x-[10%] bottom-[0.5%] h-[5%] rounded-[50%] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(18,23,43,0.28),rgba(18,23,43,0)_70%)] blur-[6px]" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/easel.png" alt="" aria-hidden width={900} height={1503} className="pointer-events-none absolute inset-0 h-full w-full object-contain object-bottom" draggable={false} />
 
         {/* Canvas */}
         <motion.div
@@ -111,12 +111,12 @@ export default function Easel({ works, autoplay = true, className = "", controls
           }}
           aria-label={showingBack ? `Turn to the next painting, ${next.name}` : `Turn ${front.name} around to read its label`}
           onClick={turn}
-          className="absolute bottom-[37%] left-1/2 block cursor-pointer outline-none [transform-style:preserve-3d] focus-visible:ring-4 focus-visible:ring-hibiscus/50"
+          className="absolute bottom-[27.5%] left-1/2 block cursor-pointer outline-none [transform-style:preserve-3d] focus-visible:ring-4 focus-visible:ring-hibiscus/50"
           style={{
-            width: `min(${ratio * 60}cqw, 78cqw)`,
+            width: `min(${ratio * 72}cqw, 84cqw)`,
             aspectRatio: `${ratio}`,
-            x: "-46%",
-            rotate: -2.5,
+            x: "-50%",
+            rotate: -3.6,
             rotateX: rx,
             rotateY: rotY,
             transformStyle: "preserve-3d",
@@ -174,82 +174,5 @@ export default function Easel({ works, autoplay = true, className = "", controls
       </div>
       )}
     </div>
-  );
-}
-
-function WalnutEasel() {
-  // A slim walnut display easel: two front legs rising into an arched crown with a cut-out,
-  // a rear leg, and a thin tray with brackets. Grain comes from a turbulence filter, so it is
-  // real texture, not a gradient. Canvas rests on the tray at 63% of the scene height.
-  return (
-    <svg viewBox="0 0 400 500" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
-      <defs>
-        <filter id="walnut" x="0" y="0" width="100%" height="100%" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="0.5 0.012" numOctaves="3" seed="7" result="n" />
-          <feColorMatrix in="n" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="lum" />
-          <feComponentTransfer in="lum" result="wood">
-            <feFuncR type="table" tableValues="0.20 0.36 0.52 0.66" />
-            <feFuncG type="table" tableValues="0.09 0.18 0.28 0.38" />
-            <feFuncB type="table" tableValues="0.04 0.08 0.13 0.18" />
-            <feFuncA type="table" tableValues="1 1" />
-          </feComponentTransfer>
-        </filter>
-        <linearGradient id="edgeL" x1="0" x2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.28" />
-          <stop offset="0.35" stopColor="#fff" stopOpacity="0" />
-          <stop offset="0.75" stopColor="#000" stopOpacity="0" />
-          <stop offset="1" stopColor="#000" stopOpacity="0.45" />
-        </linearGradient>
-        <linearGradient id="edgeT" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.3" />
-          <stop offset="0.5" stopColor="#fff" stopOpacity="0" />
-          <stop offset="1" stopColor="#000" stopOpacity="0.5" />
-        </linearGradient>
-        <filter id="blur6" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" /></filter>
-        <filter id="blur2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2" /></filter>
-        <clipPath id="frame">
-          {/* crown + two front legs as one piece */}
-          <path d="M120 488 L182 66 C 186 44, 214 44, 218 66 L 280 488 L 268 488 L 209 84 C 207 74, 193 74, 191 84 L 132 488 Z" />
-          {/* rear leg */}
-          <path d="M197 62 L232 486 L242 486 L207 62 Z" />
-          {/* tray */}
-          <path d="M112 314 L288 314 L288 324 L112 324 Z" />
-          <path d="M112 306 L288 306 L288 314 L112 314 Z" />
-          {/* tray brackets */}
-          <path d="M150 324 L162 324 L162 342 Z" />
-          <path d="M250 324 L238 324 L238 342 Z" />
-        </clipPath>
-      </defs>
-
-      {/* shadows: floor, feet, and the tray's cast on the legs */}
-      <ellipse cx="200" cy="490" rx="150" ry="7" fill="rgba(18,23,43,0.22)" filter="url(#blur6)" />
-      <ellipse cx="126" cy="489" rx="12" ry="2.5" fill="rgba(18,23,43,0.4)" filter="url(#blur2)" />
-      <ellipse cx="274" cy="489" rx="12" ry="2.5" fill="rgba(18,23,43,0.4)" filter="url(#blur2)" />
-      <ellipse cx="237" cy="487" rx="9" ry="2" fill="rgba(18,23,43,0.3)" filter="url(#blur2)" />
-
-      {/* rear leg is a touch darker: paint it first, then the front frame over it */}
-      <g clipPath="url(#frame)">
-        <rect x="0" y="0" width="400" height="500" filter="url(#walnut)" />
-      </g>
-      {/* side faces (right-hand sides catch less light) */}
-      <path d="M280 488 L218 66 L226 66 L288 488 Z" fill="#2a170b" />
-      <path d="M209 84 L268 488 L276 488 L217 84 Z" fill="#3a2211" opacity="0.9" />
-      <path d="M242 486 L207 62 L214 62 L249 486 Z" fill="#1f1108" />
-      <path d="M288 306 L296 300 L296 320 L288 324 Z" fill="#2a170b" />
-      <path d="M112 306 L120 300 L296 300 L288 306 Z" fill="#7a4a26" />
-      {/* dim the rear leg */}
-      <path d="M197 62 L232 486 L242 486 L207 62 Z" fill="#000" opacity="0.22" />
-      {/* lighting on the front legs: lit left edge, shaded right edge */}
-      <path d="M120 488 L182 66 C 186 44, 214 44, 218 66 L 280 488 L 268 488 L 209 84 C 207 74, 193 74, 191 84 L 132 488 Z" fill="url(#edgeL)" />
-      {/* tray lighting: bright top face, dark front */}
-      <path d="M112 306 L288 306 L288 314 L112 314 Z" fill="#fff" opacity="0.22" />
-      <path d="M112 314 L288 314 L288 324 L112 324 Z" fill="url(#edgeT)" />
-      <path d="M112 324 L288 324 L288 330 L112 330 Z" fill="#000" opacity="0.18" filter="url(#blur2)" />
-      {/* brass screws on the tray */}
-      <circle cx="122" cy="319" r="1.6" fill="#d9b25c" />
-      <circle cx="278" cy="319" r="1.6" fill="#d9b25c" />
-      {/* the canvas's shadow on the tray */}
-      <ellipse cx="200" cy="308" rx="100" ry="3" fill="rgba(18,23,43,0.3)" filter="url(#blur2)" />
-    </svg>
   );
 }
