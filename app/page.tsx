@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import StudioHero from "@/components/StudioHero";
+import Easel from "@/components/Easel";
 import Reveal, { Rise } from "@/components/Reveal";
 import Marquee from "@/components/Marquee";
 import BrushReveal from "@/components/BrushReveal";
@@ -23,7 +23,7 @@ export default function Home() {
     <>
       {/* HERO */}
       <section className="relative min-h-[100svh] overflow-hidden bg-[radial-gradient(90%_70%_at_70%_20%,#fff_0%,#fbf9f5_55%,#f4efe7_100%)] pt-[var(--header-h)]" aria-label="Carol Calicchio">
-        <div className="wrap grid min-h-[calc(100svh-var(--header-h))] grid-cols-1 content-center gap-y-4 py-6 lg:grid-cols-[0.9fr_1.1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-6 lg:py-4">
+        <div className="wrap grid min-h-[calc(100svh-var(--header-h))] grid-cols-1 content-center gap-y-4 py-6 lg:grid-cols-[1.05fr_1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-10 lg:py-6">
           <div className="lg:col-start-1 lg:self-end">
             <p className="display-light text-[1.05rem] italic text-ink/60">Carol Calicchio Art Studio, Delray Beach</p>
             <h1 className="display mt-3 text-[clamp(2.7rem,5.6vw,5rem)] leading-[0.98] lg:mt-5">
@@ -31,11 +31,11 @@ export default function Home() {
             </h1>
           </div>
           <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
-            <StudioHero works={hero} />
+            <Easel works={hero} className="mx-auto w-full max-w-[min(100%,300px)] sm:max-w-[420px] lg:max-w-[560px]" />
           </div>
           <div className="lg:col-start-1 lg:self-start">
             <p className="pretty max-w-[30rem] text-[1.02rem] leading-relaxed text-ink/75 md:text-[1.12rem]">
-              Carol paints abstract florals and seascapes on the Intracoastal in Delray Beach. Sixty-inch canvases, thick paint, South Florida light. The one on the easel is real; turn it around.
+              Carol paints abstract florals and seascapes on the Intracoastal in Delray Beach. Sixty-inch canvases, thick paint, South Florida light. The one on the easel is real. Turn it around.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href="/shop" className="btn btn-ink">
@@ -46,12 +46,40 @@ export default function Home() {
                 <span className="h-px w-8 bg-ink/40 transition-all group-hover:w-12 group-hover:bg-ink" />
               </Link>
             </div>
-            <p className="display-light mt-7 text-[1rem] italic text-ink/55">The new gallery at 2559 Webb Avenue opened this August. Come see the paint in person.</p>
           </div>
         </div>
       </section>
 
       <Marquee label="Featured in" items={[...site.featuredIn.map((f) => `Featured in ${f}`), ...site.onView.map((v) => `On view at ${v}`)]} />
+
+      {/* MEET CAROL */}
+      <section className="bg-paper">
+        <div className="wrap section grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+          <Reveal variant="scale" className="mx-auto w-full max-w-[420px]">
+            <VideoPlayer src="carol-talks" sound className="wrap-edge aspect-[4/5]" />
+            <p className="mt-3 text-center text-xs text-muted">Carol in the studio, loading the brush. Tap for sound.</p>
+          </Reveal>
+          <Reveal delay={100}>
+            <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[260px] md:w-[340px]" priority />
+            <p className="pretty mt-6 max-w-[38rem] text-[1.08rem] leading-[1.7] text-ink/80 md:text-[1.18rem]">
+              A Fairfield County native and one of South Florida&rsquo;s leading contemporary artists. Carol studied interior design at the New York School of Interior Design, then painting and drawing at the School of Visual Arts, and found her real subject in the art she had been curating for other people&rsquo;s homes. Her paintings hang in private collections from Palm Beach to Nantucket and New York.
+            </p>
+            <blockquote className="mt-8 border-l-2 border-hibiscus pl-5">
+              <p className="display-light text-[clamp(1.3rem,2.2vw,1.7rem)] leading-snug">&ldquo;{quotes[0].text}&rdquo;</p>
+              <p className="mt-2 text-xs text-muted">Carol, in Dan&rsquo;s Papers</p>
+            </blockquote>
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Link href="/about" className="btn btn-line">
+                Her story
+              </Link>
+              <a href={site.social.instagram} target="_blank" rel="noopener" className="group inline-flex items-center gap-2 text-[0.95rem] font-semibold text-ink">
+                {site.social.instagramHandle}
+                <span className="h-px w-8 bg-ink/40 transition-all group-hover:w-12 group-hover:bg-ink" />
+              </a>
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
       {/* COLLECTIONS */}
       <section className="section">
@@ -131,7 +159,7 @@ export default function Home() {
             </div>
           </Reveal>
           <Reveal className="order-1 lg:order-2">
-            <p className="label text-hibiscus">The new studio · Delray Beach</p>
+            <p className="label text-hibiscus">The studio · Delray Beach</p>
             <h2 className="display mt-3 text-[clamp(2.2rem,4.6vw,4rem)]">A gallery of her own, finished this summer.</h2>
             <p className="pretty mt-5 text-[1.02rem] leading-relaxed text-ink/75">
               In August 2026 Carol opened Carol Calicchio Art Studio at {site.studio.street}, {site.studio.city}: a white, light-filled gallery with Ketra lighting in the ceiling tracks, a working studio behind it, and room to hang the oversized canvases the way they are meant to be seen.
