@@ -24,10 +24,10 @@ export default function Easel({ works, autoplay = true, className = "", controls
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [-0.5, 0.5], [9, -9]), { stiffness: 120, damping: 18 });
+  const rx = useSpring(useTransform(my, [-0.5, 0.5], [12, -6]), { stiffness: 120, damping: 18 });
   const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-12, 12]), { stiffness: 120, damping: 18 });
   const flip = useSpring(0, { stiffness: 46, damping: 13, mass: 1.1 });
-  const rotY = useTransform(() => ry.get() + flip.get());
+  const rotY = useTransform(() => ry.get() + flip.get() - 16);
 
   useEffect(() => {
     flip.set(turns * 180);
@@ -94,8 +94,10 @@ export default function Easel({ works, autoplay = true, className = "", controls
         onPointerMove={onMove}
         onPointerLeave={onLeave}
       >
-        {/* Walnut floor easel */}
-        <WalnutEasel />
+        {/* Walnut floor easel, seen from three-quarter front */}
+        <div className="absolute inset-0" style={{ transform: "perspective(1100px) rotateY(-19deg) rotateX(2deg)", transformOrigin: "50% 82%" }}>
+          <WalnutEasel />
+        </div>
 
         {/* Canvas */}
         <motion.div
@@ -113,7 +115,8 @@ export default function Easel({ works, autoplay = true, className = "", controls
           style={{
             width: `min(${ratio * 60}cqw, 78cqw)`,
             aspectRatio: `${ratio}`,
-            x: "-50%",
+            x: "-46%",
+            rotate: -2.5,
             rotateX: rx,
             rotateY: rotY,
             transformStyle: "preserve-3d",
@@ -228,6 +231,12 @@ function WalnutEasel() {
       <g clipPath="url(#frame)">
         <rect x="0" y="0" width="400" height="500" filter="url(#walnut)" />
       </g>
+      {/* side faces (right-hand sides catch less light) */}
+      <path d="M280 488 L218 66 L226 66 L288 488 Z" fill="#2a170b" />
+      <path d="M209 84 L268 488 L276 488 L217 84 Z" fill="#3a2211" opacity="0.9" />
+      <path d="M242 486 L207 62 L214 62 L249 486 Z" fill="#1f1108" />
+      <path d="M288 306 L296 300 L296 320 L288 324 Z" fill="#2a170b" />
+      <path d="M112 306 L120 300 L296 300 L288 306 Z" fill="#7a4a26" />
       {/* dim the rear leg */}
       <path d="M197 62 L232 486 L242 486 L207 62 Z" fill="#000" opacity="0.22" />
       {/* lighting on the front legs: lit left edge, shaded right edge */}
