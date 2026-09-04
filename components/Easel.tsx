@@ -11,8 +11,7 @@ import { dims, img } from "@/lib/catalog";
  */
 export default function Easel({ works, autoplay = true, className = "", controls = true, glow = true }: { works: Work[]; autoplay?: boolean; className?: string; controls?: boolean; glow?: boolean }) {
   const [turns, setTurns] = useState(0); // each turn is 180°; even = a painting faces you
-  const [idle, setIdle] = useState(true);
-  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
 
   const front = works[Math.floor(turns / 2) % works.length];
@@ -43,19 +42,26 @@ export default function Easel({ works, autoplay = true, className = "", controls
     return () => document.removeEventListener("visibilitychange", onVis);
   }, [turns, flip]);
 
-  const poke = useCallback(() => {
-    setIdle(false);
-    if (idleTimer.current) clearTimeout(idleTimer.current);
-    idleTimer.current = setTimeout(() => setIdle(true), 7000);
-  }, []);
-
-  // Idle autoplay: flip to the label, then on to the next painting.
+  // The canvas turns on its own every few seconds. Any interaction just delays the next turn.
+  const schedule = useCallback(
+    (delay: number) => {
+      if (!autoplay) return;
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        setTurns((n) => n + 1);
+        schedule(3000);
+      }, delay);
+    },
+    [autoplay],
+  );
   useEffect(() => {
-    if (!autoplay || !idle) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t = setInterval(() => setTurns((n) => n + 1), 3800);
-    return () => clearInterval(t);
-  }, [autoplay, idle]);
+    schedule(3000);
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, [schedule]);
+  const poke = useCallback(() => schedule(4500), [schedule]);
 
   const onMove = (e: React.PointerEvent) => {
     const r = sceneRef.current!.getBoundingClientRect();
