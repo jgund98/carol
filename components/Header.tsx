@@ -46,7 +46,7 @@ export default function Header() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-[120] transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
-          (scrolled || mega) && !menu ? "bg-gallery/90 backdrop-blur-xl shadow-[0_1px_0_rgba(18,23,43,0.08)]" : "bg-transparent"
+          scrolled || mega ? "bg-gallery/90 backdrop-blur-xl shadow-[0_1px_0_rgba(18,23,43,0.08)]" : "bg-transparent"
         }`}
         style={{ height: "var(--header-h)" }}
       >
@@ -107,21 +107,22 @@ export default function Header() {
                 <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-hibiscus px-1 text-[0.68rem] font-bold text-white">{count}</span>
               )}
             </button>
-            <Link href="/shop" className="btn btn-sm btn-pink hidden sm:inline-flex">
-              Shop originals
+            <Link href="/shop" className="btn btn-sm btn-pink">
+              <span className="sm:hidden">Shop</span>
+              <span className="hidden sm:inline">Shop originals</span>
             </Link>
             <button
               type="button"
-              onClick={() => setMenu((m) => !m)}
+              onClick={() => setMenu(true)}
               className="grid h-11 w-11 place-items-center rounded-full text-ink lg:hidden"
               aria-expanded={menu}
               aria-controls="mobile-menu"
-              aria-label={menu ? "Close menu" : "Open menu"}
+              aria-label="Open menu"
             >
               <span className="relative block h-4 w-6">
-                <span className={`absolute left-0 top-0 h-[2px] w-6 rounded bg-current transition-transform duration-300 ${menu ? "translate-y-[7px] rotate-45" : ""}`} />
-                <span className={`absolute left-0 top-[7px] h-[2px] w-6 rounded bg-current transition-opacity duration-200 ${menu ? "opacity-0" : ""}`} />
-                <span className={`absolute left-0 top-[14px] h-[2px] w-6 rounded bg-current transition-transform duration-300 ${menu ? "-translate-y-[7px] -rotate-45" : ""}`} />
+                <span className="absolute left-0 top-0 h-[2px] w-6 rounded bg-current" />
+                <span className="absolute left-0 top-[7px] h-[2px] w-6 rounded bg-current" />
+                <span className="absolute left-0 top-[14px] h-[2px] w-6 rounded bg-current" />
               </span>
             </button>
           </div>
@@ -159,45 +160,62 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile menu */}
+      {/* Mobile menu: a full-screen sheet above the header, with its own top bar */}
       <div
         id="mobile-menu"
-        className={`fixed inset-0 z-[110] flex flex-col overflow-y-auto bg-gallery transition-[opacity,visibility] duration-400 lg:hidden ${menu ? "visible opacity-100" : "invisible opacity-0"}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        className={`fixed inset-0 z-[140] flex flex-col bg-gallery transition-transform duration-500 ease-[cubic-bezier(.2,.8,.2,1)] lg:hidden ${menu ? "translate-x-0" : "translate-x-full"}`}
         aria-hidden={!menu}
       >
-        <div className="wrap flex flex-1 flex-col justify-center gap-2 pt-24 pb-10">
-          {nav.map((n, i) => (
-            <div key={n.href}>
-              <Link
-                href={n.href}
-                className="display block border-b border-ink/10 py-4 text-[2.4rem] leading-none text-ink transition-transform duration-500"
-                style={{ transitionDelay: `${i * 40}ms`, transform: menu ? "none" : "translateY(16px)" }}
-              >
-                {n.label}
-              </Link>
-              {n.href === "/collections" && (
-                <div className="rail flex gap-2 py-3">
-                  {collections.map((c) => (
-                    <Link key={c.slug} href={`/collections/${c.slug}`} className="shrink-0 rounded-full border border-ink/15 px-3 py-1.5 text-xs font-semibold text-ink/75">
-                      {c.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/shop" className="btn btn-pink">
+        <div className="wrap flex items-center justify-between" style={{ height: "var(--header-h)" }}>
+          <Link href="/" onClick={() => setMenu(false)} aria-label="Carol Calicchio, home" className="relative block h-[44px] w-[150px]">
+            <Image src="/brand/sig-ink.png" alt="Carol Calicchio" fill sizes="150px" className="object-contain object-left" />
+          </Link>
+          <button type="button" onClick={() => setMenu(false)} className="grid h-11 w-11 place-items-center rounded-full bg-ink/5 text-ink" aria-label="Close menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </div>
+        <nav className="wrap flex-1 overflow-y-auto pb-10 pt-4" aria-label="Mobile">
+          <ul className="divide-y divide-ink/10 border-t border-ink/10">
+            {nav.map((n, i) => {
+              const active = pathname === n.href || pathname.startsWith(n.href + "/");
+              return (
+                <li key={n.href} style={{ transitionDelay: `${80 + i * 40}ms` }} className={`transition-[opacity,transform] duration-500 ${menu ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"}`}>
+                  <Link href={n.href} className="flex items-center justify-between py-4">
+                    <span className={`display text-[2.1rem] leading-none ${active ? "text-hibiscus" : "text-ink"}`}>{n.label}</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-ink/40"><path d="M9 6l6 6-6 6" /></svg>
+                  </Link>
+                  {n.href === "/collections" && (
+                    <div className="rail -mx-1 flex gap-2 px-1 pb-4">
+                      {collections.map((c) => (
+                        <Link key={c.slug} href={`/collections/${c.slug}`} className="shrink-0 rounded-full border border-ink/15 px-3 py-1.5 text-xs font-semibold text-ink/75">
+                          {c.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-8 grid gap-3">
+            <Link href="/shop" className="btn btn-pink w-full">
               Shop originals
             </Link>
-            <Link href="/studio#visit" className="btn btn-line">
+            <Link href="/studio#visit" className="btn btn-line w-full">
               Visit the studio
             </Link>
           </div>
-          <p className="mt-8 text-sm text-muted">
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
+            <a href={site.phoneHref} className="font-semibold text-ink">{site.phone}</a>
+            <a href={site.social.instagram} target="_blank" rel="noopener" className="font-semibold text-ink">{site.social.instagramHandle}</a>
+          </div>
+          <p className="mt-3 text-xs text-muted">
             {site.studio.street}, {site.studio.city}, {site.studio.state} · {site.studio.note}
           </p>
-        </div>
+        </nav>
       </div>
     </>
   );

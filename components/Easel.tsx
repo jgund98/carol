@@ -156,7 +156,7 @@ export default function Easel({ works, autoplay = true, className = "", controls
             <div className="relative z-10 flex h-[12%] items-center justify-between gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/brand/sig-ink.png" alt="Signed, Carol Calicchio" width={2160} height={680} className="block h-auto w-[38%] opacity-70" draggable={false} />
-              <p className="label text-[0.5rem] leading-none text-ink/50 sm:text-[0.55rem]" style={{ whiteSpace: "nowrap" }}>Delray Beach</p>
+              <p className="label hidden text-[0.55rem] leading-none text-ink/50 sm:block" style={{ whiteSpace: "nowrap" }}>Delray Beach</p>
             </div>
           </div>
         </motion.div>
