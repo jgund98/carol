@@ -43,8 +43,8 @@ export default function Home() {
             <Easel works={hero} className="mx-auto w-full max-w-[min(100%,300px)] sm:max-w-[420px] lg:max-w-[560px]" />
           </div>
           <div className="lg:col-start-1 lg:self-start">
-            <p className="pretty max-w-[30rem] text-[1.02rem] leading-relaxed text-ink/75 md:text-[1.12rem]">
-              Carol paints abstract florals and seascapes on the Intracoastal in Delray Beach. Sixty-inch canvases, thick paint, South Florida light. The one on the easel is real. Turn it around.
+            <p className="pretty max-w-[33rem] text-[1.02rem] leading-relaxed text-ink/75 md:text-[1.12rem]">
+              Abstract florals and seascapes from Delray Beach. Thick paint, big canvases, South Florida light. The one on the easel is real. Turn&nbsp;it&nbsp;around.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href="/shop" className="btn btn-ink">
