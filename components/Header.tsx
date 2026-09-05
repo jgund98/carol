@@ -107,8 +107,8 @@ export default function Header() {
                 <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-hibiscus px-1 text-[0.68rem] font-bold text-white">{count}</span>
               )}
             </button>
-            <Link href="/studio#visit" className="btn btn-sm btn-ink hidden sm:inline-flex">
-              Visit the studio
+            <Link href="/shop" className="btn btn-sm btn-pink hidden sm:inline-flex">
+              Shop originals
             </Link>
             <button
               type="button"
@@ -187,12 +187,12 @@ export default function Header() {
             </div>
           ))}
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/studio#visit" className="btn btn-ink">
+            <Link href="/shop" className="btn btn-pink">
+              Shop originals
+            </Link>
+            <Link href="/studio#visit" className="btn btn-line">
               Visit the studio
             </Link>
-            <a href={site.phoneHref} className="btn btn-line">
-              Call {site.phone}
-            </a>
           </div>
           <p className="mt-8 text-sm text-muted">
             {site.studio.street}, {site.studio.city}, {site.studio.state} · {site.studio.note}

@@ -82,7 +82,7 @@ export default function StudioPage() {
                 <Image src="/photos/paint-sip.jpg" alt="Paint and Sip with Carol Calicchio at the Delray Beach Historical Society" fill sizes="25vw" className="object-cover" />
               </div>
               <div className="wrap-edge relative aspect-[3/4] overflow-hidden bg-linen">
-                <Image src="/photos/popup-workshop.jpg" alt="Pop-up workshop with easels by the water" fill sizes="25vw" className="object-cover" />
+                <Image src="/photos/popup-workshop.jpg" alt="Painting at a pop-up workshop by the water" fill sizes="25vw" className="object-cover object-[58%_50%]" />
               </div>
             </div>
           </Reveal>

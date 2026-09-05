@@ -10,6 +10,7 @@ import VideoPlayer from "@/components/VideoPlayer";
 import WorkCard from "@/components/WorkCard";
 import PaintBlob from "@/components/PaintBlob";
 import Scribble from "@/components/Scribble";
+import HeroTitle from "@/components/HeroTitle";
 import { site, money } from "@/lib/site";
 import { bySlug, heroSlugs, wallSlugs, inCollection, img, dims } from "@/lib/catalog";
 import { collections, quotes, statement, process as processSteps, books } from "@/lib/content";
@@ -36,9 +37,7 @@ export default function Home() {
         <div className="wrap relative grid min-h-[calc(100svh-var(--header-h))] grid-cols-1 content-center gap-y-4 py-6 lg:grid-cols-[1.05fr_1fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-10 lg:py-6">
           <div className="lg:col-start-1 lg:self-end">
             <p className="display-light text-[1.05rem] italic text-ink/60">Carol Calicchio Art Studio, Delray Beach</p>
-            <h1 className="display mt-3 text-[clamp(2.7rem,5.6vw,5rem)] leading-[0.98] lg:mt-5">
-              Art that changes the <em className="text-ink">energy</em> of a room.
-            </h1>
+            <HeroTitle />
           </div>
           <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <Easel works={hero} className="mx-auto w-full max-w-[min(100%,300px)] sm:max-w-[420px] lg:max-w-[560px]" />
