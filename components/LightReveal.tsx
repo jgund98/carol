@@ -7,7 +7,8 @@ import { img } from "@/lib/catalog";
  * "Natural light is a limitless spectrum of color."
  * The painting hangs in a dim gallery; your pointer is the light. Two real image files
  * (dim + full color) and a CSS radial mask, so it works on every mobile browser.
- * touch-action: pan-y keeps the page scrollable on phones.
+ * touch-action: none inside the painting only, so a finger moves the light instead of the page;
+ * the page still scrolls from the text around it.
  */
 export default function LightReveal({ work, className = "" }: { work: Work; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -73,7 +74,7 @@ export default function LightReveal({ work, className = "" }: { work: Work; clas
     <div
       ref={ref}
       className={`relative overflow-hidden bg-[#0b1226] ${className}`}
-      style={{ touchAction: "pan-y", aspectRatio: `${work.iw} / ${work.ih}` }}
+      style={{ touchAction: "none", aspectRatio: `${work.iw} / ${work.ih}` }}
       data-cursor="Light"
       data-cursor-color="#e5c877"
     >

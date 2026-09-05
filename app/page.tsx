@@ -146,7 +146,7 @@ export default function Home() {
           </Reveal>
           <Reveal variant="scale" className="mx-auto w-full max-w-[640px]">
             <LightReveal work={celestial} className="wrap-edge" />
-            <p className="mt-3 text-center text-xs text-white/45">Touch or hover to bring the light</p>
+            <p className="mt-3 text-center text-xs text-white/45">Drag a finger across the painting to bring the light</p>
           </Reveal>
         </div>
       </section>

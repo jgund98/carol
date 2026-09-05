@@ -5,7 +5,7 @@
  */
 export default function HeroTitle() {
   return (
-    <h1 className="display relative mt-3 text-[clamp(2.6rem,5.4vw,4.8rem)] leading-[0.94] lg:mt-5" aria-label="Art that changes the energy of a room.">
+    <h1 className="display relative mt-3 text-[clamp(2.9rem,5.4vw,4.8rem)] leading-[0.94] lg:mt-5" aria-label="Art that changes the energy of a room.">
       <span className="block">Art that changes</span>
       <span className="block">
         <span className="mr-[0.22em] align-baseline text-[0.62em] font-normal italic text-ink/70">the</span>
@@ -38,7 +38,7 @@ export default function HeroTitle() {
             aria-hidden
             width={1400}
             height={815}
-            className="hero-brush pointer-events-none absolute left-[90%] top-[-62%] z-20 hidden w-[2.6em] origin-[8%_80%] sm:block"
+            className="hero-brush pointer-events-none absolute left-[86%] top-[-66%] z-20 block w-[2.5em] origin-[8%_80%] sm:left-[90%] sm:top-[-62%] sm:w-[2.6em]"
             draggable={false}
           />
         </span>
