@@ -148,7 +148,7 @@ export default function Easel({ works, autoplay = true, className = "", controls
             <div className="relative z-10 bg-white/85 px-4 py-3 shadow-sm backdrop-blur-sm">
               <p className="label text-[0.58rem] text-muted">Carol Calicchio</p>
               <p className="display mt-1 text-[clamp(1.05rem,4.5cqw,1.6rem)] leading-tight">{labelWork.name}</p>
-              <p className="mt-1 text-[0.8rem] text-muted">
+              <p className="mt-1 text-[0.7rem] leading-snug text-muted sm:text-[0.8rem]">
                 {dims(labelWork) ? `${dims(labelWork)} · ` : ""}
                 {labelWork.medium}
               </p>
@@ -156,7 +156,7 @@ export default function Easel({ works, autoplay = true, className = "", controls
             <div className="relative z-10 flex h-[12%] items-center justify-between gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/brand/sig-ink.png" alt="Signed, Carol Calicchio" width={2160} height={680} className="block h-auto w-[38%] opacity-70" draggable={false} />
-              <p className="label whitespace-nowrap text-[0.55rem] leading-none text-ink/50">Delray Beach</p>
+              <p className="label text-[0.5rem] leading-none text-ink/50 sm:text-[0.55rem]" style={{ whiteSpace: "nowrap" }}>Delray Beach</p>
             </div>
           </div>
         </motion.div>
