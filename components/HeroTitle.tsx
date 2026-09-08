@@ -11,13 +11,11 @@ export default function HeroTitle() {
         <span className="mr-[0.22em] align-baseline text-[0.62em] font-normal italic text-ink/70">the</span>
         <span className="relative inline-block align-baseline [isolation:isolate]">
           {/* paint smear behind the word */}
-          <svg viewBox="-40 0 480 60" className="hero-smear pointer-events-none absolute left-[-6%] top-[22%] z-0 hidden h-[0.9em] w-[112%] overflow-visible lg:block" style={{ transform: "rotate(-2deg)" }} aria-hidden>
+          <span className="hero-smear pointer-events-none absolute left-[-14%] top-[14%] z-0 block h-[1.1em] w-[128%] lg:left-[-6%] lg:top-[22%] lg:h-[0.9em] lg:w-[112%]" aria-hidden>
+          <svg viewBox="-40 0 480 60" className="block h-full w-full overflow-visible" style={{ transform: "rotate(-2deg)" }}>
             <defs>
-              <filter id="hero-smear-soft" x="-10%" y="-40%" width="120%" height="180%">
-                <feGaussianBlur stdDeviation="0.55" />
-              </filter>
               <mask id="hero-smear-mask" maskUnits="userSpaceOnUse" x="-40" y="-10" width="480" height="80">
-                <g filter="url(#hero-smear-soft)">
+                <g>
                   {/* one stroke: bristles land on the left, the pull thins out and lifts off on the right */}
                   <path d="M-22 30 C -12 20, 6 12, 32 13 C 58 5, 80 17, 104 10 C 130 4, 152 16, 178 9 C 204 3, 226 15, 252 9 C 278 4, 300 15, 326 9 C 350 5, 372 12, 396 10 C 412 9, 426 12, 434 15 C 428 20, 414 25, 396 28 C 366 34, 336 30, 306 36 C 276 42, 250 34, 224 42 C 196 50, 170 40, 144 47 C 118 54, 94 44, 70 50 C 48 55, 26 51, 8 46 C -6 42, -20 38, -22 30 Z" fill="white" />
                   {/* dry gap where the paint ran thin */}
@@ -32,6 +30,7 @@ export default function HeroTitle() {
               <path d="M20 40 C 70 46, 130 38, 200 44 C 260 49, 320 40, 372 30 L 372 33 C 320 44, 260 53, 200 48 C 130 42, 70 50, 20 44 Z" fill="#000" opacity="0.14" />
             </g>
           </svg>
+          </span>
           {/* transform lives on the wrapper: background-clip:text breaks on a composited element */}
           <span className="relative z-10 inline-block" style={{ transform: "rotate(-2deg)" }}>
             <em className="paint-text -mb-[0.32em] -mt-[0.12em] inline-block pb-[0.32em] pr-[0.08em] pt-[0.12em] text-[1.28em] font-normal italic leading-[0.9] tracking-[-0.01em]">energy</em>
