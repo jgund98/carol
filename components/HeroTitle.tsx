@@ -11,22 +11,15 @@ export default function HeroTitle() {
         <span className="mr-[0.22em] align-baseline text-[0.62em] font-normal italic text-ink/70">the</span>
         <span className="relative inline-block align-baseline [isolation:isolate]">
           {/* paint smear behind the word */}
-          <svg viewBox="-40 0 480 60" className="hero-smear pointer-events-none absolute left-[-14%] top-[14%] z-0 h-[1.1em] w-[128%] overflow-visible lg:left-[-6%] lg:top-[22%] lg:h-[0.9em] lg:w-[112%]" style={{ transform: "rotate(-2deg)" }} aria-hidden>
+          <svg viewBox="-40 0 480 60" className="hero-smear pointer-events-none absolute left-[-6%] top-[22%] z-0 hidden h-[0.9em] w-[112%] overflow-visible lg:block" style={{ transform: "rotate(-2deg)" }} aria-hidden>
             <defs>
               <filter id="hero-smear-soft" x="-10%" y="-40%" width="120%" height="180%">
                 <feGaussianBlur stdDeviation="0.55" />
               </filter>
               <mask id="hero-smear-mask" maskUnits="userSpaceOnUse" x="-40" y="-10" width="480" height="80">
                 <g filter="url(#hero-smear-soft)">
-                  {/* the body of the stroke: loaded start, pulled right, lifting off */}
-                  <path d="M-16 31 C -8 19, 8 11, 32 13 C 58 5, 80 17, 104 10 C 130 4, 152 16, 178 9 C 204 3, 226 15, 252 9 C 278 4, 300 15, 326 9 C 350 5, 372 13, 394 9 C 408 7, 418 12, 416 18 C 412 25, 398 29, 382 32 C 354 38, 328 30, 302 37 C 274 44, 250 34, 224 42 C 196 50, 170 40, 144 47 C 118 54, 94 44, 70 50 C 48 55, 26 51, 8 46 C -4 42, -18 40, -16 31 Z" fill="white" />
-                  {/* ragged start where the bristles first touch */}
-                  <path d="M-30 27 C -24 21, -16 17, -4 15 L -2 19 C -12 21, -20 25, -26 33 Z" fill="white" />
-                  <path d="M-22 40 C -16 36, -8 34, 2 34 L 2 38 C -8 39, -14 42, -18 47 Z" fill="white" />
-                  {/* lift-off flicks: the bristles leave the canvas one by one */}
-                  <path d="M372 6 C 396 4, 418 3, 440 1 L 440 4 C 418 7, 396 9, 372 11 Z" fill="white" />
-                  <path d="M384 16 C 404 15, 422 14, 440 12 L 440 15 C 422 17, 404 19, 384 20 Z" fill="white" opacity="0.85" />
-                  <path d="M380 33 C 402 31, 422 28, 440 24 L 440 27 C 422 32, 402 36, 380 38 Z" fill="white" />
+                  {/* one stroke: bristles land on the left, the pull thins out and lifts off on the right */}
+                  <path d="M-22 30 C -12 20, 6 12, 32 13 C 58 5, 80 17, 104 10 C 130 4, 152 16, 178 9 C 204 3, 226 15, 252 9 C 278 4, 300 15, 326 9 C 350 5, 372 12, 396 10 C 412 9, 426 12, 434 15 C 428 20, 414 25, 396 28 C 366 34, 336 30, 306 36 C 276 42, 250 34, 224 42 C 196 50, 170 40, 144 47 C 118 54, 94 44, 70 50 C 48 55, 26 51, 8 46 C -6 42, -20 38, -22 30 Z" fill="white" />
                   {/* dry gap where the paint ran thin */}
                   <path d="M150 44 C 190 40, 230 43, 270 38 L 270 40 C 230 45, 190 42, 150 46 Z" fill="black" />
                   <path d="M40 22 C 70 20, 100 23, 130 19 L 130 21 C 100 25, 70 22, 40 24 Z" fill="black" opacity="0.6" />
