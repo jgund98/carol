@@ -109,7 +109,7 @@ export const works: Work[] = [
   "width": 60,
   "height": 48,
   "iw": 521,
-  "ih": 531,
+  "ih": 640,
   "color": "#9194b5",
   "collections": [
    "recent"
