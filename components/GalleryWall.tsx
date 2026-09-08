@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import type { Work } from "@/lib/works";
+import { works as WORKS, type Work } from "@/lib/works";
 import { dims, img, inches } from "@/lib/catalog";
 import { money } from "@/lib/site";
 
@@ -20,19 +20,22 @@ export default function GalleryWall({ works }: { works: Work[] }) {
     if (!fine) return;
     let raf = 0, cur = 0, target = 0;
     const tick = () => {
-      cur += (target - cur) * 0.1;
+      // ease toward the target; never snap, a snap is what reads as a flicker
+      const d = target - cur;
+      cur = Math.abs(d) < 0.05 ? target : cur + d * 0.12;
       t.style.transform = `translate3d(${-cur}px,0,0)`;
       raf = requestAnimationFrame(tick);
     };
     const onScroll = () => {
       const r = o.getBoundingClientRect();
       const total = o.offsetHeight - window.innerHeight;
-      // reach the end of the wall at 88% of the pin, then hold, so the last piece and the
-      // button are fully on screen before the section releases
-      const p = Math.min(1, Math.max(0, -r.top / (total * 0.88)));
-      const max = t.scrollWidth - window.innerWidth;
+      // the wall reaches its end at 80% of the pin and holds there, so the easing has
+      // fully settled long before the section releases; ease-out so the last stretch
+      // decelerates instead of stopping dead
+      const raw = Math.min(1, Math.max(0, -r.top / (total * 0.8)));
+      const p = 1 - Math.pow(1 - raw, 2);
+      const max = Math.max(0, t.scrollWidth - window.innerWidth);
       target = p * max;
-      if (p >= 1) cur = max;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
@@ -89,14 +92,25 @@ export default function GalleryWall({ works }: { works: Work[] }) {
                 </Link>
               );
             })}
-            <div className="shrink-0 self-center pl-6 pr-[clamp(2rem,8vw,8rem)]">
-              <Link href="/shop" className="btn btn-ink">
-                See every piece
-              </Link>
+            {/* the end of the wall: a placard at the paintings' baseline */}
+            <div className="shrink-0 self-end pb-2 pl-[clamp(1rem,3vw,3rem)] pr-[clamp(1.5rem,10vw,10rem)]">
+              <div className="w-[15rem] border-l border-ink/15 pl-5 lg:w-[18rem]">
+                <p className="display-light text-[1.15rem] italic leading-snug text-ink/70 lg:text-[1.35rem]">
+                  {works.length} of {WORKS.length} originals. The rest hang in the shop.
+                </p>
+                <Link href="/shop" className="btn btn-ink mt-5">
+                  See every piece
+                </Link>
+              </div>
             </div>
           </div>
           {/* floor */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(180deg,rgba(18,23,43,0.05),rgba(18,23,43,0.1))] lg:h-24" />
+        </div>
+        <div className="wrap pb-10 pt-6 text-center lg:hidden">
+          <Link href="/shop" className="btn btn-ink">
+            See every piece
+          </Link>
         </div>
       </div>
     </div>

@@ -11,17 +11,30 @@ export default function HeroTitle() {
         <span className="mr-[0.22em] align-baseline text-[0.62em] font-normal italic text-ink/70">the</span>
         <span className="relative inline-block align-baseline [isolation:isolate]">
           {/* paint smear behind the word */}
-          <svg viewBox="0 0 400 60" className="hero-smear pointer-events-none absolute left-[-6%] top-[22%] z-0 h-[0.9em] w-[112%] overflow-visible" style={{ transform: "rotate(-2deg)" }} aria-hidden>
+          <svg viewBox="-40 0 480 60" className="hero-smear pointer-events-none absolute left-[-14%] top-[14%] z-0 h-[1.1em] w-[128%] overflow-visible lg:left-[-6%] lg:top-[22%] lg:h-[0.9em] lg:w-[112%]" style={{ transform: "rotate(-2deg)" }} aria-hidden>
             <defs>
-              <mask id="hero-smear-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="60">
-                <path d="M8 30 C 4 18, 16 10, 30 12 C 48 6, 66 16, 88 10 C 112 4, 134 14, 158 9 C 184 4, 206 15, 232 10 C 258 5, 282 14, 308 9 C 332 5, 356 12, 380 9 C 390 8, 397 12, 398 17 C 396 24, 386 28, 372 31 C 348 36, 322 30, 296 36 C 268 42, 244 34, 218 41 C 190 48, 164 40, 138 46 C 112 52, 88 44, 64 49 C 44 53, 24 50, 14 44 C 8 40, 6 35, 8 30 Z" fill="white" />
-                <path d="M330 8 C 352 6, 374 5, 399 4 L 399 7 C 374 8, 352 10, 330 12 Z" fill="white" />
-                <path d="M338 32 C 360 31, 380 28, 399 24 L 399 27 C 380 31, 360 34, 338 36 Z" fill="white" />
-                <path d="M150 44 C 190 40, 230 43, 270 38 L 270 40 C 230 45, 190 42, 150 46 Z" fill="black" />
+              <filter id="hero-smear-soft" x="-10%" y="-40%" width="120%" height="180%">
+                <feGaussianBlur stdDeviation="0.55" />
+              </filter>
+              <mask id="hero-smear-mask" maskUnits="userSpaceOnUse" x="-40" y="-10" width="480" height="80">
+                <g filter="url(#hero-smear-soft)">
+                  {/* the body of the stroke: loaded start, pulled right, lifting off */}
+                  <path d="M-16 31 C -8 19, 8 11, 32 13 C 58 5, 80 17, 104 10 C 130 4, 152 16, 178 9 C 204 3, 226 15, 252 9 C 278 4, 300 15, 326 9 C 350 5, 372 13, 394 9 C 408 7, 418 12, 416 18 C 412 25, 398 29, 382 32 C 354 38, 328 30, 302 37 C 274 44, 250 34, 224 42 C 196 50, 170 40, 144 47 C 118 54, 94 44, 70 50 C 48 55, 26 51, 8 46 C -4 42, -18 40, -16 31 Z" fill="white" />
+                  {/* ragged start where the bristles first touch */}
+                  <path d="M-30 27 C -24 21, -16 17, -4 15 L -2 19 C -12 21, -20 25, -26 33 Z" fill="white" />
+                  <path d="M-22 40 C -16 36, -8 34, 2 34 L 2 38 C -8 39, -14 42, -18 47 Z" fill="white" />
+                  {/* lift-off flicks: the bristles leave the canvas one by one */}
+                  <path d="M372 6 C 396 4, 418 3, 440 1 L 440 4 C 418 7, 396 9, 372 11 Z" fill="white" />
+                  <path d="M384 16 C 404 15, 422 14, 440 12 L 440 15 C 422 17, 404 19, 384 20 Z" fill="white" opacity="0.85" />
+                  <path d="M380 33 C 402 31, 422 28, 440 24 L 440 27 C 422 32, 402 36, 380 38 Z" fill="white" />
+                  {/* dry gap where the paint ran thin */}
+                  <path d="M150 44 C 190 40, 230 43, 270 38 L 270 40 C 230 45, 190 42, 150 46 Z" fill="black" />
+                  <path d="M40 22 C 70 20, 100 23, 130 19 L 130 21 C 100 25, 70 22, 40 24 Z" fill="black" opacity="0.6" />
+                </g>
               </mask>
             </defs>
             <g mask="url(#hero-smear-mask)">
-              <rect width="400" height="60" fill="#e8397f" />
+              <rect x="-40" y="-10" width="480" height="80" fill="#e8397f" />
               <path d="M14 20 C 60 12, 120 20, 180 14 C 240 8, 300 16, 380 10 L 380 13 C 300 20, 240 12, 180 18 C 120 24, 60 16, 14 24 Z" fill="#fff" opacity="0.26" />
               <path d="M20 40 C 70 46, 130 38, 200 44 C 260 49, 320 40, 372 30 L 372 33 C 320 44, 260 53, 200 48 C 130 42, 70 50, 20 44 Z" fill="#000" opacity="0.14" />
             </g>
@@ -38,7 +51,7 @@ export default function HeroTitle() {
             aria-hidden
             width={1400}
             height={815}
-            className="hero-brush pointer-events-none absolute left-[90%] top-[-62%] z-20 block w-[2.6em] origin-[8%_80%]"
+            className="hero-brush pointer-events-none absolute left-[92%] top-[-40%] z-20 block w-[2.3em] origin-[8%_80%] lg:left-[90%] lg:top-[-62%] lg:w-[2.6em]"
             draggable={false}
           />
         </span>
