@@ -27,9 +27,12 @@ export default function GalleryWall({ works }: { works: Work[] }) {
     const onScroll = () => {
       const r = o.getBoundingClientRect();
       const total = o.offsetHeight - window.innerHeight;
-      const p = Math.min(1, Math.max(0, -r.top / total));
+      // reach the end of the wall at 88% of the pin, then hold, so the last piece and the
+      // button are fully on screen before the section releases
+      const p = Math.min(1, Math.max(0, -r.top / (total * 0.88)));
       const max = t.scrollWidth - window.innerWidth;
       target = p * max;
+      if (p >= 1) cur = max;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
@@ -86,7 +89,7 @@ export default function GalleryWall({ works }: { works: Work[] }) {
                 </Link>
               );
             })}
-            <div className="shrink-0 pl-6">
+            <div className="shrink-0 self-center pl-6 pr-[clamp(2rem,8vw,8rem)]">
               <Link href="/shop" className="btn btn-ink">
                 See every piece
               </Link>

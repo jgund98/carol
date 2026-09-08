@@ -238,12 +238,15 @@ A gallery of <Scribble>her own.</Scribble>
               See all recent work
             </Link>
           </div>
-          <div className="mt-12 grid gap-8 md:grid-cols-12 md:gap-x-8 md:gap-y-4">
+          <div className="mt-12 grid gap-8 md:grid-cols-12 md:items-start">
             {recent[0] && (
-              <Reveal className="md:col-span-7 md:row-span-2">
+              <Reveal className="md:col-span-7">
                 <Link href={`/shop/${recent[0].slug}`} className="group block" data-cursor="View" data-cursor-color={recent[0].color}>
-                  <div className="wrap-edge relative overflow-hidden bg-linen" style={{ aspectRatio: `${recent[0].iw} / ${recent[0].ih}` }}>
-                    <Image src={img(recent[0])} alt={`${recent[0].name} by Carol Calicchio`} fill sizes="(min-width:768px) 55vw, 100vw" className="object-cover transition-transform duration-[1400ms] group-hover:scale-[1.03]" />
+                  <div className="plaster relative flex aspect-[4/5] items-center justify-center overflow-hidden rounded-sm border border-ink/[0.06]">
+                    <div className="wrap-edge relative overflow-hidden bg-linen transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:-translate-y-1.5" style={{ width: recent[0].iw / recent[0].ih >= 0.8 ? "86%" : `${107.5 * (recent[0].iw / recent[0].ih)}%`, aspectRatio: `${recent[0].iw} / ${recent[0].ih}` }}>
+                      <Image src={img(recent[0])} alt={`${recent[0].name} by Carol Calicchio`} fill sizes="(min-width:768px) 55vw, 100vw" className="object-cover" />
+                    </div>
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[9%] bg-[linear-gradient(180deg,rgba(18,23,43,0.03),rgba(18,23,43,0.09))]" />
                   </div>
                   <div className="mt-4 flex items-baseline justify-between gap-4">
                     <p className="display text-[1.6rem] leading-tight">{recent[0].name}</p>
@@ -255,11 +258,13 @@ A gallery of <Scribble>her own.</Scribble>
                 </Link>
               </Reveal>
             )}
-            {recent.slice(1, 5).map((w, i) => (
-              <Reveal key={w.slug} delay={i * 90} className={`md:col-span-5 ${i === 0 ? "md:mt-16" : i === 2 ? "md:-mt-10" : ""} ${i % 2 === 1 ? "md:ml-12" : "md:mr-12"}`}>
-                <WorkCard work={w} />
-              </Reveal>
-            ))}
+            <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:col-span-5">
+              {recent.slice(1, 5).map((w, i) => (
+                <Reveal key={w.slug} delay={i * 90}>
+                  <WorkCard work={w} />
+                </Reveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
