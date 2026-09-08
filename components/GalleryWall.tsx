@@ -78,7 +78,7 @@ export default function GalleryWall({ works }: { works: Work[] }) {
                 >
                   <div className="wrap-edge h-full w-full overflow-hidden bg-linen transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:-translate-y-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img(w, i < 4 ? "full" : "sm")} alt={`${w.name} by Carol Calicchio`} className="h-full w-full object-cover" loading={i < 3 ? "eager" : "lazy"} draggable={false} />
+                    <img src={img(w, i < 4 ? "full" : "sm")} alt={`${w.name} by Carol Calicchio`} className="h-full w-full object-cover" loading="eager" draggable={false} />
                   </div>
                   <div className="absolute -bottom-12 left-0 w-max max-w-[260px] text-left">
                     <p className="display text-[1.05rem] leading-tight">{w.name}</p>

@@ -38,7 +38,7 @@ export default function HeroTitle() {
             aria-hidden
             width={1400}
             height={815}
-            className="hero-brush pointer-events-none absolute left-[86%] top-[-66%] z-20 block w-[2.5em] origin-[8%_80%] sm:left-[90%] sm:top-[-62%] sm:w-[2.6em]"
+            className="hero-brush pointer-events-none absolute left-[90%] top-[-62%] z-20 block w-[2.6em] origin-[8%_80%]"
             draggable={false}
           />
         </span>
