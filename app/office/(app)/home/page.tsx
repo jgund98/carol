@@ -14,7 +14,6 @@ export default async function Today() {
   const [inq, ord] = await Promise.all([listInquiries(), listOrders()]);
   const newInq = inq.filter((i) => i.status === "new");
   const newOrd = ord.filter((o) => o.status === "new");
-  const paidOrders = ord.filter((o) => o.status === "paid" || o.status === "shipped" || o.status === "delivered").length;
   const waiting = [
     ...newOrd.map((o) => ({ kind: "order" as const, at: o.createdAt, o })),
     ...newInq.map((i) => ({ kind: "inquiry" as const, at: i.createdAt, i })),
@@ -33,9 +32,6 @@ export default async function Today() {
         </Link>
         <Link href="/office/orders?f=new">
           <b className={newOrd.length ? "is-new" : ""}>{newOrd.length}</b> new {newOrd.length === 1 ? "sale" : "sales"}
-        </Link>
-        <Link href="/office/orders?f=paid">
-          <b>{paidOrders}</b> paid {paidOrders === 1 ? "order" : "orders"}
         </Link>
       </p>
 
