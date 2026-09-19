@@ -17,6 +17,7 @@ export default async function Today() {
   const newOrd = ord.filter((o) => o.status === "new");
   const forSale = works.filter((w) => !w.hidden && !w.sold && w.available).length;
   const sold = works.filter((w) => w.sold).length;
+  const paidOrders = ord.filter((o) => o.status === "paid" || o.status === "shipped" || o.status === "delivered").length;
   const waiting = [
     ...newOrd.map((o) => ({ kind: "order" as const, at: o.createdAt, o })),
     ...newInq.map((i) => ({ kind: "inquiry" as const, at: i.createdAt, i })),
@@ -39,6 +40,9 @@ export default async function Today() {
         <Link href="/office/orders?f=new">
           <b className={newOrd.length ? "is-new" : ""}>{newOrd.length}</b> new {newOrd.length === 1 ? "sale" : "sales"}
         </Link>
+        <Link href="/office/orders?f=paid">
+          <b>{paidOrders}</b> paid {paidOrders === 1 ? "order" : "orders"}
+        </Link>
         <Link href="/office/artwork?f=sale">
           <b>{forSale}</b> for sale
         </Link>
@@ -52,8 +56,8 @@ export default async function Today() {
         <div className="mb-3 flex items-end justify-between gap-4">
           <h2 className="o-h2">{total ? "Waiting for you" : "All caught up"}</h2>
           {total > 0 && (
-            <Link href="/office/inbox" className="text-[0.95rem] font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
-              See everything
+            <Link href="/office/inbox?f=new" className="text-[0.95rem] font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
+              All new inquiries
             </Link>
           )}
         </div>

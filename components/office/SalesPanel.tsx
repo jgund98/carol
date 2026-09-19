@@ -73,8 +73,8 @@ export default function SalesPanel({ orders }: { orders: SlimOrder[] }) {
         <span>
           {view.requests} request{view.requests === 1 ? "" : "s"} in this window{view.refunded ? ` · ${money(view.refunded)} refunded` : ""}
         </span>
-        <Link href="/office/orders?f=all" className="font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
-          All orders
+        <Link href="/office/orders?f=paid" className="font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
+          All paid orders
         </Link>
       </div>
     </section>
