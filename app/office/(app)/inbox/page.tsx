@@ -1,9 +1,8 @@
 // Inquiries: every message the website has sent, newest first.
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { listInquiries } from "@/lib/studio/store";
 import { INQUIRY_KINDS, type InquiryKind } from "@/lib/studio/types";
-import { Empty, KindChip, NewDot, PageHead, timeAgo, personLine } from "@/components/office/ui";
+import { Empty, KindChip, PageHead, Row, timeAgo, personLine } from "@/components/office/ui";
 
 const FILTERS: { key: string; label: string }[] = [
   { key: "all", label: "Everything" },
@@ -40,18 +39,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
       ) : (
         <div className="o-card o-in-view overflow-hidden">
           {list.map((i) => (
-            <Link key={i.id} href={`/office/inbox/${i.id}`} className="o-row">
-              <NewDot on={i.status === "new"} />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <KindChip kind={i.kind} />
-                  <span className="text-[0.82rem] text-[var(--o-faint)]">{timeAgo(i.createdAt)}</span>
-                </div>
-                <p className={`mt-1 truncate text-[1.05rem] ${i.status === "new" ? "font-semibold" : ""}`}>{personLine(i)}</p>
-                <p className="truncate text-[0.9rem] text-[var(--o-soft)]">{i.fields["Artwork"] ? `About ${i.fields["Artwork"]}` : i.message || i.email || ""}</p>
-              </div>
-              <ArrowRight className="h-5 w-5 shrink-0 text-[var(--o-faint)]" />
-            </Link>
+            <Row key={i.id} href={`/office/inbox/${i.id}`} isNew={i.status === "new"} title={personLine(i)} meta={<><KindChip kind={i.kind} /> · {i.fields["Artwork"] ? `About ${i.fields["Artwork"]}` : i.message || i.email || ""}</>} time={timeAgo(i.createdAt)} />
           ))}
         </div>
       )}

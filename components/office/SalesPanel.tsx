@@ -5,10 +5,10 @@
 // cancellations never count.
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowRight, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { money } from "@/lib/site";
 import type { OrderStatus } from "@/lib/studio/types";
-import { OrderStatusChip, timeAgo } from "./ui";
+import { OrderStatusChip, Row, timeAgo } from "./ui";
 
 export type SlimOrder = { id: string; name: string; subtotal: number; status: OrderStatus; createdAt: string; paidAt: string | null; refundAmount: number | null; pieces: number; first: string };
 
@@ -65,19 +65,7 @@ export default function SalesPanel({ orders }: { orders: SlimOrder[] }) {
       ) : (
         <div>
           {view.sales.slice(0, 6).map((o) => (
-            <Link key={o.id} href={`/office/orders/${o.id}`} className="o-row">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[1rem] font-semibold">
-                  {o.name} · {o.first}
-                  {o.pieces > 1 ? ` +${o.pieces - 1}` : ""}
-                </p>
-                <p className="flex flex-wrap items-center gap-2 text-[0.82rem] text-[var(--o-faint)]">
-                  <OrderStatusChip status={o.status} /> {timeAgo(o.paidAt ?? o.createdAt)}
-                </p>
-              </div>
-              <span className="o-num shrink-0 text-[1.2rem]">{money(o.subtotal)}</span>
-              <ArrowRight className="hidden h-5 w-5 shrink-0 text-[var(--o-faint)] sm:block" />
-            </Link>
+            <Row key={o.id} href={`/office/orders/${o.id}`} title={o.name} meta={<><b className="text-[var(--o-ink)]">{money(o.subtotal)}</b> · {o.first}{o.pieces > 1 ? ` +${o.pieces - 1}` : ""}</>} time={timeAgo(o.paidAt ?? o.createdAt)} />
           ))}
         </div>
       )}

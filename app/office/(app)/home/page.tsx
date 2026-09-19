@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Plus, ArrowRight, ExternalLink } from "lucide-react";
 import { listAllWorks, listInquiries, listOrders } from "@/lib/studio/store";
 import { money } from "@/lib/site";
-import { KindChip, NewDot, OrderChip, PageHead, Thumb, timeAgo, personLine } from "@/components/office/ui";
+import { KindChip, OrderStatusChip, PageHead, Row, Thumb, timeAgo, personLine } from "@/components/office/ui";
 import SalesPanel, { type SlimOrder } from "@/components/office/SalesPanel";
 
 function greeting() {
@@ -32,40 +32,19 @@ export default async function Today() {
     <>
       <PageHead kicker={today} title={`${greeting()}, Carol.`} />
 
-      {/* the day's numbers, written the way a note on the studio door would put it */}
-      <p className="o-ledger o-in-view -mt-2 sm:-mt-4" style={{ animationDelay: "60ms" }}>
-        {total === 0 ? (
-          <>Nothing is waiting for you. </>
-        ) : (
-          <>
-            {newInq.length > 0 && (
-              <>
-                <span className="o-new" />
-                <Link href="/office/inbox?f=new">
-                  <b className="o-num">{newInq.length}</b> new {newInq.length === 1 ? "inquiry" : "inquiries"}
-                </Link>
-              </>
-            )}
-            {newInq.length > 0 && newOrd.length > 0 && " and "}
-            {newOrd.length > 0 && (
-              <>
-                <span className="o-new o-new-pink" />
-                <Link href="/office/orders?f=new">
-                  <b className="o-num">{newOrd.length}</b> new {newOrd.length === 1 ? "sale" : "sales"}
-                </Link>
-              </>
-            )}
-            {total === 1 ? " is" : " are"} waiting for you.{" "}
-          </>
-        )}
+      <p className="o-summary o-in-view -mt-2 sm:-mt-4" style={{ animationDelay: "60ms" }}>
+        <Link href="/office/inbox?f=new">
+          <b className={newInq.length ? "is-new" : ""}>{newInq.length}</b> new {newInq.length === 1 ? "inquiry" : "inquiries"}
+        </Link>
+        <Link href="/office/orders?f=new">
+          <b className={newOrd.length ? "is-new" : ""}>{newOrd.length}</b> new {newOrd.length === 1 ? "sale" : "sales"}
+        </Link>
         <Link href="/office/artwork?f=sale">
-          <b className="o-num">{forSale}</b> pieces
-        </Link>{" "}
-        hang in the shop,{" "}
+          <b>{forSale}</b> for sale
+        </Link>
         <Link href="/office/artwork?f=sold">
-          <b className="o-num">{sold}</b>
-        </Link>{" "}
-        {sold === 1 ? "has" : "have"} found a home.
+          <b>{sold}</b> sold
+        </Link>
       </p>
 
       {/* what needs her */}
@@ -87,36 +66,34 @@ export default async function Today() {
           <div className="o-card overflow-hidden">
             {waiting.map((w) =>
               w.kind === "order" ? (
-                <Link key={w.o.id} href={`/office/orders/${w.o.id}`} className="o-row o-flash">
-                  <span className="o-new o-new-pink shrink-0" aria-label="New sale" />
-                  {w.o.items[0] && <Thumb work={{ ...w.o.items[0], imageSm: w.o.items[0].image, iw: 4, ih: 5, kind: "painting" }} size={56} />}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="o-chip o-chip-pink">New sale</span>
-                      <span className="text-[0.82rem] text-[var(--o-faint)]">{timeAgo(w.o.createdAt)}</span>
-                    </div>
-                    <p className="mt-1 truncate text-[1.05rem] font-semibold">
-                      {w.o.name || "Someone"} wants {w.o.items.map((i) => i.name).join(", ")}
-                    </p>
-                    <p className="truncate text-[0.9rem] text-[var(--o-soft)]">
-                      {money(w.o.subtotal)} · {w.o.payment} · {w.o.delivery}
-                    </p>
-                  </div>
-                  <ArrowRight className="h-5 w-5 shrink-0 text-[var(--o-faint)]" />
-                </Link>
+                <Row
+                  key={w.o.id}
+                  href={`/office/orders/${w.o.id}`}
+                  isNew
+                  tone="pink"
+                  flash
+                  thumb={w.o.items[0] ? <Thumb work={{ ...w.o.items[0], imageSm: w.o.items[0].image, iw: 4, ih: 5, kind: "painting" }} size={48} /> : undefined}
+                  title={w.o.name || "Someone"}
+                  meta={
+                    <>
+                      <span className="o-chip o-chip-pink">New sale</span> · <b className="text-[var(--o-ink)]">{money(w.o.subtotal)}</b> · {w.o.items.map((i) => i.name).join(", ")}
+                    </>
+                  }
+                  time={timeAgo(w.o.createdAt)}
+                />
               ) : (
-                <Link key={w.i.id} href={`/office/inbox/${w.i.id}`} className="o-row">
-                  <NewDot on />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <KindChip kind={w.i.kind} />
-                      <span className="text-[0.82rem] text-[var(--o-faint)]">{timeAgo(w.i.createdAt)}</span>
-                    </div>
-                    <p className="mt-1 truncate text-[1.05rem] font-semibold">{personLine(w.i)}</p>
-                    <p className="truncate text-[0.9rem] text-[var(--o-soft)]">{w.i.message || w.i.fields["Artwork"] || w.i.email || "No message"}</p>
-                  </div>
-                  <ArrowRight className="h-5 w-5 shrink-0 text-[var(--o-faint)]" />
-                </Link>
+                <Row
+                  key={w.i.id}
+                  href={`/office/inbox/${w.i.id}`}
+                  isNew
+                  title={personLine(w.i)}
+                  meta={
+                    <>
+                      <KindChip kind={w.i.kind} /> · {w.i.fields["Artwork"] ? `About ${w.i.fields["Artwork"]}` : w.i.message || w.i.email || "No message"}
+                    </>
+                  }
+                  time={timeAgo(w.i.createdAt)}
+                />
               )
             )}
           </div>
@@ -162,21 +139,9 @@ export default async function Today() {
           <div className="o-card overflow-hidden">
             {recentDone.map((r) =>
               "items" in r ? (
-                <Link key={r.id} href={`/office/orders/${r.id}`} className="o-row">
-                  <NewDot on={false} />
-                  <OrderChip />
-                  <span className="min-w-0 flex-1 truncate">
-                    {r.name} · {money(r.subtotal)}
-                  </span>
-                  <span className="text-[0.82rem] text-[var(--o-faint)]">{timeAgo(r.createdAt)}</span>
-                </Link>
+                <Row key={r.id} href={`/office/orders/${r.id}`} title={r.name} meta={<><OrderStatusChip status={r.status} /> · <b className="text-[var(--o-ink)]">{money(r.subtotal)}</b> · {r.items.map((i) => i.name).join(", ")}</>} time={timeAgo(r.createdAt)} />
               ) : (
-                <Link key={r.id} href={`/office/inbox/${r.id}`} className="o-row">
-                  <NewDot on={false} />
-                  <KindChip kind={r.kind} />
-                  <span className="min-w-0 flex-1 truncate">{personLine(r)}</span>
-                  <span className="text-[0.82rem] text-[var(--o-faint)]">{timeAgo(r.createdAt)}</span>
-                </Link>
+                <Row key={r.id} href={`/office/inbox/${r.id}`} title={personLine(r)} meta={<><KindChip kind={r.kind} /> · handled</>} time={timeAgo(r.createdAt)} />
               )
             )}
           </div>

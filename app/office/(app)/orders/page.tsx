@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { listOrders } from "@/lib/studio/store";
 import { money } from "@/lib/site";
 import { ORDER_STATUS, type OrderStatus } from "@/lib/studio/types";
-import { Empty, NewDot, OrderStatusChip, PageHead, Thumb, timeAgo } from "@/components/office/ui";
+import { Empty, OrderStatusChip, PageHead, Row, Thumb, timeAgo } from "@/components/office/ui";
 
 export default async function OrdersPage({ searchParams }: { searchParams: Promise<{ f?: string }> }) {
   const { f = "open" } = await searchParams;
@@ -38,27 +37,17 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
       ) : (
         <div className="o-card o-in-view overflow-hidden">
           {list.map((o) => (
-            <Link key={o.id} href={`/office/orders/${o.id}`} className={`o-row ${o.status === "new" ? "o-flash" : ""}`}>
-              {o.status === "new" ? <span className="o-new o-new-pink shrink-0" aria-label="New" /> : <NewDot on={false} />}
-              {o.items[0] && <Thumb work={{ ...o.items[0], imageSm: o.items[0].image, iw: 4, ih: 5, kind: "painting" }} size={56} />}
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <OrderStatusChip status={o.status} />
-                  <span className="text-[0.82rem] text-[var(--o-faint)]">
-                    {o.ref} · {timeAgo(o.createdAt)}
-                  </span>
-                </div>
-                <p className={`mt-1 truncate text-[1.05rem] ${o.status === "new" ? "font-semibold" : ""}`}>
-                  {o.name || "Someone"} · {o.items.map((i) => i.name).join(", ")}
-                </p>
-                <p className="truncate text-[0.9rem] text-[var(--o-soft)]">
-                  <span className="font-semibold text-[var(--o-ink)] sm:hidden">{money(o.subtotal)} · </span>
-                  {o.city ? `${o.city}, ${o.state}` : ""} · {o.delivery}
-                </p>
-              </div>
-              <span className="o-num hidden shrink-0 text-[1.3rem] sm:block">{money(o.subtotal)}</span>
-              <ArrowRight className="hidden h-5 w-5 shrink-0 text-[var(--o-faint)] sm:block" />
-            </Link>
+            <Row
+              key={o.id}
+              href={`/office/orders/${o.id}`}
+              isNew={o.status === "new"}
+              tone="pink"
+              flash={o.status === "new"}
+              thumb={o.items[0] ? <Thumb work={{ ...o.items[0], imageSm: o.items[0].image, iw: 4, ih: 5, kind: "painting" }} size={48} /> : undefined}
+              title={o.name || "Someone"}
+              meta={<><OrderStatusChip status={o.status} /> · <b className="text-[var(--o-ink)]">{money(o.subtotal)}</b> · {o.items.map((i) => i.name).join(", ")}{o.city ? ` · ${o.city}, ${o.state}` : ""}</>}
+              time={timeAgo(o.createdAt)}
+            />
           ))}
         </div>
       )}

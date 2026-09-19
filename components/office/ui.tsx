@@ -102,6 +102,25 @@ export function NewDot({ on }: { on: boolean }) {
   return on ? <span className="o-new shrink-0" aria-label="New" /> : <span className="inline-block h-[0.65rem] w-[0.65rem] shrink-0 rounded-full bg-[var(--o-hair-2)]" />;
 }
 
+/* ───── list rows: one dot, a bold name, the time on the right, one quiet line ───── */
+
+export function Row({ href, isNew = false, tone = "gold", flash = false, thumb, title, meta, time, amount }: { href: string; isNew?: boolean; tone?: "gold" | "pink"; flash?: boolean; thumb?: ReactNode; title: string; meta: ReactNode; time: string; amount?: string }) {
+  return (
+    <Link href={href} className={`o-row ${flash ? "o-flash" : ""}`}>
+      <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${isNew ? (tone === "pink" ? "bg-[var(--o-pink)]" : "bg-[var(--o-gold)]") : "bg-transparent"}`} aria-label={isNew ? "New" : undefined} />
+      {thumb}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-3">
+          <p className={`truncate text-[1.02rem] leading-snug ${isNew ? "font-bold" : "font-medium"}`}>{title}</p>
+          <span className="shrink-0 text-[0.78rem] text-[var(--o-faint)]">{time}</span>
+        </div>
+        <p className="mt-0.5 truncate text-[0.88rem] text-[var(--o-soft)]">{meta}</p>
+      </div>
+      {amount && <span className="o-num hidden shrink-0 text-[1.15rem] sm:block">{amount}</span>}
+    </Link>
+  );
+}
+
 /* ───── thumbnails ───── */
 
 export function Thumb({ work, size = 64, className = "" }: { work: Pick<Work, "imageSm" | "iw" | "ih" | "name" | "kind"> & Partial<Work>; size?: number; className?: string }) {
