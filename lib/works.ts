@@ -29,17 +29,22 @@ export type Work = {
   image: string;
   /** card-size image URL (700px) */
   imageSm: string;
+  /** shown on the home page easel and gallery wall */
+  featured: boolean;
   /** lower = earlier in the shop */
   position: number;
   createdAt: string;
   updatedAt: string;
 };
 
-export type SeedWork = Omit<Work, "hidden" | "story" | "image" | "imageSm" | "position" | "createdAt" | "updatedAt">;
+export type SeedWork = Omit<Work, "hidden" | "story" | "image" | "imageSm" | "position" | "createdAt" | "updatedAt" | "featured">;
 
 const SEED_AT = "2026-09-04T12:00:00.000Z";
+// The pieces the home page was curated with; Carol can change this from the office.
+const FEATURED = new Set(["celestial-moonlight", "midnight-bliss", "gardenia-goddess", "crystal", "hummingbirds", "palm-way", "the-provider", "morning-white", "southern-cross", "alluring-light", "circadian-splendor", "galaxy-of-love"]);
 export const fromSeed = (s: SeedWork, i: number): Work => ({
   ...s,
+  featured: FEATURED.has(s.slug),
   hidden: false,
   story: null,
   image: `/art/${s.file}.jpg`,

@@ -32,7 +32,7 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
       </label>
       <label className="o-field">
         <span>Also send a copy to · optional</span>
-        <input type="email" value={s.notifyEmail2} onChange={(e) => setS({ ...s, notifyEmail2: e.target.value })} className="o-in" placeholder="An assistant, a family member, Jordan…" />
+        <input type="email" value={s.notifyEmail2} onChange={(e) => setS({ ...s, notifyEmail2: e.target.value })} className="o-in" placeholder="An assistant or a family member" />
       </label>
       <label className="o-field">
         <span>Your mobile number · for text alerts later</span>

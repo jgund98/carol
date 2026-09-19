@@ -9,7 +9,7 @@ import { NOT_CONNECTED } from "@/lib/studio/docstore";
 export const dynamic = "force-dynamic";
 
 export default async function OfficeLayout({ children }: { children: React.ReactNode }) {
-  if (!(await isSignedIn())) redirect("/office");
+  if (!(await isSignedIn())) redirect("/login");
   const [inq, ord, mode] = await Promise.all([listInquiries(), listOrders(), storeMode()]);
   const counts = { inquiries: inq.filter((i) => i.status === "new").length, orders: ord.filter((o) => o.status === "new").length };
 

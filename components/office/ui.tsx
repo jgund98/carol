@@ -15,13 +15,13 @@ export function PageHead({ kicker, title, text, action, back }: { kicker?: strin
           <ChevronLeft className="h-4 w-4" /> {back.label}
         </Link>
       )}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0">
+      <div className="flex flex-wrap items-start justify-between gap-4 sm:flex-nowrap">
+        <div className="min-w-0 flex-1">
           {kicker && <p className="o-kicker">{kicker}</p>}
           <h1 className="o-h1 mt-1">{title}</h1>
           {text && <p className="o-muted mt-3 max-w-2xl text-[1rem]">{text}</p>}
         </div>
-        {action}
+        {action && <div className="w-full shrink-0 sm:w-auto sm:pt-2">{action}</div>}
       </div>
     </header>
   );
@@ -80,10 +80,12 @@ const ORDER_TONE: Record<OrderStatus, string> = {
   new: "o-chip-gold",
   contacted: "o-chip-ocean",
   paid: "o-chip-green",
+  shipped: "o-chip-ocean",
   delivered: "o-chip-ink",
   cancelled: "o-chip-red",
+  refunded: "o-chip-red",
 };
-const ORDER_LABEL: Record<OrderStatus, string> = { new: "New", contacted: "In conversation", paid: "Paid", delivered: "Delivered", cancelled: "Cancelled" };
+const ORDER_LABEL: Record<OrderStatus, string> = { new: "New", contacted: "In conversation", paid: "Paid", shipped: "Shipped", delivered: "Delivered", cancelled: "Cancelled", refunded: "Refunded" };
 
 export function OrderStatusChip({ status }: { status: OrderStatus }) {
   return <span className={`o-chip ${ORDER_TONE[status]}`}>{ORDER_LABEL[status]}</span>;

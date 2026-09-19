@@ -1,6 +1,6 @@
 // Artwork: everything in the shop, as cards you can tap to edit.
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Layers } from "lucide-react";
 import { listAllWorks, listCollections } from "@/lib/studio/store";
 import { money } from "@/lib/site";
 import { dims, shopOrder } from "@/lib/catalog";
@@ -42,7 +42,14 @@ export default async function ArtworkPage({ searchParams }: { searchParams: Prom
         }
       />
 
-      <ArtworkSearch initial={q} filter={f} />
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <ArtworkSearch initial={q} filter={f} />
+        </div>
+        <Link href="/office/collections" className="btn btn-line btn-sm mb-4 shrink-0">
+          <Layers className="h-4 w-4" /> Collections
+        </Link>
+      </div>
 
       <nav className="rail -mx-5 mb-6 flex gap-2 px-5 sm:mx-0 sm:flex-wrap sm:px-0" aria-label="Filter">
         {filters.map((x) => (
@@ -67,20 +74,25 @@ export default async function ArtworkPage({ searchParams }: { searchParams: Prom
           {list.map((w) => {
             const a = w.iw / w.ih;
             const board = w.kind === "surfboard";
-            const widthPct = board ? 100 : a >= 0.8 ? 84 : 105 * a;
+            const widthPct = board ? 100 : a >= 0.8 ? 86 : 107.5 * a;
             return (
               <Link key={w.slug} href={`/office/artwork/${w.slug}`} className="o-card group overflow-hidden transition-transform hover:-translate-y-0.5">
-                <div className="o-thumb relative flex aspect-[4/5] w-full items-center justify-center rounded-none">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={w.imageSm} alt={w.name} className="object-cover" style={board ? { width: "100%", height: "100%" } : { width: `${widthPct}%`, aspectRatio: `${w.iw} / ${w.ih}` }} loading="lazy" />
-                  <span className="absolute left-3 top-3">
-                    <WorkStatusChip work={w} />
-                  </span>
+                <div className="plaster relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden border-b border-[var(--o-hair)]">
+                  <div className="spot pointer-events-none absolute -top-[30%] left-1/2 h-[60%] w-[140%] -translate-x-1/2 opacity-70" />
+                  <div className="wrap-edge relative overflow-hidden bg-linen transition-transform duration-500 group-hover:-translate-y-1" style={board ? { width: "100%", height: "100%" } : { width: `${widthPct}%`, aspectRatio: `${w.iw} / ${w.ih}` }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={w.imageSm} alt={w.name} className="h-full w-full object-cover" loading="lazy" />
+                  </div>
+                  {w.hidden && <div className="absolute inset-0 bg-[rgba(246,242,234,0.55)]" />}
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[9%] bg-[linear-gradient(180deg,rgba(18,23,43,0.03),rgba(18,23,43,0.09))]" />
                 </div>
                 <div className="p-3.5 sm:p-4">
                   <p className="truncate text-[1rem] font-semibold leading-tight sm:text-[1.05rem]">{w.name}</p>
                   <p className="mt-1 truncate text-[0.82rem] text-[var(--o-soft)]">{dims(w) ?? w.medium ?? w.kind}</p>
-                  <p className="o-num mt-2 text-[1.15rem]">{w.sold ? "Sold" : money(w.price)}</p>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                    <p className="o-num text-[1.15rem]">{w.sold ? "Sold" : money(w.price)}</p>
+                    <WorkStatusChip work={w} />
+                  </div>
                 </div>
               </Link>
             );
@@ -88,9 +100,6 @@ export default async function ArtworkPage({ searchParams }: { searchParams: Prom
         </div>
       )}
 
-      <Link href="/office/artwork/new" className="fixed bottom-[calc(var(--o-tab-h)+env(safe-area-inset-bottom)+1rem)] right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-[var(--o-pink)] text-white shadow-[0_16px_40px_-12px_rgba(232,57,127,0.7)] lg:hidden" aria-label="Add a new piece">
-        <Plus className="h-6 w-6" />
-      </Link>
     </>
   );
 }

@@ -22,7 +22,7 @@ async function main() {
     executablePath: "C:/Users/Lucky/.cache/puppeteer/chrome/win64-150.0.7871.24/chrome-win64/chrome.exe",
     args: ["--no-sandbox", "--hide-scrollbars"],
   });
-  const token = createHash("sha256").update("carol-studio-office|studio").digest("hex");
+  const token = createHash("sha256").update("carol-studio-office|carol|jordan123").digest("hex");
   const page = await browser.newPage();
   await page.setCookie({ name: "cc_studio", value: token, domain: "localhost", path: "/" });
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
@@ -108,16 +108,25 @@ async function main() {
   const d = await browser.newPage();
   await d.setCookie({ name: "cc_studio", value: token, domain: "localhost", path: "/" });
   await d.setViewport({ width: 1440, height: 900 });
-  for (const p of ["home", "inbox", "orders", "artwork", `artwork/${slug}`, "collections", "guide", "settings"]) {
+  await d.goto(`${BASE}/login`, { waitUntil: "networkidle2" });
+  await d.screenshot({ path: path.join(OUT, "d-login.png") });
+  const ord = await fetch(`${BASE}/api/office/unread`, { headers: { cookie: `cc_studio=${token}` } }).then((r) => r.json());
+  console.log("unread:", JSON.stringify(ord));
+  for (const p of ["home", "inbox", "inbox/demo_inq_1", "orders", "orders/demo_ord_1", "orders/demo_ord_2", "artwork", `artwork/${slug}`, "collections", "guide", "settings"]) {
     await d.goto(`${BASE}/office/${p}`, { waitUntil: "networkidle2" });
     await sleep(700);
     await d.screenshot({ path: path.join(OUT, `d-${p.replace(/\//g, "_")}.png`) });
     const overflow = await d.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     if (overflow) console.log("HORIZONTAL OVERFLOW (desktop):", p);
   }
-  for (const p of ["home", "inbox", "orders", "artwork", "collections"]) {
+  await page.deleteCookie({ name: "cc_studio", domain: "localhost" });
+  await page.goto(`${BASE}/login`, { waitUntil: "networkidle2" });
+  await page.screenshot({ path: path.join(OUT, "m-login.png") });
+  await page.setCookie({ name: "cc_studio", value: token, domain: "localhost", path: "/" });
+  for (const p of ["home", "inbox", "orders", "orders/demo_ord_1", "orders/demo_ord_2", "artwork", "collections"]) {
     await page.goto(`${BASE}/office/${p}`, { waitUntil: "networkidle2" });
     await sleep(500);
+    await page.screenshot({ path: path.join(OUT, `m-${p.split("/").join("_")}.png`) });
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     if (overflow) console.log("HORIZONTAL OVERFLOW (phone):", p);
   }

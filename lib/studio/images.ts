@@ -37,7 +37,7 @@ async function storeFile(key: string, data: Buffer): Promise<string> {
     return res.url;
   }
   if (process.env.VERCEL) {
-    throw new StudioError("Photo storage is not connected yet, so photos cannot be uploaded. Ask Jordan to connect it.");
+    throw new StudioError("Photo storage is not connected yet, so photos cannot be uploaded right now.");
   }
   const rel = path.posix.join("uploads", key);
   const abs = path.join(projectRoot(), "public", rel);

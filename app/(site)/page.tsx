@@ -12,16 +12,14 @@ import PaintBlob from "@/components/PaintBlob";
 import Scribble from "@/components/Scribble";
 import HeroTitle from "@/components/HeroTitle";
 import { site, money } from "@/lib/site";
-import { bySlug, heroSlugs, wallSlugs, inCollection, img, dims, pick } from "@/lib/catalog";
+import { bySlug, heroSlugs, wallSlugs, inCollection, img, dims, featuredFor } from "@/lib/catalog";
 import { quotes, statement, process as processSteps, books } from "@/lib/content";
 import { getCatalog } from "@/lib/store";
 
 export default async function Home() {
   const { works, collections } = await getCatalog();
-  const heroAll = pick(works, heroSlugs);
-  const hero = heroAll.length ? heroAll : works.filter((w) => w.kind === "painting").slice(0, 6);
-  const wallAll = pick(works, wallSlugs);
-  const wall = wallAll.length ? wallAll : works.filter((w) => w.kind === "painting").slice(0, 12);
+  const hero = featuredFor(works, heroSlugs, 6);
+  const wall = featuredFor(works, wallSlugs, 12);
   const recent = inCollection(works, "recent").filter((w) => !w.sold).slice(0, 5);
   const celestial = bySlug(works, "celestial-moonlight") ?? hero[0];
   const featured = collections.slice(0, 3);

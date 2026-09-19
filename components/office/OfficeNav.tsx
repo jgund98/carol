@@ -1,9 +1,12 @@
 "use client";
+// Navigation. On a phone it works like the apps Carol already knows: five
+// tabs along the bottom with a big + in the middle, and a small gear at the
+// top for settings. On a desk it is a sidebar.
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sun, Inbox, ShoppingBag, Palette, Layers, Camera, Settings, ExternalLink, LogOut, MoreHorizontal } from "lucide-react";
+import { Sun, Inbox, ShoppingBag, Palette, Layers, Camera, Settings, ExternalLink, LogOut, Plus } from "lucide-react";
 import { logoutAction } from "@/app/office/actions";
 
 type Counts = { inquiries: number; orders: number };
@@ -17,19 +20,14 @@ const ITEMS = [
   { href: "/office/guide", label: "Photo guide", Icon: Camera },
   { href: "/office/settings", label: "Settings", Icon: Settings },
 ];
-// Phones get the four places Carol goes daily, plus "More" for the rest.
-const TABS = ITEMS.slice(0, 4);
-const MORE = ITEMS.slice(4);
 
 export default function OfficeNav({ initial }: { initial: Counts }) {
   const path = usePathname();
   const [counts, setCounts] = useState<Counts>(initial);
-  const [more, setMore] = useState(false);
 
   useEffect(() => setCounts(initial), [initial]);
-  useEffect(() => setMore(false), [path]);
 
-  // Keep the badges honest while the office sits open on the desk.
+  // Keep the badges honest while the office sits open.
   useEffect(() => {
     let dead = false;
     const check = async () => {
@@ -63,7 +61,17 @@ export default function OfficeNav({ initial }: { initial: Counts }) {
 
   const active = (href: string) => path === href || path.startsWith(href + "/");
   const badgeOf = (b?: "inquiries" | "orders") => (b ? counts[b] : 0);
-  const moreActive = MORE.some((m) => active(m.href));
+  const [today, inbox, orders, artwork] = ITEMS;
+  const Tab = ({ href, label, Icon, badge }: (typeof ITEMS)[number]) => {
+    const n = badgeOf(badge);
+    return (
+      <Link href={href} className="o-tab" data-active={active(href)}>
+        <Icon className="h-6 w-6" strokeWidth={1.8} />
+        {label}
+        {n > 0 && <span className="o-tab-badge">{n}</span>}
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -73,7 +81,10 @@ export default function OfficeNav({ initial }: { initial: Counts }) {
           <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[170px]" priority />
           <span className="o-label mt-3 block">Studio office</span>
         </Link>
-        <nav className="mt-9 grid gap-1" aria-label="Office">
+        <Link href="/office/artwork/new" className="btn btn-pink mt-7">
+          <Plus className="h-4 w-4" /> Add a new piece
+        </Link>
+        <nav className="mt-6 grid gap-1" aria-label="Office">
           {ITEMS.map(({ href, label, Icon, badge }) => {
             const n = badgeOf(badge);
             return (
@@ -98,50 +109,31 @@ export default function OfficeNav({ initial }: { initial: Counts }) {
       </aside>
 
       {/* Phone: top bar + bottom tabs */}
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--o-hair)] bg-[rgba(251,249,245,0.9)] px-5 py-3 backdrop-blur-xl lg:hidden">
-        <Link href="/office/home" className="flex items-center gap-3">
+      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--o-hair)] bg-[rgba(251,249,245,0.9)] px-4 py-2.5 backdrop-blur-xl lg:hidden">
+        <Link href="/office/home" className="flex items-center gap-3 pl-1">
           <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[120px]" priority />
         </Link>
-        <span className="o-label">Studio office</span>
+        <div className="flex items-center gap-1">
+          <Link href="/office/guide" className="grid h-11 w-11 place-items-center rounded-full text-[var(--o-soft)] hover:bg-[var(--o-hair)]" aria-label="Photo guide" data-active={active("/office/guide")}>
+            <Camera className="h-5 w-5" strokeWidth={1.8} />
+          </Link>
+          <Link href="/office/settings" className="grid h-11 w-11 place-items-center rounded-full text-[var(--o-soft)] hover:bg-[var(--o-hair)]" aria-label="Settings">
+            <Settings className="h-5 w-5" strokeWidth={1.8} />
+          </Link>
+        </div>
       </header>
 
       <nav className="o-tabbar lg:hidden" aria-label="Office">
-        {TABS.map(({ href, label, Icon, badge }) => {
-          const n = badgeOf(badge);
-          return (
-            <Link key={href} href={href} className="o-tab" data-active={active(href)}>
-              <Icon className="h-6 w-6" strokeWidth={1.8} />
-              {label}
-              {n > 0 && <span className="o-tab-badge">{n}</span>}
-            </Link>
-          );
-        })}
-        <button type="button" onClick={() => setMore((v) => !v)} className="o-tab" data-active={moreActive || more} aria-expanded={more}>
-          <MoreHorizontal className="h-6 w-6" strokeWidth={1.8} />
-          More
-        </button>
+        <Tab {...today} />
+        <Tab {...inbox} />
+        <Link href="/office/artwork/new" className="o-tab" aria-label="Add a new piece">
+          <span className="grid h-12 w-12 -translate-y-2 place-items-center rounded-full bg-[var(--o-pink)] text-white shadow-[0_12px_28px_-10px_rgba(232,57,127,0.8)]">
+            <Plus className="h-6 w-6" strokeWidth={2.2} />
+          </span>
+        </Link>
+        <Tab {...orders} />
+        <Tab {...artwork} />
       </nav>
-
-      {more && (
-        <div className="fixed inset-0 z-[55] lg:hidden" onClick={() => setMore(false)}>
-          <div className="absolute inset-0 bg-[rgba(18,23,43,0.35)] backdrop-blur-[2px]" />
-          <div className="o-card absolute inset-x-3 bottom-[calc(var(--o-tab-h)+env(safe-area-inset-bottom)+0.75rem)] p-3" onClick={(e) => e.stopPropagation()}>
-            {MORE.map(({ href, label, Icon }) => (
-              <Link key={href} href={href} className="o-nav-item" data-active={active(href)}>
-                <Icon className="h-5 w-5" strokeWidth={1.8} /> {label}
-              </Link>
-            ))}
-            <a href="/" target="_blank" rel="noopener" className="o-nav-item">
-              <ExternalLink className="h-5 w-5" strokeWidth={1.8} /> See the website
-            </a>
-            <form action={logoutAction}>
-              <button type="submit" className="o-nav-item w-full text-left">
-                <LogOut className="h-5 w-5" strokeWidth={1.8} /> Sign out
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   );
 }

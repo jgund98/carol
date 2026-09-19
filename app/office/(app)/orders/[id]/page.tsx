@@ -4,8 +4,9 @@ import { MapPin } from "lucide-react";
 import { getOrder, getWorkBySlug } from "@/lib/studio/store";
 import { money } from "@/lib/site";
 import { ContactButtons, OrderStatusChip, PageHead, Thumb, fullDate } from "@/components/office/ui";
-import { ActionButton, ConfirmButton, NotesBox, OrderStatusStepper } from "@/components/office/Controls";
-import { deleteOrderAction, markOrderSoldAction, saveOrderNotesAction, setOrderStatusAction } from "@/app/office/actions";
+import { ActionButton, NotesBox, OrderStatusStepper } from "@/components/office/Controls";
+import { RefundBox, ShippingBox } from "@/components/office/OrderBoxes";
+import { markOrderSoldAction, saveOrderNotesAction, setOrderPieceAction, setOrderStatusAction } from "@/app/office/actions";
 
 export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,39 +19,52 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
   return (
     <>
-      <PageHead back={{ href: "/office/orders", label: "All orders" }} kicker={`Order ${o.ref} · ${money(o.subtotal)} · ${fullDate(o.createdAt)}`} title={o.name || "Someone"} />
+      <PageHead back={{ href: "/office/orders", label: "All orders" }} kicker={`Order ${o.ref} · ${money(o.subtotal)} · ${fullDate(o.createdAt)}`} title={o.name || "Someone"} action={<OrderStatusChip status={o.status} />} />
 
-      <div className="grid gap-5 lg:grid-cols-[1.3fr_0.9fr]">
-        <div className="grid gap-5">
+      <div className="grid min-w-0 gap-5 lg:grid-cols-[1.3fr_0.9fr]">
+        <div className="grid min-w-0 gap-5">
+          {/* the pieces */}
           <section className="o-card o-in-view p-5 sm:p-7">
-            <div className="flex items-center justify-between gap-3">
-              <p className="o-label">The pieces</p>
-              <OrderStatusChip status={o.status} />
-            </div>
+            <p className="o-label">The pieces</p>
             <ul className="mt-4 divide-y divide-[var(--o-hair)]">
               {pieces.map(({ it, work }) => (
-                <li key={it.slug} className="flex items-center gap-4 py-4">
-                  <Thumb work={work ?? { ...it, imageSm: it.image, iw: 4, ih: 5, kind: "painting" }} size={72} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[1.08rem] font-semibold leading-tight">
-                      {it.name}
-                      {it.qty > 1 ? ` × ${it.qty}` : ""}
-                    </p>
-                    <p className="text-[0.88rem] text-[var(--o-soft)]">{it.dims ?? work?.medium ?? ""}</p>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.85rem]">
-                      {work ? (
-                        <>
-                          {work.sold ? <span className="o-chip o-chip-ink">Sold on the website</span> : <span className="o-chip o-chip-green">Still for sale</span>}
-                          <Link href={`/office/artwork/${work.slug}`} className="font-semibold text-[var(--o-soft)] underline-offset-4 hover:underline">
-                            Edit
-                          </Link>
-                        </>
-                      ) : (
-                        <span className="text-[var(--o-faint)]">No longer in the shop</span>
-                      )}
+                <li key={it.slug} className="py-4">
+                  <div className="flex items-center gap-4">
+                    <Thumb work={work ?? { ...it, imageSm: it.image, iw: 4, ih: 5, kind: "painting" }} size={72} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[1.08rem] font-semibold leading-tight">
+                        {it.name}
+                        {it.qty > 1 ? ` × ${it.qty}` : ""}
+                      </p>
+                      <p className="text-[0.88rem] text-[var(--o-soft)]">{it.dims ?? work?.medium ?? ""}</p>
+                      <div className="mt-1.5">
+                        {work ? work.hidden ? <span className="o-chip o-chip-muted">Off the website</span> : work.sold ? <span className="o-chip o-chip-ink">Marked sold</span> : <span className="o-chip o-chip-green">Still for sale online</span> : <span className="o-chip o-chip-muted">No longer in the shop</span>}
+                      </div>
                     </div>
+                    <p className="o-num shrink-0 text-[1.25rem]">{money(it.price * it.qty)}</p>
                   </div>
-                  <p className="o-num text-[1.25rem]">{money(it.price * it.qty)}</p>
+                  {work && work.kind !== "book" && (
+                    <div className="mt-3 flex flex-wrap gap-2 sm:pl-[calc(72px+1rem)]">
+                      {!work.sold && !work.hidden && (
+                        <ActionButton className="btn btn-ink btn-sm" done={`${work.name} is marked sold on the website.`} action={setOrderPieceAction} args={[o.id, work.slug, "sold"]}>
+                          Mark as sold
+                        </ActionButton>
+                      )}
+                      {!work.hidden && (
+                        <ActionButton className="btn btn-line btn-sm" done={`${work.name} is off the website.`} action={setOrderPieceAction} args={[o.id, work.slug, "hide"]}>
+                          Remove from the website
+                        </ActionButton>
+                      )}
+                      {(work.sold || work.hidden) && (
+                        <ActionButton className="btn btn-line btn-sm" done={`${work.name} is back for sale.`} action={setOrderPieceAction} args={[o.id, work.slug, "restore"]}>
+                          Put it back for sale
+                        </ActionButton>
+                      )}
+                      <Link href={`/office/artwork/${work.slug}`} className="btn btn-line btn-sm">
+                        Edit the piece
+                      </Link>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -59,18 +73,17 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               <span className="o-num text-[2rem]">{money(o.subtotal)}</span>
             </div>
             <p className="text-[0.86rem] text-[var(--o-faint)]">Shipping or installation is quoted by you, separately.</p>
-            {unsold > 0 && (
+            {unsold > 1 && (
               <div className="o-card-soft mt-5 flex flex-wrap items-center gap-3 p-4">
-                <p className="flex-1 text-[0.95rem]">
-                  {unsold === 1 ? "This piece still shows as for sale on the website." : `${unsold} of these pieces still show as for sale on the website.`}
-                </p>
-                <ActionButton className="btn btn-ink btn-sm" done="Marked sold on the website." action={markOrderSoldAction} args={[o.id]}>
-                  Mark {unsold === 1 ? "it" : "them"} sold
+                <p className="flex-1 text-[0.95rem]">{unsold} of these pieces still show as for sale on the website.</p>
+                <ActionButton className="btn btn-ink btn-sm" done="All marked sold on the website." action={markOrderSoldAction} args={[o.id]}>
+                  Mark them all sold
                 </ActionButton>
               </div>
             )}
           </section>
 
+          {/* the buyer */}
           <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "80ms" }}>
             <p className="o-label">The buyer</p>
             <p className="o-h2 mt-2">{o.name}</p>
@@ -118,11 +131,21 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
             </div>
           </section>
 
-          <section className="o-card-soft o-in-view p-5 sm:p-6" style={{ animationDelay: "120ms" }}>
-            <p className="o-label">Card payments</p>
-            <p className="mt-2 text-[0.95rem] text-[var(--o-soft)]">
-              Once Jordan connects your Stripe account, buyers will be able to pay by card at checkout and paid orders will show up here already marked <strong>Paid</strong>. Until then, settle payment with them the way you do now and mark it here yourself.
-            </p>
+          {/* shipping */}
+          <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "120ms" }}>
+            <p className="o-label">Shipping</p>
+            <p className="o-muted mt-1 text-[0.95rem]">When it leaves the studio, note how it went and the tracking number. Saving this moves the order to Shipped.</p>
+            <div className="mt-4">
+              <ShippingBox id={o.id} carrier={o.carrier} tracking={o.tracking} shippedAt={o.shippedAt} deliveredAt={o.deliveredAt} />
+            </div>
+          </section>
+
+          {/* refund */}
+          <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "160ms" }}>
+            <p className="o-label">Refund</p>
+            <div className="mt-3">
+              <RefundBox id={o.id} subtotal={o.subtotal} refundedAt={o.refundedAt} refundAmount={o.refundAmount} refundNote={o.refundNote} />
+            </div>
           </section>
         </div>
 
@@ -135,9 +158,6 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
             <p className="o-label mb-3">Your notes</p>
             <NotesBox initial={o.notes} action={saveOrderNotesAction} id={o.id} placeholder="Delivery date, framing, what you agreed on the phone…" />
           </section>
-          <div className="o-in-view" style={{ animationDelay: "200ms" }}>
-            <ConfirmButton label="Remove this order" question="Remove this order for good?" action={deleteOrderAction} args={[o.id]} afterHref="/office/orders" />
-          </div>
         </aside>
       </div>
     </>

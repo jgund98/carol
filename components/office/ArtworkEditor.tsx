@@ -4,7 +4,7 @@
 // Save bar that never scrolls away.
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, RotateCcw } from "lucide-react";
+import { ArrowUpToLine, Check, RotateCcw } from "lucide-react";
 import type { Kind, Work } from "@/lib/works";
 import type { CollectionDef } from "@/lib/studio/types";
 import { money } from "@/lib/site";
@@ -13,7 +13,8 @@ import ScaleView from "@/components/ScaleView";
 import PhotoUploader, { type Photo } from "./PhotoUploader";
 import { ConfirmButton } from "./Controls";
 import { useToast } from "./Toast";
-import { deleteWorkAction, saveWorkAction, type WorkInput } from "@/app/office/actions";
+import { deleteWorkAction, moveWorkTopAction, saveWorkAction, type WorkInput } from "@/app/office/actions";
+import { ActionButton } from "./Controls";
 
 const KINDS: { key: Kind; label: string; hint: string }[] = [
   { key: "painting", label: "Painting", hint: "An original on canvas, linen or glass" },
@@ -60,6 +61,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
   const [description, setDescription] = useState(work?.description ?? "");
   const [descTouched, setDescTouched] = useState(Boolean(work && work.description && work.description !== initialAuto));
   const [story, setStory] = useState(work?.story ?? "");
+  const [featured, setFeatured] = useState(work?.featured ?? false);
   const [photo, setPhoto] = useState<Photo | null>(null);
 
   const effectiveMedium = medium === "__other" ? customMedium : medium;
@@ -88,6 +90,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       collections: colls,
       description: shownDescription,
       story: story || null,
+      featured,
       kind,
       image: currentPhoto.image,
       imageSm: currentPhoto.imageSm,
@@ -95,7 +98,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       createdAt: "",
       updatedAt: "",
     };
-  }, [currentPhoto, work, name, priceNum, status, effectiveMedium, width, height, colls, shownDescription, story, kind]);
+  }, [currentPhoto, work, name, priceNum, status, effectiveMedium, width, height, colls, shownDescription, story, kind, featured]);
 
   const canSave = name.trim().length > 0 && Boolean(currentPhoto) && !busy;
 
@@ -113,6 +116,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
         collections: colls,
         description: shownDescription,
         story,
+        featured,
         photo,
       });
       if (!r.ok) {
@@ -230,7 +234,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
 
         {/* 4 collections */}
         <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "180ms" }}>
-          <S n={4} title="Collections" hint="Tick every series this piece belongs to. It will appear on those pages and in the shop filters." />
+          <S n={4} title="Where it appears" hint="Tick every series this piece belongs to. It will appear on those pages and in the shop filters." />
           {collections.length === 0 ? (
             <p className="o-muted">No collections yet. You can make them under Collections.</p>
           ) : (
@@ -245,6 +249,22 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
                   </label>
                 );
               })}
+            </div>
+          )}
+          <div className="mt-6 border-t border-[var(--o-hair)] pt-5">
+            <label className="o-choice relative" data-on={featured}>
+              <input type="checkbox" checked={featured} onChange={() => setFeatured(!featured)} />
+              <span className="o-choice-dot" />
+              Show on the home page
+            </label>
+            <span className="o-help">Home-page pieces turn on the easel at the top and hang on the gallery wall. Untick to keep it in the shop only.</span>
+          </div>
+          {work && !work.hidden && (
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <ActionButton className="btn btn-line btn-sm" done="Moved to the top of the shop." action={moveWorkTopAction} args={[work.slug]}>
+                <ArrowUpToLine className="h-4 w-4" /> Move to the top of the shop
+              </ActionButton>
+              <span className="text-[0.86rem] text-[var(--o-faint)]">New pieces start at the top; use this to bring an older one back up.</span>
             </div>
           )}
         </section>

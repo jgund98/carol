@@ -96,6 +96,13 @@ export async function POST(req: Request) {
         status: "new",
         notes: null,
         paidAt: null,
+        carrier: null,
+        tracking: null,
+        shippedAt: null,
+        deliveredAt: null,
+        refundedAt: null,
+        refundAmount: null,
+        refundNote: null,
         stripeSessionId: null,
       };
       await saveOrder(o);

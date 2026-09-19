@@ -21,7 +21,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
       <PageHead
         kicker="Orders"
         title={newCount ? `${newCount} new order${newCount === 1 ? "" : "s"}.` : "Orders from the website."}
-        text="When someone checks out, their order lands here with the pieces, where it is going and how they would like to pay. Card payments through the website are coming once Stripe is connected; until then you settle payment with them directly, as you do today."
+        text="When someone checks out, their order lands here with the pieces, where it is going and how they would like to pay. You settle payment with them, then move the order along: paid, shipped, delivered."
       />
 
       <nav className="rail -mx-5 mb-5 flex gap-2 px-5 sm:mx-0 sm:flex-wrap sm:px-0" aria-label="Filter">

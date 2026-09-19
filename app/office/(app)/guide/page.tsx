@@ -49,6 +49,29 @@ export default function GuidePage() {
       </section>
 
       <section className="o-card o-in-view mt-8 p-5 sm:p-7">
+        <h2 className="o-h2">Sizes that work</h2>
+        <p className="o-muted mt-2 text-[1rem] leading-relaxed">The website shows every piece at 1,600 pixels wide on its own page, 700 pixels in the shop grid, and lets people zoom in 2.4 times on the brushwork. So:</p>
+        <ul className="mt-4 grid gap-3 text-[1rem] sm:grid-cols-3">
+          <li className="o-card-soft p-4">
+            <p className="o-label text-[var(--o-green)]">Best</p>
+            <p className="mt-1 font-semibold">3,000 px or more</p>
+            <p className="text-[0.9rem] text-[var(--o-soft)]">Any photo straight from your phone's camera. Nothing to do.</p>
+          </li>
+          <li className="o-card-soft p-4">
+            <p className="o-label text-[var(--o-green)]">Good</p>
+            <p className="mt-1 font-semibold">1,600 px across</p>
+            <p className="text-[0.9rem] text-[var(--o-soft)]">Looks perfect everywhere; the zoom is a touch softer.</p>
+          </li>
+          <li className="o-card-soft p-4">
+            <p className="o-label text-[var(--o-red)]">Too small</p>
+            <p className="mt-1 font-semibold">Under 1,000 px</p>
+            <p className="text-[0.9rem] text-[var(--o-soft)]">Screenshots, photos from text messages, old emails. Retake it.</p>
+          </li>
+        </ul>
+        <p className="o-muted mt-4 text-[0.95rem]">Tall, wide or square all work; the shop hangs every piece at its true shape. The crop step tells you the size as you go.</p>
+      </section>
+
+      <section className="o-card o-in-view mt-5 p-5 sm:p-7">
         <h2 className="o-h2">Adding a piece, start to finish</h2>
         <ol className="mt-4 grid gap-3 text-[1rem] leading-relaxed">
           {[

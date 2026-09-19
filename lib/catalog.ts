@@ -47,6 +47,19 @@ export const wallSlugs = [
 
 export const pick = (works: Work[], slugs: string[]) => slugs.map((s) => bySlug(works, s)).filter((w): w is Work => Boolean(w));
 
+/** Pieces Carol marked "show on the home page" first, then the curated defaults to fill, never a book. */
+export const featuredFor = (works: Work[], fallback: string[], n: number): Work[] => {
+  const seen = new Set<string>();
+  const out: Work[] = [];
+  for (const w of [...works.filter((w) => w.featured && w.kind !== "book").sort((a, b) => a.position - b.position), ...pick(works, fallback), ...works.filter((w) => w.kind === "painting")]) {
+    if (seen.has(w.slug)) continue;
+    seen.add(w.slug);
+    out.push(w);
+    if (out.length === n) break;
+  }
+  return out;
+};
+
 /** Related pieces: same collection first, then similar price. */
 export const related = (works: Work[], w: Work, n = 4) => {
   const same = works.filter((x) => x.slug !== w.slug && x.kind === w.kind && x.collections.some((c) => w.collections.includes(c)));

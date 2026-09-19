@@ -38,7 +38,7 @@ export type Inquiry = {
 
 export type OrderItem = { slug: string; name: string; qty: number; price: number; image: string; dims: string | null };
 
-export type OrderStatus = "new" | "contacted" | "paid" | "delivered" | "cancelled";
+export type OrderStatus = "new" | "contacted" | "paid" | "shipped" | "delivered" | "cancelled" | "refunded";
 
 export type StudioOrder = {
   id: string;
@@ -61,14 +61,23 @@ export type StudioOrder = {
   status: OrderStatus;
   notes: string | null;
   paidAt: string | null;
-  /** filled in once Stripe is connected */
+  /** shipping, when she sends it */
+  carrier: string | null;
+  tracking: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  /** a refund she recorded */
+  refundedAt: string | null;
+  refundAmount: number | null;
+  refundNote: string | null;
+  /** payment-processor reference, when there is one */
   stripeSessionId: string | null;
 };
 
 export type Settings = {
   /** where new inquiries and orders are emailed */
   notifyEmail: string;
-  /** an optional second inbox (Jordan, an assistant) */
+  /** an optional second inbox */
   notifyEmail2: string;
   /** reserved for text alerts */
   notifyPhone: string;
@@ -80,9 +89,13 @@ export const ORDER_STATUS: { key: OrderStatus; label: string; hint: string }[] =
   { key: "new", label: "New", hint: "Just came in. Nobody has spoken to them yet." },
   { key: "contacted", label: "In conversation", hint: "You have reached out and are settling payment and delivery." },
   { key: "paid", label: "Paid", hint: "Payment received. Delivery or pick-up is next." },
+  { key: "shipped", label: "Shipped", hint: "On its way. Add the carrier and tracking number below." },
   { key: "delivered", label: "Delivered", hint: "The piece is on their wall." },
   { key: "cancelled", label: "Cancelled", hint: "It did not go ahead." },
+  { key: "refunded", label: "Refunded", hint: "Money returned to the buyer." },
 ];
+
+export const CARRIERS = ["UPS", "FedEx", "USPS", "DHL", "White-glove art shipper", "Delivered by Carol", "Picked up at the studio", "Other"];
 
 export const INQUIRY_KINDS: Record<InquiryKind, { label: string; plural: string }> = {
   contact: { label: "Message", plural: "Messages" },

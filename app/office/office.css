@@ -96,6 +96,7 @@
 
 /* surfaces */
 .o-card {
+  min-width: 0;
   background: var(--o-white);
   border: 1px solid var(--o-hair);
   border-radius: 22px;
@@ -130,14 +131,15 @@ a.o-row:active {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  height: 1.7rem;
-  padding: 0 0.7rem;
+  min-height: 1.7rem;
+  padding: 0.15rem 0.7rem;
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 700;
+  line-height: 1.2;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  white-space: nowrap;
+  text-align: center;
 }
 .o-chip-ink { background: rgba(18, 23, 43, 0.08); color: var(--o-ink); }
 .o-chip-pink { background: rgba(232, 57, 127, 0.12); color: #b8235f; }
@@ -149,7 +151,6 @@ a.o-row:active {
 
 /* the "new" mark: a gold dot that breathes */
 .o-new {
-  position: relative;
   display: inline-block;
   width: 0.65rem;
   height: 0.65rem;
@@ -204,6 +205,10 @@ a.o-row:active {
 }
 .o-in::placeholder {
   color: rgba(18, 23, 43, 0.35);
+}
+/* room for a leading icon (Tailwind's pl-* loses to the rule above) */
+.o-in-icon {
+  padding-left: 3rem;
 }
 textarea.o-in {
   resize: vertical;

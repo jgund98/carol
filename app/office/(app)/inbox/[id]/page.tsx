@@ -4,8 +4,8 @@ import { getInquiry, getWorkBySlug } from "@/lib/studio/store";
 import { money } from "@/lib/site";
 import { dims } from "@/lib/catalog";
 import { ContactButtons, KindChip, PageHead, Thumb, fullDate, personLine } from "@/components/office/ui";
-import { ActionButton, ConfirmButton, NotesBox } from "@/components/office/Controls";
-import { deleteInquiryAction, saveInquiryNotesAction, setInquiryStatusAction } from "@/app/office/actions";
+import { ActionButton, NotesBox } from "@/components/office/Controls";
+import { saveInquiryNotesAction, setInquiryStatusAction } from "@/app/office/actions";
 
 export default async function InquiryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,8 +18,8 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
     <>
       <PageHead back={{ href: "/office/inbox", label: "All inquiries" }} kicker={fullDate(i.createdAt)} title={personLine(i)} />
 
-      <div className="grid gap-5 lg:grid-cols-[1.3fr_0.9fr]">
-        <div className="grid gap-5">
+      <div className="grid min-w-0 gap-5 lg:grid-cols-[1.3fr_0.9fr]">
+        <div className="grid min-w-0 gap-5">
           <section className="o-card o-in-view p-5 sm:p-7">
             <div className="flex flex-wrap items-center gap-2">
               <KindChip kind={i.kind} />
@@ -108,9 +108,6 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
             <p className="o-label mb-3">Your notes</p>
             <NotesBox initial={i.notes} action={saveInquiryNotesAction} id={i.id} />
           </section>
-          <div className="o-in-view" style={{ animationDelay: "200ms" }}>
-            <ConfirmButton label="Remove this inquiry" question="Remove this inquiry for good?" action={deleteInquiryAction} args={[i.id]} afterHref="/office/inbox" />
-          </div>
         </aside>
       </div>
     </>

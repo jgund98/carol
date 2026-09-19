@@ -30,7 +30,7 @@ export class StudioError extends Error {
 }
 
 export const NOT_CONNECTED =
-  "The studio database is not connected yet, so changes cannot be saved. Ask Jordan to connect it. Nothing you see here is lost, it is the website's current catalog.";
+  "The studio database is not connected yet, so changes cannot be saved. Everything you see here is the website's current catalog and nothing is lost.";
 
 /* ───────────────────────────── Postgres ───────────────────────────── */
 
@@ -99,7 +99,7 @@ function postgresStore(url: string): DocStore {
 type FileShape = Record<Table, Record<string, { created: string; data: unknown }>>;
 
 /**
- * The project folder. Usually process.cwd(), but Jordan's launcher starts
+ * The project folder. Usually process.cwd(), but the dev launcher may start
  * `next dev C:/Users/Lucky/carol` from a different directory, so look for
  * next.config.ts and fall back to a sibling `carol` folder before giving up.
  */

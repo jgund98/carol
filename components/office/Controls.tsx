@@ -113,14 +113,14 @@ export function OrderStatusStepper({ current, action, id }: { current: OrderStat
   const idx = ORDER_STATUS.findIndex((s) => s.key === current);
   return (
     <div className="grid gap-2">
-      {ORDER_STATUS.map((s, i) => {
+      {ORDER_STATUS.filter((s) => s.key !== "refunded" || current === "refunded").map((s, i) => {
         const on = s.key === current;
-        const past = i < idx && current !== "cancelled";
+        const past = i < idx && current !== "cancelled" && current !== "refunded";
         return (
           <button
             key={s.key}
             type="button"
-            disabled={busy || on}
+            disabled={busy || on || s.key === "refunded"}
             onClick={() =>
               start(async () => {
                 const r = await action(id, s.key);

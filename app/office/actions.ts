@@ -5,12 +5,10 @@
 // happened in plain words.
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { checkPassword, isSignedIn, signIn, signOut } from "@/lib/studio/auth";
+import { checkCredentials, isSignedIn, signIn, signOut } from "@/lib/studio/auth";
 import {
   StudioError,
   deleteCollection,
-  deleteInquiry,
-  deleteOrder,
   deleteWork,
   getCollection,
   getInquiry,
@@ -33,13 +31,13 @@ import type { CollectionDef, OrderStatus, Settings } from "@/lib/studio/types";
 export type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
 async function guard(): Promise<void> {
-  if (!(await isSignedIn())) redirect("/office");
+  if (!(await isSignedIn())) redirect("/login");
 }
 
 function explain(e: unknown): string {
   if (e instanceof StudioError) return e.message;
   console.error("[office]", e);
-  return "Something went wrong on our side. Nothing was changed. Try again in a moment, and if it keeps happening, tell Jordan.";
+  return "Something went wrong on our side. Nothing was changed. Please try again in a moment.";
 }
 
 /** The website shows the catalog on nearly every page; redraw them all. */
@@ -50,11 +48,12 @@ function refreshSite() {
 /* ───────── sign in / out ───────── */
 
 export async function loginAction(formData: FormData): Promise<void> {
+  const user = String(formData.get("user") || "");
   const password = String(formData.get("password") || "");
   const remember = formData.get("remember") !== "off";
-  if (!checkPassword(password)) {
+  if (!checkCredentials(user, password)) {
     await new Promise((r) => setTimeout(r, 600));
-    redirect("/office?wrong=1");
+    redirect("/login?wrong=1");
   }
   await signIn(remember);
   redirect("/office/home");
@@ -62,7 +61,7 @@ export async function loginAction(formData: FormData): Promise<void> {
 
 export async function logoutAction(): Promise<void> {
   await signOut();
-  redirect("/office");
+  redirect("/login");
 }
 
 /* ───────── artwork ───────── */
@@ -79,6 +78,7 @@ export type WorkInput = {
   collections: string[];
   description: string;
   story: string;
+  featured: boolean;
   photo: { image: string; imageSm: string; iw: number; ih: number; color: string } | null;
 };
 
@@ -121,6 +121,7 @@ export async function saveWorkAction(input: WorkInput): Promise<Result<{ slug: s
       description: input.description.trim(),
       story: input.story.trim() || null,
       kind: input.kind,
+      featured: input.featured,
       image: photo.image,
       imageSm: photo.imageSm,
       position: existing?.position ?? topPosition,
@@ -270,17 +271,6 @@ export async function saveInquiryNotesAction(id: string, notes: string): Promise
   }
 }
 
-export async function deleteInquiryAction(id: string): Promise<Result> {
-  await guard();
-  try {
-    await deleteInquiry(id);
-    revalidatePath("/office", "layout");
-    return { ok: true };
-  } catch (e) {
-    return { ok: false, error: explain(e) };
-  }
-}
-
 /* ───────── orders ───────── */
 
 export async function setOrderStatusAction(id: string, status: OrderStatus): Promise<Result> {
@@ -288,7 +278,15 @@ export async function setOrderStatusAction(id: string, status: OrderStatus): Pro
   try {
     const o = await getOrder(id);
     if (!o) return { ok: false, error: "That order is gone." };
-    await saveOrder({ ...o, status, paidAt: status === "paid" || status === "delivered" ? o.paidAt ?? new Date().toISOString() : o.paidAt });
+    const now = new Date().toISOString();
+    const paidLike = status === "paid" || status === "shipped" || status === "delivered";
+    await saveOrder({
+      ...o,
+      status,
+      paidAt: paidLike ? o.paidAt ?? now : o.paidAt,
+      shippedAt: status === "shipped" ? o.shippedAt ?? now : status === "delivered" ? o.shippedAt : o.shippedAt,
+      deliveredAt: status === "delivered" ? o.deliveredAt ?? now : null,
+    });
     revalidatePath("/office", "layout");
     return { ok: true };
   } catch (e) {
@@ -303,6 +301,60 @@ export async function saveOrderNotesAction(id: string, notes: string): Promise<R
     if (!o) return { ok: false, error: "That order is gone." };
     await saveOrder({ ...o, notes: notes.trim() || null });
     revalidatePath("/office", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: explain(e) };
+  }
+}
+
+export async function saveShippingAction(id: string, carrier: string, tracking: string): Promise<Result> {
+  await guard();
+  try {
+    const o = await getOrder(id);
+    if (!o) return { ok: false, error: "That order is gone." };
+    const now = new Date().toISOString();
+    const hasShip = Boolean(carrier.trim() || tracking.trim());
+    await saveOrder({
+      ...o,
+      carrier: carrier.trim() || null,
+      tracking: tracking.trim() || null,
+      // adding shipping details moves a paid order along to Shipped automatically
+      status: hasShip && (o.status === "paid" || o.status === "contacted" || o.status === "new") ? "shipped" : o.status,
+      shippedAt: hasShip ? o.shippedAt ?? now : o.shippedAt,
+    });
+    revalidatePath("/office", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: explain(e) };
+  }
+}
+
+/** Record a refund on the order. */
+export async function recordRefundAction(id: string, amount: number, note: string): Promise<Result> {
+  await guard();
+  try {
+    const o = await getOrder(id);
+    if (!o) return { ok: false, error: "That order is gone." };
+    const amt = Math.max(0, Math.round(amount || 0));
+    if (!amt) return { ok: false, error: "Enter the amount you refunded." };
+    await saveOrder({ ...o, status: "refunded", refundedAt: new Date().toISOString(), refundAmount: amt, refundNote: note.trim() || null });
+    revalidatePath("/office", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: explain(e) };
+  }
+}
+
+/** One piece in an order: mark it sold on the website, or take it off the website. */
+export async function setOrderPieceAction(orderId: string, slug: string, what: "sold" | "hide" | "restore"): Promise<Result> {
+  await guard();
+  try {
+    const w = await getWorkBySlug(slug);
+    if (!w) return { ok: false, error: "That piece is no longer in the shop." };
+    if (what === "sold") await saveWork({ ...w, sold: true, hidden: false });
+    else if (what === "hide") await saveWork({ ...w, hidden: true });
+    else await saveWork({ ...w, sold: false, hidden: false, available: true });
+    refreshSite();
     return { ok: true };
   } catch (e) {
     return { ok: false, error: explain(e) };
@@ -325,17 +377,6 @@ export async function markOrderSoldAction(id: string): Promise<Result<{ count: n
     }
     refreshSite();
     return { ok: true, count };
-  } catch (e) {
-    return { ok: false, error: explain(e) };
-  }
-}
-
-export async function deleteOrderAction(id: string): Promise<Result> {
-  await guard();
-  try {
-    await deleteOrder(id);
-    revalidatePath("/office", "layout");
-    return { ok: true };
   } catch (e) {
     return { ok: false, error: explain(e) };
   }

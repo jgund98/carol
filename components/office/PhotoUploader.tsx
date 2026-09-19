@@ -178,8 +178,8 @@ export default function PhotoUploader({ current, name, kind, onDone }: { current
           <button type="button" onClick={() => fileRef.current?.click()} className="btn btn-line btn-sm">
             Different photo
           </button>
-          <span className="text-[0.85rem] text-[var(--o-faint)]">
-            {cropped.iw} × {cropped.ih} px{cropped.iw < 900 ? " · a little small, closer is better" : ""}
+          <span className={`text-[0.85rem] font-semibold ${quality(cropped).tone}`}>
+            {cropped.iw} × {cropped.ih} px · {quality(cropped).label}
           </span>
         </div>
         <button type="button" onClick={finish} disabled={busy === "uploading"} className="btn btn-pink w-full sm:w-max">
@@ -203,9 +203,7 @@ export default function PhotoUploader({ current, name, kind, onDone }: { current
         </div>
         {busy === "reading" ? <p className="o-muted">Opening the photo…</p> : pickers}
         {error && <p className="font-semibold text-[var(--o-red)]">{error}</p>}
-        <p className="text-[0.88rem] text-[var(--o-faint)]">
-          Straight on, in daylight, the whole canvas in view. <Link href="/office/guide" className="font-semibold underline underline-offset-4">The photo guide</Link> has the details.
-        </p>
+        <SizeNote />
       </div>
     );
 
@@ -223,6 +221,29 @@ export default function PhotoUploader({ current, name, kind, onDone }: { current
         {busy === "reading" ? <p className="o-muted">Opening the photo…</p> : pickers}
         {error && <p className="font-semibold text-[var(--o-red)]">{error}</p>}
       </div>
+    </div>
+  );
+}
+
+/** Sizes measured against how the website shows a piece: 1600 px wide on its own page, 700 px in the shop grid, zoomed 2.4× in the viewer. */
+function quality({ iw, ih }: { iw: number; ih: number }): { label: string; tone: string } {
+  const long = Math.max(iw, ih);
+  if (long >= 2400) return { label: "perfect", tone: "text-[var(--o-green)]" };
+  if (long >= 1600) return { label: "very good", tone: "text-[var(--o-green)]" };
+  if (long >= 1000) return { label: "fine for the shop, a little soft when zoomed", tone: "text-[#7d5f1e]" };
+  return { label: "too small, get closer or use a bigger photo", tone: "text-[var(--o-red)]" };
+}
+
+function SizeNote() {
+  return (
+    <div className="o-card-soft grid gap-1.5 p-4 text-[0.9rem]">
+      <p className="font-semibold">Sizes that work</p>
+      <p><span className="font-semibold text-[var(--o-green)]">Best:</span> any photo straight from your phone's camera (3,000 px or more across).</p>
+      <p><span className="font-semibold text-[var(--o-green)]">Good:</span> at least 1,600 px on the long side. This is what the website shows on a piece's own page.</p>
+      <p><span className="font-semibold text-[var(--o-red)]">Too small:</span> under 1,000 px, like a screenshot or a photo saved from a text message.</p>
+      <p className="text-[var(--o-faint)]">
+        Any shape is fine, tall, wide or square. <Link href="/office/guide" className="font-semibold underline underline-offset-4">The photo guide</Link> has the rest.
+      </p>
     </div>
   );
 }

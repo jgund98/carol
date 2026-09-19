@@ -36,11 +36,6 @@ export default async function Today() {
             ? "Nothing is waiting on you. Enjoy the studio."
             : `You have ${newOrd.length ? `${newOrd.length} new order${newOrd.length === 1 ? "" : "s"}` : ""}${newOrd.length && newInq.length ? " and " : ""}${newInq.length ? `${newInq.length} new inquir${newInq.length === 1 ? "y" : "ies"}` : ""}.`
         }
-        action={
-          <Link href="/office/artwork/new" className="btn btn-pink w-full sm:w-auto">
-            <Plus className="h-4 w-4" /> Add a new piece
-          </Link>
-        }
       />
 
       {/* the numbers */}
@@ -167,7 +162,7 @@ export default async function Today() {
 
 function Stat({ href, n, label, hot = false }: { href: string; n: number; label: string; hot?: boolean }) {
   return (
-    <Link href={href} className={`o-card relative p-5 transition-transform hover:-translate-y-0.5 sm:p-6 ${hot ? "ring-2 ring-[var(--o-gold)]/70" : ""}`}>
+    <Link href={href} className="o-card relative flex min-h-[9.5rem] flex-col justify-end p-5 transition-transform hover:-translate-y-0.5 sm:p-6" style={hot ? { borderColor: "var(--o-gold)" } : undefined}>
       {hot && <span className="o-new absolute right-5 top-5" />}
       <p className="o-num text-[2.8rem] sm:text-[3.4rem]">{n}</p>
       <p className="o-label mt-2">{label}</p>
