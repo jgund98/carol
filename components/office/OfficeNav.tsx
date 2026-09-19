@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sun, Inbox, ShoppingBag, Palette, Layers, Camera, Settings, ExternalLink, LogOut, Plus, FileText } from "lucide-react";
+import { Sun, Inbox, ShoppingBag, Palette, Layers, Camera, Settings, ExternalLink, LogOut, Plus, FileText, X } from "lucide-react";
 import { logoutAction } from "@/app/office/actions";
 
 type Counts = { inquiries: number; orders: number };
@@ -25,6 +25,8 @@ const ITEMS = [
 export default function OfficeNav({ initial }: { initial: Counts }) {
   const path = usePathname();
   const [counts, setCounts] = useState<Counts>(initial);
+  const [sheet, setSheet] = useState(false);
+  useEffect(() => setSheet(false), [path]);
 
   useEffect(() => setCounts(initial), [initial]);
 
@@ -124,14 +126,44 @@ export default function OfficeNav({ initial }: { initial: Counts }) {
       <nav className="o-tabbar lg:hidden" aria-label="Office">
         <Tab {...today} />
         <Tab {...inbox} />
-        <Link href="/office/artwork/new" className="o-tab" aria-label="Add a new piece">
-          <span className="grid h-12 w-12 -translate-y-2 place-items-center rounded-full bg-[var(--o-pink)] text-white shadow-[0_12px_28px_-10px_rgba(232,57,127,0.8)]">
+        <button type="button" onClick={() => setSheet((v) => !v)} className="o-tab" aria-label="Add" aria-expanded={sheet}>
+          <span className={`grid h-12 w-12 -translate-y-2 place-items-center rounded-full text-white transition-transform ${sheet ? "rotate-45 bg-[var(--o-ink)]" : "bg-[var(--o-pink)]"}`}>
             <Plus className="h-6 w-6" strokeWidth={2.2} />
           </span>
-        </Link>
+        </button>
         <Tab {...orders} />
         <Tab {...artwork} />
       </nav>
+
+      {/* the + sheet: two things she can create */}
+      {sheet && (
+        <div className="fixed inset-0 z-[55] lg:hidden" onClick={() => setSheet(false)}>
+          <div className="absolute inset-0 bg-[rgba(18,23,43,0.35)] backdrop-blur-[2px]" />
+          <div className="o-card absolute inset-x-3 bottom-[calc(var(--o-tab-h)+env(safe-area-inset-bottom)+0.9rem)] p-2" onClick={(e) => e.stopPropagation()}>
+            <Link href="/office/artwork/new" className="flex items-center gap-4 rounded-2xl p-3.5 hover:bg-[rgba(18,23,43,0.04)]">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--o-pink)] text-white">
+                <Palette className="h-5 w-5" strokeWidth={1.8} />
+              </span>
+              <span>
+                <span className="block text-[1.02rem] font-semibold">Add a piece to the shop</span>
+                <span className="block text-[0.86rem] text-[var(--o-soft)]">Photo, title, price</span>
+              </span>
+            </Link>
+            <Link href="/office/invoices/new" className="flex items-center gap-4 rounded-2xl p-3.5 hover:bg-[rgba(18,23,43,0.04)]">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--o-ink)] text-white">
+                <FileText className="h-5 w-5" strokeWidth={1.8} />
+              </span>
+              <span>
+                <span className="block text-[1.02rem] font-semibold">Write an invoice</span>
+                <span className="block text-[0.86rem] text-[var(--o-soft)]">Email or text it to a buyer</span>
+              </span>
+            </Link>
+            <button type="button" onClick={() => setSheet(false)} className="mt-1 flex w-full items-center justify-center gap-2 rounded-2xl p-3 text-[0.95rem] font-semibold text-[var(--o-soft)]">
+              <X className="h-4 w-4" /> Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
