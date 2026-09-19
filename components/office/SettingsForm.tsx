@@ -34,10 +34,26 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
         <span>Also send a copy to · optional</span>
         <input type="email" value={s.notifyEmail2} onChange={(e) => setS({ ...s, notifyEmail2: e.target.value })} className="o-in" placeholder="An assistant or a family member" />
       </label>
-      <label className="o-field">
-        <span>Your mobile number · for text alerts later</span>
-        <input type="tel" value={s.notifyPhone} onChange={(e) => setS({ ...s, notifyPhone: e.target.value })} className="o-in" placeholder="561-400-0678" />
-        <span className="o-help">Text alerts are not switched on yet. When they are, this is the number they go to.</span>
+      <div className="border-t border-[var(--o-hair)] pt-5">
+        <label className="o-choice relative mb-4" data-on={s.textAlerts}>
+          <input type="checkbox" checked={s.textAlerts} onChange={() => setS({ ...s, textAlerts: !s.textAlerts })} />
+          <span className="o-choice-dot" />
+          Text me when something comes in
+        </label>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="o-field">
+            <span>Mobile number</span>
+            <input type="tel" value={s.notifyPhone} onChange={(e) => setS({ ...s, notifyPhone: e.target.value })} className="o-in" placeholder="561-400-0678" />
+          </label>
+          <label className="o-field">
+            <span>Second number · optional</span>
+            <input type="tel" value={s.notifyPhone2} onChange={(e) => setS({ ...s, notifyPhone2: e.target.value })} className="o-in" placeholder="An assistant or family member" />
+          </label>
+        </div>
+      </div>
+      <label className="o-field border-t border-[var(--o-hair)] pt-5">
+        <span>How buyers can pay you · shown on invoices</span>
+        <textarea value={s.payInstructions} onChange={(e) => setS({ ...s, payInstructions: e.target.value })} rows={3} className="o-in" placeholder="Card, PayPal, wire, check, Zelle…" />
       </label>
       <button type="submit" disabled={!dirty || busy} className="btn btn-ink w-full sm:w-max">
         {busy ? "Saving…" : "Save"}

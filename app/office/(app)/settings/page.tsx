@@ -7,10 +7,10 @@ export default async function SettingsPage() {
   const settings = await getSettings();
   return (
     <>
-      <PageHead kicker="Settings" title="A few things to set once." text="Where the website sends its emails, and how to sign out." />
+      <PageHead kicker="Settings" title="A few things to set once." text="Where alerts go, how buyers can pay you, and how to sign out." />
       <div className="grid gap-3 sm:gap-5 lg:grid-cols-[1.3fr_0.9fr]">
         <section className="o-card o-in-view p-4 sm:p-7">
-          <p className="o-label mb-4">Email alerts</p>
+          <p className="o-label mb-4">Alerts</p>
           <SettingsForm initial={settings} />
         </section>
         <aside className="grid gap-5 lg:self-start">

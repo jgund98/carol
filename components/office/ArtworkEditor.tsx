@@ -7,9 +7,7 @@ import { useRouter } from "next/navigation";
 import { ArrowUpToLine, Check, RotateCcw } from "lucide-react";
 import type { Kind, Work } from "@/lib/works";
 import type { CollectionDef } from "@/lib/studio/types";
-import { money } from "@/lib/site";
 import WorkCard from "@/components/WorkCard";
-import ScaleView from "@/components/ScaleView";
 import PhotoUploader, { type Photo } from "./PhotoUploader";
 import { ConfirmButton } from "./Controls";
 import { useToast } from "./Toast";
@@ -131,22 +129,14 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
     });
   }
 
-  const S = ({ n, title, hint }: { n: number; title: string; hint?: string }) => (
-    <div className="mb-5 flex items-start gap-3">
-      <span className="o-num grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--o-ink)] text-[1rem] text-white">{n}</span>
-      <div>
-        <h2 className="o-h2">{title}</h2>
-        {hint && <p className="o-muted mt-1 text-[0.95rem]">{hint}</p>}
-      </div>
-    </div>
-  );
+  const S = ({ title }: { n?: number; title: string; hint?: string }) => <h2 className="o-h2 mb-4">{title}</h2>;
 
   return (
     <div className="grid gap-3 sm:gap-5 lg:grid-cols-[1.25fr_0.85fr] lg:items-start">
       <div className="grid gap-3 sm:gap-5">
         {/* 1 photo */}
         <section className="o-card o-in-view p-4 sm:p-7">
-          <S n={1} title="The photo" hint="Straight on, in daylight. You will trim it to the edges of the canvas in the next step." />
+          <S title="Photo" />
           <PhotoUploader current={currentPhoto} name={name} kind={kind} onDone={(p) => setPhoto(p)} />
           {photo && (
             <p className="mt-3 inline-flex items-center gap-2 text-[0.92rem] font-semibold text-[var(--o-green)]">
@@ -157,7 +147,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
 
         {/* 2 title, price, status */}
         <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "60ms" }}>
-          <S n={2} title="Title and price" />
+          <S title="Title and price" />
           <div className="grid gap-5">
             <label className="o-field">
               <span>Title</span>
@@ -168,7 +158,6 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
               <div className="o-money">
                 <input value={price} onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" className="o-in" placeholder="14000" />
               </div>
-              <span className="o-help">{priceNum > 0 ? `Shows on the website as ${money(priceNum)}.` : "Whole dollars, no commas needed."}</span>
             </label>
             <div className="o-field">
               <span className="o-field-label">Status</span>
@@ -181,17 +170,16 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
                   </label>
                 ))}
               </div>
-              <span className="o-help">{STATUSES.find((s) => s.key === status)?.hint}</span>
             </div>
           </div>
         </section>
 
         {/* 3 size & medium */}
         <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "120ms" }}>
-          <S n={3} title="Size and medium" hint="Inches, as you would say them: 48 wide by 36 tall." />
+          <S title="Size and medium" />
           <div className="grid gap-5">
             <div className="o-field">
-              <span className="o-field-label">What is it?</span>
+              <span className="o-field-label">Type</span>
               <div className="flex flex-wrap gap-2">
                 {KINDS.map((k) => (
                   <label key={k.key} className="o-choice relative" data-on={kind === k.key} title={k.hint}>
@@ -234,7 +222,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
 
         {/* 4 collections */}
         <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "180ms" }}>
-          <S n={4} title="Where it appears" hint="Tick every series this piece belongs to. It will appear on those pages and in the shop filters." />
+          <S title="Collections" />
           {collections.length === 0 ? (
             <p className="o-muted">No collections yet. You can make them under Collections.</p>
           ) : (
@@ -257,21 +245,19 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
               <span className="o-choice-dot" />
               Show on the home page
             </label>
-            <span className="o-help">Home-page pieces turn on the easel at the top and hang on the gallery wall. Untick to keep it in the shop only.</span>
           </div>
           {work && !work.hidden && (
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <ActionButton className="btn btn-line btn-sm" done="Moved to the top of the shop." action={moveWorkTopAction} args={[work.slug]}>
                 <ArrowUpToLine className="h-4 w-4" /> Move to the top of the shop
               </ActionButton>
-              <span className="text-[0.86rem] text-[var(--o-faint)]">New pieces start at the top; use this to bring an older one back up.</span>
             </div>
           )}
         </section>
 
         {/* 5 words */}
         <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "240ms" }}>
-          <S n={5} title="The words" hint="The short line is written for you from the size and medium, the way every piece on the website reads. Change it if you like." />
+          <S title="Description" />
           <div className="grid gap-5">
             <label className="o-field">
               <span>Short description</span>
@@ -293,14 +279,13 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
                   }}
                   className="mt-2 inline-flex items-center gap-1.5 text-[0.9rem] font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]"
                 >
-                  <RotateCcw className="h-3.5 w-3.5" /> Use the standard wording: “{auto}”
+                  <RotateCcw className="h-3.5 w-3.5" /> Use “{auto}”
                 </button>
               )}
             </label>
             <label className="o-field">
-              <span>The story behind it · optional</span>
-              <textarea value={story} onChange={(e) => setStory(e.target.value)} rows={4} className="o-in" placeholder="Where it was painted, what you were thinking about, the light that morning…" />
-              <span className="o-help">Shown on the piece's own page, under the price.</span>
+              <span>About this piece · optional</span>
+              <textarea value={story} onChange={(e) => setStory(e.target.value)} rows={4} className="o-in" placeholder="Optional. Shown on its page under the price." />
             </label>
           </div>
         </section>
@@ -316,19 +301,13 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       {/* preview + save */}
       <aside className="grid gap-3 sm:gap-5 lg:sticky lg:top-12">
         <section className="o-card o-in-view p-4 sm:p-6" style={{ animationDelay: "120ms" }}>
-          <p className="o-label mb-4">How it will look in the shop</p>
+          <p className="o-label mb-4">In the shop</p>
           {preview ? (
             <div className="pointer-events-none mx-auto max-w-[300px]">
               <WorkCard work={preview} />
             </div>
           ) : (
             <div className="o-thumb grid aspect-[4/5] max-w-[300px] place-items-center text-[0.95rem] text-[var(--o-faint)]">Add a photo to see it</div>
-          )}
-          {preview && preview.kind !== "book" && preview.width && preview.height && (
-            <div className="mt-6">
-              <p className="o-label mb-3">True to scale</p>
-              <ScaleView work={preview} />
-            </div>
           )}
         </section>
         <div className="hidden lg:block">
@@ -351,7 +330,6 @@ function SaveBar({ canSave, busy, status, isNew, onSave, compact = false }: { ca
       <button type="button" onClick={onSave} disabled={!canSave} className={`btn btn-pink ${compact ? "flex-1" : "w-full"}`}>
         {label}
       </button>
-      {!compact && <p className="mt-3 text-center text-[0.86rem] text-[var(--o-faint)]">{canSave ? "Changes appear on the website within a minute." : "Add a photo and a title to save."}</p>}
     </div>
   );
 }

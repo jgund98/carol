@@ -24,6 +24,9 @@ const DEFAULT_SETTINGS: Settings = {
   notifyEmail: process.env.LEAD_TO_EMAIL || "Carol@carolcalicchioart.com",
   notifyEmail2: "",
   notifyPhone: "",
+  notifyPhone2: "",
+  textAlerts: true,
+  payInstructions: "Credit and debit cards, PayPal, wire or check. Carol will confirm the details with you personally.",
 };
 
 function seedShape() {

@@ -155,9 +155,7 @@ export default function PhotoUploader({ current, name, kind, onDone }: { current
     const cropped = { iw: Math.round(box.w * (work?.width ?? 1)), ih: Math.round(box.h * (work?.height ?? 1)) };
     return (
       <div className="grid gap-4">
-        <p className="text-[1rem]">
-          <strong>Drag the pink corners to the edges of the {kind === "surfboard" ? "board" : kind === "book" ? "cover" : "canvas"}.</strong> Leave out the wall, the frame and the easel. The website will show only what is inside the box.
-        </p>
+        <p className="text-[0.95rem] font-semibold">Drag the pink corners to the edges of the {kind === "surfboard" ? "board" : kind === "book" ? "cover" : "canvas"}.</p>
         <div ref={stageRef} className="o-crop-stage mx-auto w-full max-w-[560px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={src} alt="" draggable={false} />
@@ -203,7 +201,7 @@ export default function PhotoUploader({ current, name, kind, onDone }: { current
         </div>
         {busy === "reading" ? <p className="o-muted">Opening the photo…</p> : pickers}
         {error && <p className="font-semibold text-[var(--o-red)]">{error}</p>}
-        <SizeNote />
+        <p className="text-[0.88rem] text-[var(--o-faint)]">Straight on, in daylight. <Link href="/office/guide" className="font-semibold underline underline-offset-4">Photo guide</Link></p>
       </div>
     );
 
@@ -216,7 +214,7 @@ export default function PhotoUploader({ current, name, kind, onDone }: { current
       </div>
       <div className="grid gap-3">
         <p className="text-[0.95rem] text-[var(--o-soft)]">
-          {current.iw} × {current.ih} px. This is the photo on the website.
+          {current.iw} × {current.ih} px
         </p>
         {busy === "reading" ? <p className="o-muted">Opening the photo…</p> : pickers}
         {error && <p className="font-semibold text-[var(--o-red)]">{error}</p>}
@@ -232,20 +230,6 @@ function quality({ iw, ih }: { iw: number; ih: number }): { label: string; tone:
   if (long >= 1600) return { label: "very good", tone: "text-[var(--o-green)]" };
   if (long >= 1000) return { label: "fine for the shop, a little soft when zoomed", tone: "text-[#7d5f1e]" };
   return { label: "too small, get closer or use a bigger photo", tone: "text-[var(--o-red)]" };
-}
-
-function SizeNote() {
-  return (
-    <div className="o-card-soft grid gap-1.5 p-4 text-[0.9rem]">
-      <p className="font-semibold">Sizes that work</p>
-      <p><span className="font-semibold text-[var(--o-green)]">Best:</span> any photo straight from your phone's camera (3,000 px or more across).</p>
-      <p><span className="font-semibold text-[var(--o-green)]">Good:</span> at least 1,600 px on the long side. This is what the website shows on a piece's own page.</p>
-      <p><span className="font-semibold text-[var(--o-red)]">Too small:</span> under 1,000 px, like a screenshot or a photo saved from a text message.</p>
-      <p className="text-[var(--o-faint)]">
-        Any shape is fine, tall, wide or square. <Link href="/office/guide" className="font-semibold underline underline-offset-4">The photo guide</Link> has the rest.
-      </p>
-    </div>
-  );
 }
 
 async function loadBitmap(file: File): Promise<ImageBitmap | HTMLImageElement> {

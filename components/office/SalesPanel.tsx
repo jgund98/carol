@@ -30,11 +30,9 @@ export default function SalesPanel({ orders }: { orders: SlimOrder[] }) {
   const view = useMemo(() => {
     const inWindow = (iso: string | null) => Boolean(iso) && new Date(iso as string).getTime() >= since;
     const sales = orders.filter((o) => PAID.includes(o.status) && inWindow(o.paidAt ?? o.createdAt)).sort((a, b) => (b.paidAt ?? b.createdAt).localeCompare(a.paidAt ?? a.createdAt));
-    const requests = orders.filter((o) => inWindow(o.createdAt)).length;
     const revenue = sales.reduce((n, o) => n + o.subtotal, 0);
     const pieces = sales.reduce((n, o) => n + o.pieces, 0);
-    const refunded = orders.filter((o) => o.status === "refunded" && inWindow(o.createdAt)).reduce((n, o) => n + (o.refundAmount ?? 0), 0);
-    return { sales, requests, revenue, pieces, refunded };
+    return { sales, revenue, pieces };
   }, [orders, since]);
 
   return (
@@ -59,9 +57,7 @@ export default function SalesPanel({ orders }: { orders: SlimOrder[] }) {
       </div>
 
       {view.sales.length === 0 ? (
-        <p className="o-muted px-4 py-5 text-[0.95rem] sm:px-6">
-          No paid sales {win === "all" ? "yet" : `in the last ${days === 1 ? "day" : `${days} days`}`}.{view.requests > 0 ? ` ${view.requests} order request${view.requests === 1 ? "" : "s"} came in; mark one Paid once the money arrives and it lands here.` : ""}
-        </p>
+        <p className="o-muted px-4 py-5 text-[0.95rem] sm:px-6">No paid sales {win === "all" ? "yet" : `in the last ${days === 1 ? "day" : `${days} days`}`}.</p>
       ) : (
         <div>
           {view.sales.slice(0, 6).map((o) => (
@@ -69,10 +65,7 @@ export default function SalesPanel({ orders }: { orders: SlimOrder[] }) {
           ))}
         </div>
       )}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--o-hair)] px-4 py-3 text-[0.82rem] text-[var(--o-faint)] sm:px-6">
-        <span>
-          {view.requests} request{view.requests === 1 ? "" : "s"} in this window{view.refunded ? ` · ${money(view.refunded)} refunded` : ""}
-        </span>
+      <div className="flex justify-end border-t border-[var(--o-hair)] px-4 py-3 text-[0.88rem] sm:px-6">
         <Link href="/office/orders?f=paid" className="font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
           All paid orders
         </Link>

@@ -3,6 +3,8 @@
 // an email about it. If the email cannot be sent the message is still saved,
 // so nothing is ever lost.
 import { sendLead, type LeadField } from "@/lib/lead-email";
+import { sendSms } from "@/lib/studio/sms";
+import { money } from "@/lib/site";
 import { getSettings, newId, saveInquiry, saveOrder } from "@/lib/studio/store";
 import type { Inquiry, InquiryKind, OrderItem, StudioOrder } from "@/lib/studio/types";
 
@@ -146,11 +148,23 @@ export async function POST(req: Request) {
   const replyTo = body.email && EMAIL_RE.test(body.email) ? { email: body.email, name: body.name } : undefined;
 
   let to: string[] | undefined;
+  let phones: string[] = [];
   try {
     const s = await getSettings();
     to = [s.notifyEmail, s.notifyEmail2].filter((e) => e && EMAIL_RE.test(e));
+    if (s.textAlerts) phones = [s.notifyPhone, s.notifyPhone2].filter(Boolean);
   } catch {
     /* defaults inside sendLead */
+  }
+
+  // 3. Text her (and a second number) unless it is only a newsletter signup.
+  if (phones.length && formType !== "newsletter") {
+    const who = body.name || body.email || "Someone";
+    const line =
+      formType === "order" && body.order
+        ? `New sale request from ${who}: ${money(Number(body.order.subtotal || 0))} for ${body.order.items.map((i) => i.name).join(", ")}.`
+        : `New ${(KIND[formType] || "message").replace("inquiry", "artwork inquiry").replace("contact", "message")} from ${who}${body.message ? `: "${body.message.slice(0, 90)}${body.message.length > 90 ? "…" : ""}"` : "."}`;
+    await Promise.all(phones.map((p) => sendSms(p, `${line} Open: ${officeLink}`)));
   }
 
   const res = await sendLead({

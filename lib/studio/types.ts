@@ -79,8 +79,12 @@ export type Settings = {
   notifyEmail: string;
   /** an optional second inbox */
   notifyEmail2: string;
-  /** reserved for text alerts */
+  /** text alerts */
   notifyPhone: string;
+  notifyPhone2: string;
+  textAlerts: boolean;
+  /** shown on invoices: how buyers can pay */
+  payInstructions: string;
 };
 
 export type Catalog = { works: Work[]; collections: CollectionDef[] };

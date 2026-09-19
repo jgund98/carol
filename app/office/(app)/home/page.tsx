@@ -1,9 +1,8 @@
 // Today: what is waiting, at a glance, in the order it came in.
 import Link from "next/link";
-import { Plus, ArrowRight, ExternalLink } from "lucide-react";
-import { listAllWorks, listInquiries, listOrders } from "@/lib/studio/store";
+import { listInquiries, listOrders } from "@/lib/studio/store";
 import { money } from "@/lib/site";
-import { KindChip, OrderStatusChip, PageHead, Row, Thumb, timeAgo, personLine } from "@/components/office/ui";
+import { KindChip, PageHead, Row, Thumb, timeAgo, personLine } from "@/components/office/ui";
 import SalesPanel, { type SlimOrder } from "@/components/office/SalesPanel";
 
 function greeting() {
@@ -12,11 +11,9 @@ function greeting() {
 }
 
 export default async function Today() {
-  const [inq, ord, works] = await Promise.all([listInquiries(), listOrders(), listAllWorks()]);
+  const [inq, ord] = await Promise.all([listInquiries(), listOrders()]);
   const newInq = inq.filter((i) => i.status === "new");
   const newOrd = ord.filter((o) => o.status === "new");
-  const forSale = works.filter((w) => !w.hidden && !w.sold && w.available).length;
-  const sold = works.filter((w) => w.sold).length;
   const paidOrders = ord.filter((o) => o.status === "paid" || o.status === "shipped" || o.status === "delivered").length;
   const waiting = [
     ...newOrd.map((o) => ({ kind: "order" as const, at: o.createdAt, o })),
@@ -25,9 +22,6 @@ export default async function Today() {
   const total = waiting.length;
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   const slim: SlimOrder[] = ord.map((o) => ({ id: o.id, name: o.name || "Someone", subtotal: o.subtotal, status: o.status, createdAt: o.createdAt, paidAt: o.paidAt, refundAmount: o.refundAmount, pieces: o.items.reduce((n, i) => n + i.qty, 0), first: o.items[0]?.name ?? "" }));
-  const recentDone = [...inq.filter((i) => i.status === "handled"), ...ord.filter((o) => o.status !== "new")]
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    .slice(0, 4);
 
   return (
     <>
@@ -42,12 +36,6 @@ export default async function Today() {
         </Link>
         <Link href="/office/orders?f=paid">
           <b>{paidOrders}</b> paid {paidOrders === 1 ? "order" : "orders"}
-        </Link>
-        <Link href="/office/artwork?f=sale">
-          <b>{forSale}</b> for sale
-        </Link>
-        <Link href="/office/artwork?f=sold">
-          <b>{sold}</b> sold
         </Link>
       </p>
 
@@ -108,49 +96,7 @@ export default async function Today() {
         <SalesPanel orders={slim} />
       </div>
 
-      {/* shortcuts */}
-      <section className="o-in-view mt-5 grid gap-2.5 sm:mt-9 sm:gap-3 sm:grid-cols-3" style={{ animationDelay: "180ms" }}>
-        <Link href="/office/artwork/new" className="o-card flex items-center gap-3 p-3.5 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:p-5">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full sm:h-12 sm:w-12 bg-[var(--o-pink)] text-white">
-            <Plus className="h-5 w-5" />
-          </span>
-          <span>
-            <span className="block font-semibold">Add a new piece</span>
-            <span className="block text-[0.86rem] text-[var(--o-soft)]">Photo, title, price. Live in a minute.</span>
-          </span>
-        </Link>
-        <Link href="/office/guide" className="o-card flex items-center gap-3 p-3.5 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:p-5">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full sm:h-12 sm:w-12 bg-[var(--o-gold)] text-white o-num text-lg">?</span>
-          <span>
-            <span className="block font-semibold">How to photograph a piece</span>
-            <span className="block text-[0.86rem] text-[var(--o-soft)]">So it fits the website perfectly.</span>
-          </span>
-        </Link>
-        <a href="/shop" target="_blank" rel="noopener" className="o-card flex items-center gap-3 p-3.5 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:p-5">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full sm:h-12 sm:w-12 bg-[var(--o-ink)] text-white">
-            <ExternalLink className="h-5 w-5" />
-          </span>
-          <span>
-            <span className="block font-semibold">See the shop as visitors do</span>
-            <span className="block text-[0.86rem] text-[var(--o-soft)]">Opens the website in a new tab.</span>
-          </span>
-        </a>
-      </section>
 
-      {recentDone.length > 0 && (
-        <section className="o-in-view mt-6 sm:mt-9" style={{ animationDelay: "240ms" }}>
-          <h2 className="o-h2 mb-3">Recently looked after</h2>
-          <div className="o-card overflow-hidden">
-            {recentDone.map((r) =>
-              "items" in r ? (
-                <Row key={r.id} href={`/office/orders/${r.id}`} title={r.name} meta={<><OrderStatusChip status={r.status} /> · <b className="text-[var(--o-ink)]">{money(r.subtotal)}</b> · {r.items.map((i) => i.name).join(", ")}</>} time={timeAgo(r.createdAt)} />
-              ) : (
-                <Row key={r.id} href={`/office/inbox/${r.id}`} title={personLine(r)} meta={<><KindChip kind={r.kind} /> · handled</>} time={timeAgo(r.createdAt)} />
-              )
-            )}
-          </div>
-        </section>
-      )}
     </>
   );
 }
