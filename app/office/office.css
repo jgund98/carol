@@ -84,11 +84,13 @@
   font-variant-numeric: lining-nums tabular-nums;
 }
 .o-label {
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: var(--o-faint);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.98rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--o-soft);
 }
 .o-muted {
   color: var(--o-soft);
@@ -126,28 +128,68 @@ a.o-row:active {
   background: rgba(18, 23, 43, 0.03);
 }
 
-/* status + type chips */
+/* status + type labels: a small italic word with a coloured point, like the card beside a painting */
 .o-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  min-height: 1.7rem;
-  padding: 0.15rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.95rem;
   line-height: 1.2;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--o-ink);
 }
-.o-chip-ink { background: rgba(18, 23, 43, 0.08); color: var(--o-ink); }
-.o-chip-pink { background: rgba(232, 57, 127, 0.12); color: #b8235f; }
-.o-chip-gold { background: rgba(201, 162, 74, 0.18); color: #7d5f1e; }
-.o-chip-ocean { background: rgba(27, 79, 168, 0.1); color: var(--o-ocean); }
-.o-chip-green { background: rgba(47, 122, 79, 0.12); color: var(--o-green); }
-.o-chip-muted { background: rgba(18, 23, 43, 0.05); color: var(--o-soft); }
-.o-chip-red { background: rgba(192, 57, 43, 0.1); color: var(--o-red); }
+.o-chip::before {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.o-chip-ink { color: var(--o-ink); }
+.o-chip-pink { color: #c92a6d; }
+.o-chip-gold { color: #9a7524; }
+.o-chip-ocean { color: var(--o-ocean); }
+.o-chip-green { color: var(--o-green); }
+.o-chip-muted { color: var(--o-faint); }
+.o-chip-red { color: var(--o-red); }
+
+/* the morning ledger: the day's numbers, written out */
+.o-ledger {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 3.6vw, 1.85rem);
+  line-height: 1.4;
+  color: rgba(18, 23, 43, 0.78);
+  text-wrap: pretty;
+  max-width: 40rem;
+}
+.o-ledger a {
+  color: var(--o-ink);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1.5px solid rgba(201, 162, 74, 0.7);
+  padding-bottom: 0.05em;
+  transition: border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.o-ledger a:hover {
+  border-color: var(--o-pink);
+  color: var(--o-pink);
+}
+.o-ledger .o-new,
+.o-ledger .o-new-pink {
+  vertical-align: middle;
+  margin-right: 0.35rem;
+  transform: translateY(-0.08em);
+}
+.o-ledger .o-num {
+  font-size: 1.15em;
+}
 
 /* the "new" mark: a gold dot that breathes */
 .o-new {
@@ -544,6 +586,12 @@ select.o-in {
   }
   .o-kicker {
     font-size: 0.98rem;
+  }
+  .o-label {
+    font-size: 0.92rem;
+  }
+  .o-chip {
+    font-size: 0.9rem;
   }
   .o-card,
   .o-card-soft {

@@ -30,23 +30,43 @@ export default async function Today() {
 
   return (
     <>
-      <PageHead
-        kicker={today}
-        title={`${greeting()}, Carol.`}
-        text={
-          total === 0
-            ? "Nothing is waiting on you. Enjoy the studio."
-            : `You have ${newOrd.length ? `${newOrd.length} new order${newOrd.length === 1 ? "" : "s"}` : ""}${newOrd.length && newInq.length ? " and " : ""}${newInq.length ? `${newInq.length} new inquir${newInq.length === 1 ? "y" : "ies"}` : ""}.`
-        }
-      />
+      <PageHead kicker={today} title={`${greeting()}, Carol.`} />
 
-      {/* the numbers */}
-      <section className="o-card o-in-view grid grid-cols-4 divide-x divide-[var(--o-hair)] overflow-hidden" style={{ animationDelay: "60ms" }}>
-        <Stat href="/office/inbox" n={newInq.length} label="New inquiries" hot={newInq.length > 0} />
-        <Stat href="/office/orders" n={newOrd.length} label="New orders" hot={newOrd.length > 0} sale />
-        <Stat href="/office/artwork?f=sale" n={forSale} label="For sale" />
-        <Stat href="/office/artwork?f=sold" n={sold} label="Sold" />
-      </section>
+      {/* the day's numbers, written the way a note on the studio door would put it */}
+      <p className="o-ledger o-in-view -mt-2 sm:-mt-4" style={{ animationDelay: "60ms" }}>
+        {total === 0 ? (
+          <>Nothing is waiting for you. </>
+        ) : (
+          <>
+            {newInq.length > 0 && (
+              <>
+                <span className="o-new" />
+                <Link href="/office/inbox?f=new">
+                  <b className="o-num">{newInq.length}</b> new {newInq.length === 1 ? "inquiry" : "inquiries"}
+                </Link>
+              </>
+            )}
+            {newInq.length > 0 && newOrd.length > 0 && " and "}
+            {newOrd.length > 0 && (
+              <>
+                <span className="o-new o-new-pink" />
+                <Link href="/office/orders?f=new">
+                  <b className="o-num">{newOrd.length}</b> new {newOrd.length === 1 ? "sale" : "sales"}
+                </Link>
+              </>
+            )}
+            {total === 1 ? " is" : " are"} waiting for you.{" "}
+          </>
+        )}
+        <Link href="/office/artwork?f=sale">
+          <b className="o-num">{forSale}</b> pieces
+        </Link>{" "}
+        hang in the shop,{" "}
+        <Link href="/office/artwork?f=sold">
+          <b className="o-num">{sold}</b>
+        </Link>{" "}
+        {sold === 1 ? "has" : "have"} found a home.
+      </p>
 
       {/* what needs her */}
       <section className="o-in-view mt-5 sm:mt-9" style={{ animationDelay: "120ms" }}>
@@ -166,14 +186,3 @@ export default async function Today() {
   );
 }
 
-function Stat({ href, n, label, hot = false, sale = false }: { href: string; n: number; label: string; hot?: boolean; sale?: boolean }) {
-  return (
-    <Link href={href} className="flex min-w-0 flex-col items-center px-2 py-4 text-center transition-colors hover:bg-[rgba(18,23,43,0.03)] sm:py-5">
-      <span className="flex items-center gap-1.5">
-        {hot && <span className={`o-new ${sale ? "o-new-pink" : ""}`} />}
-        <span className="o-num text-[1.9rem] sm:text-[2.4rem]">{n}</span>
-      </span>
-      <span className="o-label mt-1 text-[0.58rem] leading-tight tracking-[0.12em] sm:text-[0.68rem]">{label}</span>
-    </Link>
-  );
-}
