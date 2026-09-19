@@ -52,9 +52,16 @@ async function pgClient(url: string): Promise<Sql> {
     const sql = g.__studioSql;
     g.__studioSqlReady = (async () => {
       for (const t of Object.values(TABLES)) {
-        await sql.unsafe(
-          `CREATE TABLE IF NOT EXISTS ${t} (id text PRIMARY KEY, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), data jsonb NOT NULL)`
-        );
+        try {
+          await sql.unsafe(
+            `CREATE TABLE IF NOT EXISTS ${t} (id text PRIMARY KEY, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), data jsonb NOT NULL)`
+          );
+        } catch (e) {
+          // `next build` runs many workers at once; two of them creating the
+          // same table in the same instant is fine as long as it exists after.
+          const code = (e as { code?: string }).code;
+          if (code !== "23505" && code !== "42P07") throw e;
+        }
       }
     })();
   }
@@ -62,18 +69,23 @@ async function pgClient(url: string): Promise<Sql> {
   return g.__studioSql;
 }
 
+/** jsonb normally arrives parsed; be safe if a driver/proxy hands it back as text. */
+function parseRow<T>(data: unknown): T {
+  return (typeof data === "string" ? JSON.parse(data) : data) as T;
+}
+
 function postgresStore(url: string): DocStore {
   return {
     mode: "postgres",
     async list<T>(table: Table) {
       const sql = await pgClient(url);
-      const rows = (await sql.unsafe(`SELECT data FROM ${TABLES[table]} ORDER BY created_at ASC`)) as unknown as { data: T }[];
-      return rows.map((r) => r.data);
+      const rows = (await sql.unsafe(`SELECT data FROM ${TABLES[table]} ORDER BY created_at ASC`)) as unknown as { data: unknown }[];
+      return rows.map((r) => parseRow<T>(r.data));
     },
     async get<T>(table: Table, id: string) {
       const sql = await pgClient(url);
-      const rows = (await sql.unsafe(`SELECT data FROM ${TABLES[table]} WHERE id = $1`, [id])) as unknown as { data: T }[];
-      return rows[0]?.data ?? null;
+      const rows = (await sql.unsafe(`SELECT data FROM ${TABLES[table]} WHERE id = $1`, [id])) as unknown as { data: unknown }[];
+      return rows[0] ? parseRow<T>(rows[0].data) : null;
     },
     async put<T>(table: Table, id: string, data: T) {
       const sql = await pgClient(url);
