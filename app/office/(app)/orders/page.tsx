@@ -38,8 +38,8 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
       ) : (
         <div className="o-card o-in-view overflow-hidden">
           {list.map((o) => (
-            <Link key={o.id} href={`/office/orders/${o.id}`} className="o-row">
-              <NewDot on={o.status === "new"} />
+            <Link key={o.id} href={`/office/orders/${o.id}`} className={`o-row ${o.status === "new" ? "o-flash" : ""}`}>
+              {o.status === "new" ? <span className="o-new o-new-pink shrink-0" aria-label="New" /> : <NewDot on={false} />}
               {o.items[0] && <Thumb work={{ ...o.items[0], imageSm: o.items[0].image, iw: 4, ih: 5, kind: "painting" }} size={56} />}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">

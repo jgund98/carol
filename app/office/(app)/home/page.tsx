@@ -4,6 +4,7 @@ import { Plus, ArrowRight, ExternalLink } from "lucide-react";
 import { listAllWorks, listInquiries, listOrders } from "@/lib/studio/store";
 import { money } from "@/lib/site";
 import { KindChip, NewDot, OrderChip, PageHead, Thumb, timeAgo, personLine } from "@/components/office/ui";
+import SalesPanel, { type SlimOrder } from "@/components/office/SalesPanel";
 
 function greeting() {
   const h = new Date().getHours();
@@ -22,6 +23,7 @@ export default async function Today() {
   ].sort((a, b) => b.at.localeCompare(a.at));
   const total = waiting.length;
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  const slim: SlimOrder[] = ord.map((o) => ({ id: o.id, name: o.name || "Someone", subtotal: o.subtotal, status: o.status, createdAt: o.createdAt, paidAt: o.paidAt, refundAmount: o.refundAmount, pieces: o.items.reduce((n, i) => n + i.qty, 0), first: o.items[0]?.name ?? "" }));
   const recentDone = [...inq.filter((i) => i.status === "handled"), ...ord.filter((o) => o.status !== "new")]
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .slice(0, 4);
@@ -41,7 +43,7 @@ export default async function Today() {
       {/* the numbers */}
       <section className="o-card o-in-view grid grid-cols-4 divide-x divide-[var(--o-hair)] overflow-hidden" style={{ animationDelay: "60ms" }}>
         <Stat href="/office/inbox" n={newInq.length} label="New inquiries" hot={newInq.length > 0} />
-        <Stat href="/office/orders" n={newOrd.length} label="New orders" hot={newOrd.length > 0} />
+        <Stat href="/office/orders" n={newOrd.length} label="New orders" hot={newOrd.length > 0} sale />
         <Stat href="/office/artwork?f=sale" n={forSale} label="For sale" />
         <Stat href="/office/artwork?f=sold" n={sold} label="Sold" />
       </section>
@@ -65,12 +67,12 @@ export default async function Today() {
           <div className="o-card overflow-hidden">
             {waiting.map((w) =>
               w.kind === "order" ? (
-                <Link key={w.o.id} href={`/office/orders/${w.o.id}`} className="o-row">
-                  <NewDot on />
+                <Link key={w.o.id} href={`/office/orders/${w.o.id}`} className="o-row o-flash">
+                  <span className="o-new o-new-pink shrink-0" aria-label="New sale" />
                   {w.o.items[0] && <Thumb work={{ ...w.o.items[0], imageSm: w.o.items[0].image, iw: 4, ih: 5, kind: "painting" }} size={56} />}
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <OrderChip />
+                      <span className="o-chip o-chip-pink">New sale</span>
                       <span className="text-[0.82rem] text-[var(--o-faint)]">{timeAgo(w.o.createdAt)}</span>
                     </div>
                     <p className="mt-1 truncate text-[1.05rem] font-semibold">
@@ -100,6 +102,10 @@ export default async function Today() {
           </div>
         )}
       </section>
+
+      <div className="mt-5 sm:mt-9">
+        <SalesPanel orders={slim} />
+      </div>
 
       {/* shortcuts */}
       <section className="o-in-view mt-5 grid gap-2.5 sm:mt-9 sm:gap-3 sm:grid-cols-3" style={{ animationDelay: "180ms" }}>
@@ -160,11 +166,11 @@ export default async function Today() {
   );
 }
 
-function Stat({ href, n, label, hot = false }: { href: string; n: number; label: string; hot?: boolean }) {
+function Stat({ href, n, label, hot = false, sale = false }: { href: string; n: number; label: string; hot?: boolean; sale?: boolean }) {
   return (
     <Link href={href} className="flex min-w-0 flex-col items-center px-2 py-4 text-center transition-colors hover:bg-[rgba(18,23,43,0.03)] sm:py-5">
       <span className="flex items-center gap-1.5">
-        {hot && <span className="o-new" />}
+        {hot && <span className={`o-new ${sale ? "o-new-pink" : ""}`} />}
         <span className="o-num text-[1.9rem] sm:text-[2.4rem]">{n}</span>
       </span>
       <span className="o-label mt-1 text-[0.58rem] leading-tight tracking-[0.12em] sm:text-[0.68rem]">{label}</span>

@@ -165,6 +165,29 @@ a.o-row:active {
   100% { box-shadow: 0 0 0 0 rgba(201, 162, 74, 0); }
 }
 
+/* a new sale: a slow hibiscus breath behind it, until she opens it */
+.o-flash {
+  position: relative;
+  animation: o-flash 2.6s ease-in-out infinite;
+}
+@keyframes o-flash {
+  0%, 100% { background-color: rgba(232, 57, 127, 0); box-shadow: inset 3px 0 0 rgba(232, 57, 127, 0.35); }
+  50% { background-color: rgba(232, 57, 127, 0.07); box-shadow: inset 3px 0 0 rgba(232, 57, 127, 0.95); }
+}
+.o-new-pink {
+  background: var(--o-pink);
+  box-shadow: 0 0 0 0 rgba(232, 57, 127, 0.5);
+  animation: o-breathe-pink 2.2s ease-out infinite;
+}
+@keyframes o-breathe-pink {
+  0% { box-shadow: 0 0 0 0 rgba(232, 57, 127, 0.55); }
+  70% { box-shadow: 0 0 0 10px rgba(232, 57, 127, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(232, 57, 127, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .o-flash, .o-new, .o-new-pink { animation: none; }
+}
+
 /* fields: big, calm, obvious */
 .o-field {
   display: block;
