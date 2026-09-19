@@ -39,16 +39,16 @@ export default async function Today() {
       />
 
       {/* the numbers */}
-      <section className="o-in-view grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" style={{ animationDelay: "60ms" }}>
+      <section className="o-card o-in-view grid grid-cols-4 divide-x divide-[var(--o-hair)] overflow-hidden" style={{ animationDelay: "60ms" }}>
         <Stat href="/office/inbox" n={newInq.length} label="New inquiries" hot={newInq.length > 0} />
         <Stat href="/office/orders" n={newOrd.length} label="New orders" hot={newOrd.length > 0} />
-        <Stat href="/office/artwork?f=sale" n={forSale} label="Pieces for sale" />
+        <Stat href="/office/artwork?f=sale" n={forSale} label="For sale" />
         <Stat href="/office/artwork?f=sold" n={sold} label="Sold" />
       </section>
 
       {/* what needs her */}
-      <section className="o-in-view mt-9" style={{ animationDelay: "120ms" }}>
-        <div className="mb-4 flex items-end justify-between gap-4">
+      <section className="o-in-view mt-5 sm:mt-9" style={{ animationDelay: "120ms" }}>
+        <div className="mb-3 flex items-end justify-between gap-4">
           <h2 className="o-h2">{total ? "Waiting for you" : "All caught up"}</h2>
           {total > 0 && (
             <Link href="/office/inbox" className="text-[0.95rem] font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
@@ -102,9 +102,9 @@ export default async function Today() {
       </section>
 
       {/* shortcuts */}
-      <section className="o-in-view mt-9 grid gap-3 sm:grid-cols-3" style={{ animationDelay: "180ms" }}>
-        <Link href="/office/artwork/new" className="o-card flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[var(--o-pink)] text-white">
+      <section className="o-in-view mt-5 grid gap-2.5 sm:mt-9 sm:gap-3 sm:grid-cols-3" style={{ animationDelay: "180ms" }}>
+        <Link href="/office/artwork/new" className="o-card flex items-center gap-3 p-3.5 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:p-5">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full sm:h-12 sm:w-12 bg-[var(--o-pink)] text-white">
             <Plus className="h-5 w-5" />
           </span>
           <span>
@@ -112,15 +112,15 @@ export default async function Today() {
             <span className="block text-[0.86rem] text-[var(--o-soft)]">Photo, title, price. Live in a minute.</span>
           </span>
         </Link>
-        <Link href="/office/guide" className="o-card flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[var(--o-gold)] text-white o-num text-lg">?</span>
+        <Link href="/office/guide" className="o-card flex items-center gap-3 p-3.5 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:p-5">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full sm:h-12 sm:w-12 bg-[var(--o-gold)] text-white o-num text-lg">?</span>
           <span>
             <span className="block font-semibold">How to photograph a piece</span>
             <span className="block text-[0.86rem] text-[var(--o-soft)]">So it fits the website perfectly.</span>
           </span>
         </Link>
-        <a href="/shop" target="_blank" rel="noopener" className="o-card flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[var(--o-ink)] text-white">
+        <a href="/shop" target="_blank" rel="noopener" className="o-card flex items-center gap-3 p-3.5 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:p-5">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full sm:h-12 sm:w-12 bg-[var(--o-ink)] text-white">
             <ExternalLink className="h-5 w-5" />
           </span>
           <span>
@@ -131,8 +131,8 @@ export default async function Today() {
       </section>
 
       {recentDone.length > 0 && (
-        <section className="o-in-view mt-9" style={{ animationDelay: "240ms" }}>
-          <h2 className="o-h2 mb-4">Recently looked after</h2>
+        <section className="o-in-view mt-6 sm:mt-9" style={{ animationDelay: "240ms" }}>
+          <h2 className="o-h2 mb-3">Recently looked after</h2>
           <div className="o-card overflow-hidden">
             {recentDone.map((r) =>
               "items" in r ? (
@@ -162,10 +162,12 @@ export default async function Today() {
 
 function Stat({ href, n, label, hot = false }: { href: string; n: number; label: string; hot?: boolean }) {
   return (
-    <Link href={href} className="o-card relative flex min-h-[9.5rem] flex-col justify-end p-5 transition-transform hover:-translate-y-0.5 sm:p-6" style={hot ? { borderColor: "var(--o-gold)" } : undefined}>
-      {hot && <span className="o-new absolute right-5 top-5" />}
-      <p className="o-num text-[2.8rem] sm:text-[3.4rem]">{n}</p>
-      <p className="o-label mt-2">{label}</p>
+    <Link href={href} className="flex min-w-0 flex-col items-center px-2 py-4 text-center transition-colors hover:bg-[rgba(18,23,43,0.03)] sm:py-5">
+      <span className="flex items-center gap-1.5">
+        {hot && <span className="o-new" />}
+        <span className="o-num text-[1.9rem] sm:text-[2.4rem]">{n}</span>
+      </span>
+      <span className="o-label mt-1 text-[0.58rem] leading-tight tracking-[0.12em] sm:text-[0.68rem]">{label}</span>
     </Link>
   );
 }

@@ -23,7 +23,7 @@ export default async function OfficeLayout({ children }: { children: React.React
               <span className="font-semibold text-[var(--o-gold-2)]">Preview only.</span> {NOT_CONNECTED}
             </div>
           )}
-          <main className="mx-auto w-full max-w-[68rem] px-5 pb-[calc(var(--o-tab-h)+2.5rem)] pt-5 sm:px-8 lg:px-12 lg:pb-16 lg:pt-12">{children}</main>
+          <main className="mx-auto w-full max-w-[68rem] px-4 pb-[calc(var(--o-tab-h)+2rem)] pt-3 sm:px-8 lg:px-12 lg:pb-16 lg:pt-12">{children}</main>
         </div>
       </div>
     </ToastProvider>

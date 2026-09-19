@@ -207,8 +207,8 @@ a.o-row:active {
   color: rgba(18, 23, 43, 0.35);
 }
 /* room for a leading icon (Tailwind's pl-* loses to the rule above) */
-.o-in-icon {
-  padding-left: 3rem;
+.o-in.o-in-icon {
+  padding-left: 3rem !important;
 }
 textarea.o-in {
   resize: vertical;
@@ -505,6 +505,71 @@ select.o-in {
   background: #fff;
   border: 3px solid var(--o-pink);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* Phones: Safari's own bars eat a third of the screen, so every inch counts. */
+@media (max-width: 1023px) {
+  .office {
+    --o-tab-h: 3.6rem;
+    font-size: 16px;
+  }
+  .o-h1 {
+    font-size: 1.7rem;
+  }
+  .o-h2 {
+    font-size: 1.25rem;
+  }
+  .o-kicker {
+    font-size: 0.98rem;
+  }
+  .o-card,
+  .o-card-soft {
+    border-radius: 18px;
+  }
+  .o-row {
+    gap: 0.8rem;
+    padding: 0.8rem 0.9rem;
+  }
+  .o-choice {
+    min-height: 2.5rem;
+    padding: 0 0.85rem;
+    font-size: 0.88rem;
+    gap: 0.4rem;
+  }
+  .o-in {
+    min-height: 3.1rem;
+    padding: 0.7rem 0.95rem;
+    font-size: 1rem;
+  }
+  .o-field > span:first-child,
+  .o-field-label {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+  .o-tab {
+    font-size: 0.62rem;
+    gap: 0.2rem;
+  }
+  .o-tab svg {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+  .o-tab-badge {
+    top: 0.3rem;
+  }
+  .o-nav-item {
+    min-height: 2.9rem;
+  }
+  .btn {
+    height: 2.9rem;
+    padding: 0 1.4rem;
+    font-size: 0.92rem;
+  }
+  .btn-sm {
+    height: 2.4rem;
+    padding: 0 1rem;
+    font-size: 0.82rem;
+  }
 }
 
 .office ::selection {

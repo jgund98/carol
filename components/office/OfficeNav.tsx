@@ -109,15 +109,12 @@ export default function OfficeNav({ initial }: { initial: Counts }) {
       </aside>
 
       {/* Phone: top bar + bottom tabs */}
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--o-hair)] bg-[rgba(251,249,245,0.9)] px-4 py-2.5 backdrop-blur-xl lg:hidden">
+      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--o-hair)] bg-[rgba(251,249,245,0.9)] px-3 py-1.5 backdrop-blur-xl lg:hidden">
         <Link href="/office/home" className="flex items-center gap-3 pl-1">
-          <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[120px]" priority />
+          <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[104px]" priority />
         </Link>
-        <div className="flex items-center gap-1">
-          <Link href="/office/guide" className="grid h-11 w-11 place-items-center rounded-full text-[var(--o-soft)] hover:bg-[var(--o-hair)]" aria-label="Photo guide" data-active={active("/office/guide")}>
-            <Camera className="h-5 w-5" strokeWidth={1.8} />
-          </Link>
-          <Link href="/office/settings" className="grid h-11 w-11 place-items-center rounded-full text-[var(--o-soft)] hover:bg-[var(--o-hair)]" aria-label="Settings">
+        <div className="flex items-center gap-0.5">
+          <Link href="/office/settings" className="grid h-10 w-10 place-items-center rounded-full text-[var(--o-soft)] hover:bg-[var(--o-hair)]" aria-label="Settings">
             <Settings className="h-5 w-5" strokeWidth={1.8} />
           </Link>
         </div>

@@ -92,7 +92,7 @@ function CollectionForm({ collection: c, works, onClose }: { collection?: Collec
 
   return (
     <form
-      className={`grid gap-4 ${c ? "" : "o-card o-in-view p-5 sm:p-7"}`}
+      className={`grid gap-4 ${c ? "" : "o-card o-in-view p-4 sm:p-7"}`}
       onSubmit={(e) => {
         e.preventDefault();
         start(async () => {

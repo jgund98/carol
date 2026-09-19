@@ -90,26 +90,26 @@ export default function GuidePage() {
         </ol>
       </section>
 
-      <section className="mt-5 grid gap-5 lg:grid-cols-2">
-        <article className="o-card o-in-view p-5 sm:p-7">
+      <section className="mt-5 grid gap-3 sm:gap-5 lg:grid-cols-2">
+        <article className="o-card o-in-view p-4 sm:p-7">
           <h2 className="o-h2">When a piece sells</h2>
           <p className="o-muted mt-2 text-[1rem] leading-relaxed">
             Open it under <strong>Artwork</strong>, tap <strong>Sold</strong>, save. It stays on the website with a Sold mark, which collectors like to see. If it sold through an order, the order page has a one-tap <strong>Mark it sold</strong> button.
           </p>
         </article>
-        <article className="o-card o-in-view p-5 sm:p-7">
+        <article className="o-card o-in-view p-4 sm:p-7">
           <h2 className="o-h2">When an inquiry or order comes in</h2>
           <p className="o-muted mt-2 text-[1rem] leading-relaxed">
             You get an email, and a gold dot appears on <strong>Today</strong>, <strong>Inquiries</strong> or <strong>Orders</strong>. Open it, tap <strong>Call</strong>, <strong>Text</strong> or <strong>Email</strong> to reply, then mark it handled so it leaves your list.
           </p>
         </article>
-        <article className="o-card o-in-view p-5 sm:p-7">
+        <article className="o-card o-in-view p-4 sm:p-7">
           <h2 className="o-h2">Changing a price or a description</h2>
           <p className="o-muted mt-2 text-[1rem] leading-relaxed">
             Under <strong>Artwork</strong>, tap the piece, change what you like, tap <strong>Save changes</strong>. The website updates itself.
           </p>
         </article>
-        <article className="o-card o-in-view p-5 sm:p-7">
+        <article className="o-card o-in-view p-4 sm:p-7">
           <h2 className="o-h2">Not ready to show something yet?</h2>
           <p className="o-muted mt-2 text-[1rem] leading-relaxed">
             Set its status to <strong>Hidden</strong>. It is saved here but not on the website. Switch it to <strong>For sale</strong> whenever you are ready.

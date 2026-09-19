@@ -26,7 +26,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
     <>
       <PageHead kicker="Inquiries" title={newCount ? `${newCount} waiting for a reply.` : "Everything people have sent you."} text="Messages, artwork questions, commission requests and studio-visit requests from the website. Tap one to see everything they wrote and to call, text or email them back." />
 
-      <nav className="rail -mx-5 mb-5 flex gap-2 px-5 sm:mx-0 sm:flex-wrap sm:px-0" aria-label="Filter">
+      <nav className="rail -mx-4 mb-3 flex gap-2 px-4 sm:mx-0 sm:mb-5 sm:flex-wrap sm:px-0" aria-label="Filter">
         {FILTERS.map((x) => (
           <Link key={x.key} href={x.key === "all" ? "/office/inbox" : `/office/inbox?f=${x.key}`} className="o-choice shrink-0" data-on={f === x.key}>
             {x.label}

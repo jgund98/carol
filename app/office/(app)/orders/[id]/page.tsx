@@ -21,10 +21,10 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
     <>
       <PageHead back={{ href: "/office/orders", label: "All orders" }} kicker={`Order ${o.ref} · ${money(o.subtotal)} · ${fullDate(o.createdAt)}`} title={o.name || "Someone"} action={<OrderStatusChip status={o.status} />} />
 
-      <div className="grid min-w-0 gap-5 lg:grid-cols-[1.3fr_0.9fr]">
-        <div className="grid min-w-0 gap-5">
+      <div className="grid min-w-0 gap-3 sm:gap-5 lg:grid-cols-[1.3fr_0.9fr]">
+        <div className="grid min-w-0 gap-3 sm:gap-5">
           {/* the pieces */}
-          <section className="o-card o-in-view p-5 sm:p-7">
+          <section className="o-card o-in-view p-4 sm:p-7">
             <p className="o-label">The pieces</p>
             <ul className="mt-4 divide-y divide-[var(--o-hair)]">
               {pieces.map(({ it, work }) => (
@@ -38,7 +38,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                       </p>
                       <p className="text-[0.88rem] text-[var(--o-soft)]">{it.dims ?? work?.medium ?? ""}</p>
                       <div className="mt-1.5">
-                        {work ? work.hidden ? <span className="o-chip o-chip-muted">Off the website</span> : work.sold ? <span className="o-chip o-chip-ink">Marked sold</span> : <span className="o-chip o-chip-green">Still for sale online</span> : <span className="o-chip o-chip-muted">No longer in the shop</span>}
+                        {work ? work.hidden ? <span className="o-chip o-chip-muted">Off the website</span> : work.sold ? <span className="o-chip o-chip-ink">Marked sold</span> : <span className="o-chip o-chip-green">For sale online</span> : <span className="o-chip o-chip-muted">No longer in the shop</span>}
                       </div>
                     </div>
                     <p className="o-num shrink-0 text-[1.25rem]">{money(it.price * it.qty)}</p>
@@ -84,7 +84,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           </section>
 
           {/* the buyer */}
-          <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "80ms" }}>
+          <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "80ms" }}>
             <p className="o-label">The buyer</p>
             <p className="o-h2 mt-2">{o.name}</p>
             <dl className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -132,7 +132,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           </section>
 
           {/* shipping */}
-          <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "120ms" }}>
+          <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "120ms" }}>
             <p className="o-label">Shipping</p>
             <p className="o-muted mt-1 text-[0.95rem]">When it leaves the studio, note how it went and the tracking number. Saving this moves the order to Shipped.</p>
             <div className="mt-4">
@@ -141,7 +141,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           </section>
 
           {/* refund */}
-          <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "160ms" }}>
+          <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "160ms" }}>
             <p className="o-label">Refund</p>
             <div className="mt-3">
               <RefundBox id={o.id} subtotal={o.subtotal} refundedAt={o.refundedAt} refundAmount={o.refundAmount} refundNote={o.refundNote} />
@@ -149,12 +149,12 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           </section>
         </div>
 
-        <aside className="grid gap-5 lg:sticky lg:top-12 lg:self-start">
-          <section className="o-card o-in-view p-5 sm:p-6" style={{ animationDelay: "100ms" }}>
+        <aside className="grid gap-3 sm:gap-5 lg:sticky lg:top-12 lg:self-start">
+          <section className="o-card o-in-view p-4 sm:p-6" style={{ animationDelay: "100ms" }}>
             <p className="o-label mb-3">Where this order stands</p>
             <OrderStatusStepper current={o.status} action={setOrderStatusAction} id={o.id} />
           </section>
-          <section className="o-card o-in-view p-5 sm:p-6" style={{ animationDelay: "160ms" }}>
+          <section className="o-card o-in-view p-4 sm:p-6" style={{ animationDelay: "160ms" }}>
             <p className="o-label mb-3">Your notes</p>
             <NotesBox initial={o.notes} action={saveOrderNotesAction} id={o.id} placeholder="Delivery date, framing, what you agreed on the phone…" />
           </section>

@@ -9,9 +9,9 @@ import { img } from "@/lib/catalog";
 
 export function PageHead({ kicker, title, text, action, back }: { kicker?: string; title: string; text?: string; action?: ReactNode; back?: { href: string; label: string } }) {
   return (
-    <header className="o-in-view mb-7 sm:mb-9">
+    <header className="o-in-view mb-4 sm:mb-8">
       {back && (
-        <Link href={back.href} className="mb-4 inline-flex items-center gap-1 text-[0.95rem] font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
+        <Link href={back.href} className="mb-2 inline-flex items-center gap-1 text-[0.95rem] font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
           <ChevronLeft className="h-4 w-4" /> {back.label}
         </Link>
       )}
@@ -19,7 +19,7 @@ export function PageHead({ kicker, title, text, action, back }: { kicker?: strin
         <div className="min-w-0 flex-1">
           {kicker && <p className="o-kicker">{kicker}</p>}
           <h1 className="o-h1 mt-1">{title}</h1>
-          {text && <p className="o-muted mt-3 max-w-2xl text-[1rem]">{text}</p>}
+          {text && <p className="o-muted mt-3 hidden max-w-2xl text-[1rem] sm:block">{text}</p>}
         </div>
         {action && <div className="w-full shrink-0 sm:w-auto sm:pt-2">{action}</div>}
       </div>

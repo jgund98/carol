@@ -142,10 +142,10 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
   );
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1.25fr_0.85fr] lg:items-start">
-      <div className="grid gap-5">
+    <div className="grid gap-3 sm:gap-5 lg:grid-cols-[1.25fr_0.85fr] lg:items-start">
+      <div className="grid gap-3 sm:gap-5">
         {/* 1 photo */}
-        <section className="o-card o-in-view p-5 sm:p-7">
+        <section className="o-card o-in-view p-4 sm:p-7">
           <S n={1} title="The photo" hint="Straight on, in daylight. You will trim it to the edges of the canvas in the next step." />
           <PhotoUploader current={currentPhoto} name={name} kind={kind} onDone={(p) => setPhoto(p)} />
           {photo && (
@@ -156,7 +156,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
         </section>
 
         {/* 2 title, price, status */}
-        <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "60ms" }}>
+        <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "60ms" }}>
           <S n={2} title="Title and price" />
           <div className="grid gap-5">
             <label className="o-field">
@@ -187,7 +187,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
         </section>
 
         {/* 3 size & medium */}
-        <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "120ms" }}>
+        <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "120ms" }}>
           <S n={3} title="Size and medium" hint="Inches, as you would say them: 48 wide by 36 tall." />
           <div className="grid gap-5">
             <div className="o-field">
@@ -233,7 +233,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
         </section>
 
         {/* 4 collections */}
-        <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "180ms" }}>
+        <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "180ms" }}>
           <S n={4} title="Where it appears" hint="Tick every series this piece belongs to. It will appear on those pages and in the shop filters." />
           {collections.length === 0 ? (
             <p className="o-muted">No collections yet. You can make them under Collections.</p>
@@ -270,7 +270,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
         </section>
 
         {/* 5 words */}
-        <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "240ms" }}>
+        <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "240ms" }}>
           <S n={5} title="The words" hint="The short line is written for you from the size and medium, the way every piece on the website reads. Change it if you like." />
           <div className="grid gap-5">
             <label className="o-field">
@@ -314,8 +314,8 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       </div>
 
       {/* preview + save */}
-      <aside className="grid gap-5 lg:sticky lg:top-12">
-        <section className="o-card o-in-view p-5 sm:p-6" style={{ animationDelay: "120ms" }}>
+      <aside className="grid gap-3 sm:gap-5 lg:sticky lg:top-12">
+        <section className="o-card o-in-view p-4 sm:p-6" style={{ animationDelay: "120ms" }}>
           <p className="o-label mb-4">How it will look in the shop</p>
           {preview ? (
             <div className="pointer-events-none mx-auto max-w-[300px]">

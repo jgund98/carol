@@ -18,9 +18,9 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
     <>
       <PageHead back={{ href: "/office/inbox", label: "All inquiries" }} kicker={fullDate(i.createdAt)} title={personLine(i)} />
 
-      <div className="grid min-w-0 gap-5 lg:grid-cols-[1.3fr_0.9fr]">
-        <div className="grid min-w-0 gap-5">
-          <section className="o-card o-in-view p-5 sm:p-7">
+      <div className="grid min-w-0 gap-3 sm:gap-5 lg:grid-cols-[1.3fr_0.9fr]">
+        <div className="grid min-w-0 gap-3 sm:gap-5">
+          <section className="o-card o-in-view p-4 sm:p-7">
             <div className="flex flex-wrap items-center gap-2">
               <KindChip kind={i.kind} />
               {i.status === "new" ? <span className="o-chip o-chip-gold">New</span> : <span className="o-chip o-chip-green">Handled</span>}
@@ -61,7 +61,7 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
           </section>
 
           {work && (
-            <section className="o-card o-in-view p-5 sm:p-7" style={{ animationDelay: "80ms" }}>
+            <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "80ms" }}>
               <p className="o-label mb-3">The piece they asked about</p>
               <div className="flex items-center gap-4">
                 <Thumb work={work} size={80} />
@@ -85,8 +85,8 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
           {i.workSlug && !work && <p className="o-muted text-[0.9rem]">They asked about a piece that has since been removed from the shop ({i.workSlug}).</p>}
         </div>
 
-        <aside className="grid gap-5 lg:sticky lg:top-12 lg:self-start">
-          <section className="o-card o-in-view p-5 sm:p-6" style={{ animationDelay: "120ms" }}>
+        <aside className="grid gap-3 sm:gap-5 lg:sticky lg:top-12 lg:self-start">
+          <section className="o-card o-in-view p-4 sm:p-6" style={{ animationDelay: "120ms" }}>
             <p className="o-label mb-3">Where this stands</p>
             {i.status === "new" ? (
               <>
@@ -104,7 +104,7 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
               </>
             )}
           </section>
-          <section className="o-card o-in-view p-5 sm:p-6" style={{ animationDelay: "160ms" }}>
+          <section className="o-card o-in-view p-4 sm:p-6" style={{ animationDelay: "160ms" }}>
             <p className="o-label mb-3">Your notes</p>
             <NotesBox initial={i.notes} action={saveInquiryNotesAction} id={i.id} />
           </section>

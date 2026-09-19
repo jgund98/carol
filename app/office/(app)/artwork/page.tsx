@@ -36,9 +36,11 @@ export default async function ArtworkPage({ searchParams }: { searchParams: Prom
         title={`${works.length} pieces.`}
         text="Tap any piece to change its photo, price, size, words or collections, or to mark it sold. New pieces go to the top of the shop."
         action={
-          <Link href="/office/artwork/new" className="btn btn-pink w-full sm:w-auto">
-            <Plus className="h-4 w-4" /> Add a new piece
-          </Link>
+          <span className="hidden sm:block">
+            <Link href="/office/artwork/new" className="btn btn-pink">
+              <Plus className="h-4 w-4" /> Add a new piece
+            </Link>
+          </span>
         }
       />
 
@@ -46,12 +48,12 @@ export default async function ArtworkPage({ searchParams }: { searchParams: Prom
         <div className="min-w-0 flex-1">
           <ArtworkSearch initial={q} filter={f} />
         </div>
-        <Link href="/office/collections" className="btn btn-line btn-sm mb-4 shrink-0">
+        <Link href="/office/collections" className="btn btn-line btn-sm mb-3 shrink-0 sm:mb-4">
           <Layers className="h-4 w-4" /> Collections
         </Link>
       </div>
 
-      <nav className="rail -mx-5 mb-6 flex gap-2 px-5 sm:mx-0 sm:flex-wrap sm:px-0" aria-label="Filter">
+      <nav className="rail -mx-4 mb-4 flex gap-2 px-4 sm:mx-0 sm:mb-6 sm:flex-wrap sm:px-0" aria-label="Filter">
         {filters.map((x) => (
           <Link key={x.key} href={href(x.key)} className="o-choice shrink-0" data-on={f === x.key}>
             {x.label}

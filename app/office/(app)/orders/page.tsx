@@ -24,7 +24,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
         text="When someone checks out, their order lands here with the pieces, where it is going and how they would like to pay. You settle payment with them, then move the order along: paid, shipped, delivered."
       />
 
-      <nav className="rail -mx-5 mb-5 flex gap-2 px-5 sm:mx-0 sm:flex-wrap sm:px-0" aria-label="Filter">
+      <nav className="rail -mx-4 mb-3 flex gap-2 px-4 sm:mx-0 sm:mb-5 sm:flex-wrap sm:px-0" aria-label="Filter">
         {filters.map((x) => (
           <Link key={x.key} href={x.key === "open" ? "/office/orders" : `/office/orders?f=${x.key}`} className="o-choice shrink-0" data-on={f === x.key}>
             {x.label}
