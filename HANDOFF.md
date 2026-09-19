@@ -32,6 +32,12 @@ Screens: **Today** (what is waiting, gold dots, count in the browser tab), **Inq
 - `/api/lead` saves every form post into the office (orders → Orders, the rest → Inquiries; newsletter signups auto-handled) and emails via Brevo with an office deep link.
 - Photos: browser downsizes + crops (`components/office/PhotoUploader.tsx`), `/api/office/upload` runs sharp (1600 + 700 px JPEG, dominant colour) into Vercel Blob (`carol-art`, public, `BLOB_READ_WRITE_TOKEN`) or `public/uploads` locally.
 
+### Invoices, alerts, sales (added later on 2026-09-19)
+- **Invoices** (`/office/invoices`, sidebar; on phones via the Invoices button on Orders, or "Send an invoice" on an open order which prefills the pieces): name + email/mobile, line items in dollars, optional due date and note. Saves as a draft, then **Email the invoice** / **Text the invoice** (both through `BREVO_API_KEY`; SMS sender "CarolArt", set `SMS_SENDER` to a registered number once 10DLC exists), Copy link, Print/PDF, **Mark as paid** (also marks a linked order Paid), Void. Buyer opens `/invoice/<id>?k=<token>`, no login, printable. Numbers run INV-0001, INV-0002… Files: `lib/studio/invoices.ts`, `lib/studio/invoice-shared.ts` (client-safe), `components/office/Invoice*.tsx`, table `studio_invoice`.
+- **Text alerts:** Settings → "Text me when something comes in", two numbers; `/api/lead` texts both (Brevo SMS) on every inquiry/order except newsletter signups. Settings also holds "How buyers can pay you", printed on invoices.
+- **Today:** greeting, one line (new inquiries · new sales · paid orders), Waiting for you, Sales panel (Today / 7 days / 30 days / All time; a sale = an order at Paid/Shipped/Delivered). New sales breathe faintly pink until opened.
+- Orders tabs: Open · Paid · All. Inquiries tabs: New · Handled · All + a type dropdown. Nothing but artwork can be removed.
+
 ### Wiping the sample data later
 Delete rows whose id starts with `demo_` from `studio_inquiry` and `studio_order` (Neon console → carol-studio → SQL: `DELETE FROM studio_inquiry WHERE id LIKE 'demo_%'; DELETE FROM studio_order WHERE id LIKE 'demo_%';`).
 
