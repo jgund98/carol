@@ -20,23 +20,23 @@ A new site for carolcalicchioart.com: home, six collection pages, shop with 66 p
 ## Content sources
 Her Wix site (copy, bio, exhibitions, 66 products), her Instagram reels (studio tour, process clips, Breakers surfboards), Palm Beach Illustrated, Dan's Papers, Elevated Magazine (Bruce Helander), Schneps podcast, Boca Raton Museum of Art. Every quote is verbatim and attributed in `lib/content.ts`.
 
-## Studio Office (added 2026-09-19)
+## Studio Office (added 2026-09-19, LIVE)
 
-Carol's private back room lives at **/office** (a "Studio office" link sits in the site footer). Same brand as the site, built phone-first: bottom tabs, one column, 56px controls. Screens: **Today** (what is waiting, gold dots, counts in the browser tab), **Inquiries** (every form message, typed: artwork inquiry / commission / studio visit / message / newsletter; call, text, email buttons; mark handled; notes), **Orders** (checkout requests with pieces, ship-to, payment and delivery preference; status stepper New → In conversation → Paid → Delivered; "Mark it sold" flips the pieces on the website), **Artwork** (every piece; tap to edit photo, title, price, status For sale / Sold / On hold / Hidden, size, medium, collections, description, story; "Add a new piece" = take or choose a photo → drag the pink corners to the canvas edges → save; new pieces lead the shop), **Collections** (add, rename, blurb, hero piece, reorder, remove), **Photo guide** (five rules + step-by-steps), **Settings** (where alerts are emailed, connection status).
+Carol's private back room: **carol.epicdevsolutions.com/login** (the app lives under /office/*; a small "Studio office" link sits in the site footer). Sign-in is a name + password with defaults in code (`lib/studio/auth.ts`: carol / jordan123), overridable with `STUDIO_USER` / `STUDIO_PASSWORD` env vars. Phone-first: five bottom tabs (Today, Inquiries, +, Orders, Artwork) with camera/gear icons up top; a sidebar on a desk.
+
+Screens: **Today** (what is waiting, gold dots, count in the browser tab), **Inquiries** (every form message, typed; call/text/email; mark handled; notes; never removable), **Orders** (pieces with per-piece Mark as sold / Remove from the website / Put it back; buyer + Maps link; status New → In conversation → Paid → Shipped → Delivered, Cancelled; Shipping box with carrier + tracking number and tracking links; Refund box that records a refund and marks the order Refunded; never removable), **Artwork** (cards hung like the site's; tap to edit photo, title, price, status For sale / Sold / On hold / Hidden, size, medium, collections, "Show on the home page", description, story, Move to the top of the shop, Remove), **Collections** (add, rename, blurb, hero piece, reorder, remove), **Photo guide** (five rules + sizes that work + step-by-steps), **Settings** (alert emails, sign out).
 
 ### How it works
-- `lib/studio/docstore.ts` — one tiny document store with three backends: Postgres (`DATABASE_URL`, tables `studio_*` as `id + jsonb`), a local JSON file (`.data/studio.json`, dev only), and a read-only seed when deployed without a database. `lib/studio/store.ts` is the typed layer; the 66 pieces and 6 collections in `lib/works.ts` / `lib/content.ts` are the SEED, loaded once.
-- The website reads the catalog through `lib/store.ts` (hidden pieces filtered), so every page, the header menu, the cart and the shop are database-driven. Saves in the office call `revalidatePath("/", "layout")`.
-- `/api/lead` now saves every form post into the office (orders into Orders, the rest into Inquiries) AND emails Carol via Brevo; the email footer links straight to the item in the office.
-- Photos: the browser downsizes and crops (`components/office/PhotoUploader.tsx`), `/api/office/upload` runs sharp (1600 + 700 px JPEG, dominant colour) and stores to Vercel Blob (`BLOB_READ_WRITE_TOKEN`) or `public/uploads` locally.
-- Sign-in: one password, `STUDIO_PASSWORD` env; locally without it the password is `studio`. Session = httpOnly cookie for 60 days.
+- `lib/studio/docstore.ts` — one document store, three backends: Postgres (`DATABASE_URL`, tables `studio_*` as `id + jsonb`; Neon `carol-studio` connected in Vercel), a local JSON file (`.data/studio.json`, dev), read-only seed if deployed without a database. `lib/studio/store.ts` seeds the 66 pieces, 6 collections and the sample inquiries/orders (`lib/studio/demo.ts`, ids `demo_*`) once.
+- The website reads the catalog through `lib/store.ts`, so every page, the header menu, cart and shop are database-driven; `featured` pieces drive the home-page easel and wall (`featuredFor` in `lib/catalog.ts`). Saves call `revalidatePath("/", "layout")`.
+- `/api/lead` saves every form post into the office (orders → Orders, the rest → Inquiries; newsletter signups auto-handled) and emails via Brevo with an office deep link.
+- Photos: browser downsizes + crops (`components/office/PhotoUploader.tsx`), `/api/office/upload` runs sharp (1600 + 700 px JPEG, dominant colour) into Vercel Blob (`carol-art`, public, `BLOB_READ_WRITE_TOKEN`) or `public/uploads` locally.
 
-### Before Carol uses it (Jordan, one time)
-1. Vercel project `carol` → Storage → create a **Neon Postgres** database and connect it (injects `DATABASE_URL`). Tables create themselves; the 66 pieces seed on first visit.
-2. Storage → create a **Blob** store and connect it (injects `BLOB_READ_WRITE_TOKEN`).
-3. Env vars: `STUDIO_PASSWORD` (her password), `BREVO_API_KEY` (already planned). Optional `OFFICE_URL` if the office ever moves off carol.epicdevsolutions.com.
-4. Redeploy (`npx vercel --prod --yes` from this folder). Until 1–3 are done the office opens in a read-only preview and says so at the top.
-5. Stripe: `StudioOrder.stripeSessionId` / `paidAt` are reserved; wire checkout later and paid orders will show as Paid automatically.
+### Wiping the sample data later
+Delete rows whose id starts with `demo_` from `studio_inquiry` and `studio_order` (Neon console → carol-studio → SQL: `DELETE FROM studio_inquiry WHERE id LIKE 'demo_%'; DELETE FROM studio_order WHERE id LIKE 'demo_%';`).
+
+### Still to come
+Card payments at checkout (order rows already carry `stripeSessionId` / `paidAt`); text alerts (Settings stores a number). `BREVO_API_KEY` must be set in Vercel for emails.
 
 ### Verify locally
-`pnpm dev` (port 3540), sign in at /office with `studio`, then `MSYS_NO_PATHCONV=1 node scripts/office-test.js` runs the full add-a-piece flow headlessly (photo → crop → upload → save → live on /shop) and screenshots every office screen at phone and desktop sizes into `shots/office/`.
+`pnpm dev` (port 3540), sign in at /login, then `MSYS_NO_PATHCONV=1 node scripts/office-test.js` runs the full add-a-piece flow headlessly and screenshots every office screen at phone and desktop sizes into `shots/office/`.
