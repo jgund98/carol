@@ -1,14 +1,11 @@
 "use client";
-import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import LeadForm from "./LeadForm";
-import { bySlug, dims, img } from "@/lib/catalog";
+import { dims, img } from "@/lib/catalog";
+import type { Work } from "@/lib/works";
 import { money } from "@/lib/site";
 
-export default function ContactForm() {
-  const sp = useSearchParams();
-  const about = sp.get("about");
-  const w = about ? bySlug(about) : undefined;
+export default function ContactForm({ work: w }: { work?: Work }) {
   return (
     <div>
       {w && (
@@ -26,6 +23,7 @@ export default function ContactForm() {
       <LeadForm
         formType={w ? "inquiry" : "contact"}
         subject={w ? `New Artwork Inquiry · ${w.name}` : undefined}
+        workSlug={w?.slug}
         extra={w ? { Artwork: `${w.name} (${dims(w) ?? ""}) ${w.sold ? "SOLD" : money(w.price)}` } : {}}
         submitLabel={w ? "Send inquiry" : "Send"}
         fields={[

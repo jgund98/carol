@@ -1,17 +1,14 @@
 "use client";
-import { useSearchParams } from "next/navigation";
 import LeadForm from "./LeadForm";
-import { bySlug } from "@/lib/catalog";
+import type { Work } from "@/lib/works";
 
-export default function CommissionForm() {
-  const sp = useSearchParams();
-  const ref = sp.get("ref");
-  const w = ref ? bySlug(ref) : undefined;
+export default function CommissionForm({ work: w }: { work?: Work }) {
   return (
     <LeadForm
       dark
       formType="commission"
       submitLabel="Request a commission"
+      workSlug={w?.slug}
       extra={w ? { "Inspired by": w.name } : {}}
       fields={[
         { name: "name", label: "Name", required: true, half: true },

@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { works, type Work } from "@/lib/works";
+import type { Work } from "@/lib/works";
 
 export type CartLine = { slug: string; qty: number };
 
@@ -21,7 +21,7 @@ type Ctx = {
 const CartContext = createContext<Ctx | null>(null);
 const KEY = "cc-cart-v1";
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children, works }: { children: ReactNode; works: Work[] }) {
   const [lines, setLines] = useState<CartLine[]>([]);
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
@@ -51,7 +51,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...ls, { slug, qty: 1 }];
     });
     setOpen(true);
-  }, []);
+  }, [works]);
   const remove = useCallback((slug: string) => setLines((ls) => ls.filter((l) => l.slug !== slug)), []);
   const setQty = useCallback((slug: string, qty: number) => setLines((ls) => ls.map((l) => (l.slug === slug ? { ...l, qty: Math.max(1, qty) } : l))), []);
   const clear = useCallback(() => setLines([]), []);
@@ -71,7 +71,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       clear,
       has: (slug) => lines.some((l) => l.slug === slug),
     };
-  }, [lines, open, add, remove, setQty, clear]);
+  }, [lines, open, add, remove, setQty, clear, works]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

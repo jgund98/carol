@@ -4,11 +4,11 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { nav, site } from "@/lib/site";
-import { collections } from "@/lib/content";
-import { bySlug, img, inCollection } from "@/lib/catalog";
+import { img } from "@/lib/catalog";
+import type { CollectionView } from "@/lib/store";
 import { useCart } from "./cart/CartProvider";
 
-export default function Header() {
+export default function Header({ collections }: { collections: CollectionView[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const [mega, setMega] = useState(false);
@@ -137,15 +137,16 @@ export default function Header() {
           onMouseLeave={closeMega}
           aria-hidden={!mega}
         >
-          <div className="wrap grid grid-cols-6 gap-6 py-7">
+          <div className="wrap grid gap-6 py-7" style={{ gridTemplateColumns: `repeat(${Math.max(1, collections.length)}, minmax(0, 1fr))` }}>
             {collections.map((c) => {
-              const w = bySlug(c.hero)!;
-              const n = inCollection(c.key).length;
+              const w = c.heroWork;
+              if (!w) return null;
+              const n = c.count;
               const a = w.iw / w.ih;
               return (
                 <Link key={c.slug} href={`/collections/${c.slug}`} className="group" tabIndex={mega ? 0 : -1}>
                   <div className="plaster flex aspect-[5/4] items-center justify-center overflow-hidden rounded-sm">
-                    <div className="wrap-edge relative overflow-hidden transition-transform duration-500 group-hover:-translate-y-1" style={c.key === "surfboards" ? { width: "100%", height: "100%" } : { width: a >= 1.25 ? "84%" : `${Math.min(84, 68 * a)}%`, aspectRatio: `${w.iw} / ${w.ih}` }}>
+                    <div className="wrap-edge relative overflow-hidden transition-transform duration-500 group-hover:-translate-y-1" style={c.id === "surfboards" ? { width: "100%", height: "100%" } : { width: a >= 1.25 ? "84%" : `${Math.min(84, 68 * a)}%`, aspectRatio: `${w.iw} / ${w.ih}` }}>
                       <Image src={img(w, "sm")} alt="" fill sizes="200px" className="object-cover" />
                     </div>
                   </div>

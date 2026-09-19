@@ -53,9 +53,12 @@ export async function sendLead(opts: {
   fields: LeadField[];
   replyTo?: { email: string; name?: string };
   footer?: string;
+  /** override the recipient list (the Studio Office settings); defaults to TO_EMAIL */
+  to?: string[];
 }): Promise<{ ok: boolean; skipped?: boolean; status?: number }> {
   const key = process.env.BREVO_API_KEY;
-  if (!key || !TO_EMAIL) {
+  const recipients = opts.to && opts.to.length ? opts.to : TO_EMAIL ? [TO_EMAIL] : [];
+  if (!key || recipients.length === 0) {
     console.warn("[lead] BREVO_API_KEY or LEAD_TO_EMAIL missing — skipping send.");
     return { ok: false, skipped: true };
   }
@@ -65,7 +68,7 @@ export async function sendLead(opts: {
       headers: { "api-key": key, "content-type": "application/json", accept: "application/json" },
       body: JSON.stringify({
         sender: { email: FROM_EMAIL, name: FROM_NAME },
-        to: [{ email: TO_EMAIL }],
+        to: recipients.map((email) => ({ email })),
         ...(opts.replyTo?.email ? { replyTo: opts.replyTo } : {}),
         subject: opts.subject,
         htmlContent: leadHtml(opts.subject, opts.fields, opts.footer),

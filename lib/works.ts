@@ -1,12 +1,55 @@
-// Generated from carolcalicchioart.com store data (Sept 2026). Edit freely.
-export type Collection = "blue" | "white" | "recent" | "minis" | "surfboards" | "books";
+// Generated from carolcalicchioart.com store data (Sept 2026). This file is the SEED:
+// the live catalog lives in the studio database (lib/studio/store.ts) and is
+// managed from the Studio Office at /office. On first run the database is
+// filled from this list; after that this file is only a fallback.
+export type Collection = string;
+export type Kind = "painting" | "surfboard" | "book" | "mini";
 export type Work = {
-  slug: string; file: string; name: string; price: number; sold: boolean; available: boolean;
-  medium: string | null; width: number | null; height: number | null; iw: number; ih: number; color: string;
-  collections: Collection[]; description: string; kind: "painting" | "surfboard" | "book" | "mini";
+  slug: string;
+  /** legacy bare file name under /art and /art-sm (uploads use image/imageSm instead) */
+  file: string;
+  name: string;
+  price: number;
+  sold: boolean;
+  available: boolean;
+  /** hidden from the website entirely (a draft, or something Carol is not ready to show) */
+  hidden: boolean;
+  medium: string | null;
+  width: number | null;
+  height: number | null;
+  iw: number;
+  ih: number;
+  color: string;
+  collections: Collection[];
+  description: string;
+  /** optional longer paragraph shown on the piece's page */
+  story: string | null;
+  kind: Kind;
+  /** full-size image URL (1600px) */
+  image: string;
+  /** card-size image URL (700px) */
+  imageSm: string;
+  /** lower = earlier in the shop */
+  position: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
-export const works: Work[] = [
+export type SeedWork = Omit<Work, "hidden" | "story" | "image" | "imageSm" | "position" | "createdAt" | "updatedAt">;
+
+const SEED_AT = "2026-09-04T12:00:00.000Z";
+export const fromSeed = (s: SeedWork, i: number): Work => ({
+  ...s,
+  hidden: false,
+  story: null,
+  image: `/art/${s.file}.jpg`,
+  imageSm: `/art-sm/${s.file}.jpg`,
+  position: i * 10,
+  createdAt: SEED_AT,
+  updatedAt: SEED_AT,
+});
+
+const SEED_LIST: SeedWork[] = [
  {
   "slug": "alluring-light",
   "file": "alluring-light",
@@ -1198,3 +1241,5 @@ export const works: Work[] = [
   "kind": "painting"
  }
 ];
+
+export const works: Work[] = SEED_LIST.map(fromSeed);

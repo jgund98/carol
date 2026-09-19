@@ -3,6 +3,7 @@ import { useId, useRef } from "react";
 import { useParallax } from "@/lib/parallax";
 import { img } from "@/lib/catalog";
 import { bySlug } from "@/lib/catalog";
+import { works as seed } from "@/lib/works";
 
 const SHAPES = [
   "M52 3C70 2 88 14 94 32C100 50 96 72 82 85C68 98 44 100 28 90C12 80 2 62 4 44C6 26 20 6 52 3Z",
@@ -34,7 +35,7 @@ export default function PaintBlob({ of, shape = 0, focus = [0.5, 0.5], size = "2
   const id = useId().replace(/:/g, "");
   const ref = useRef<HTMLDivElement>(null);
   useParallax(ref, speed, rotate, base);
-  const w = bySlug(of);
+  const w = bySlug(seed, of);
   if (!w) return null;
   const S = 175;
   const x = -(S - 100) * focus[0];

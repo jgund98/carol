@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { works as WORKS, type Work } from "@/lib/works";
+import type { Work } from "@/lib/works";
 import { dims, img, inches } from "@/lib/catalog";
 import { money } from "@/lib/site";
 
@@ -10,7 +10,7 @@ import { money } from "@/lib/site";
  * Desktop: the wall glides sideways as you scroll (manual rAF, no framer scroll hooks).
  * Touch: a native horizontal rail, nothing hijacked.
  */
-export default function GalleryWall({ works }: { works: Work[] }) {
+export default function GalleryWall({ works, total }: { works: Work[]; total: number }) {
   const outer = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
 
@@ -96,7 +96,7 @@ export default function GalleryWall({ works }: { works: Work[] }) {
             <div className="shrink-0 self-end pb-2 pl-[clamp(1rem,3vw,3rem)] pr-[clamp(1.5rem,10vw,10rem)]">
               <div className="w-[15rem] border-l border-ink/15 pl-5 lg:w-[18rem]">
                 <p className="display-light text-[1.15rem] italic leading-snug text-ink/70 lg:text-[1.35rem]">
-                  {works.length} of {WORKS.length} originals. The rest hang in the shop.
+                  {works.length} of {total} originals. The rest hang in the shop.
                 </p>
                 <Link href="/shop" className="btn btn-ink mt-5">
                   See every piece

@@ -7,3 +7,7 @@ shots
 .env*.local
 
 .vercel
+
+# studio office local data + local uploads
+.data
+public/uploads

@@ -15,6 +15,7 @@ export default function LeadForm({
   fields,
   submitLabel = "Send",
   extra = {},
+  workSlug,
   success,
   dark = false,
   note = "Carol reads every note herself and replies personally.",
@@ -24,6 +25,7 @@ export default function LeadForm({
   fields: Field[];
   submitLabel?: string;
   extra?: Record<string, string>;
+  workSlug?: string;
   success: { title: string; text: string };
   dark?: boolean;
   note?: string;
@@ -37,7 +39,7 @@ export default function LeadForm({
     if (fd.get("_honey")) return;
     if (Date.now() - t0 < 2500) return;
     setState("sending");
-    const body: Record<string, unknown> = { formType, subject, fields: { ...extra } };
+    const body: Record<string, unknown> = { formType, subject, workSlug, fields: { ...extra } };
     for (const f of fields) {
       const v = String(fd.get(f.name) || "");
       if (["name", "email", "phone", "message", "company"].includes(f.name)) body[f.name] = v;

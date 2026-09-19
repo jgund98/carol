@@ -2,13 +2,13 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Work, Collection } from "@/lib/works";
+import type { CollectionDef } from "@/lib/studio/types";
 import WorkCard from "./WorkCard";
-import { collections } from "@/lib/content";
 
 type Filter = "all" | Collection | "available";
 type Sort = "featured" | "price-desc" | "price-asc" | "size" | "name";
 
-export default function ShopGrid({ works }: { works: Work[] }) {
+export default function ShopGrid({ works, collections }: { works: Work[]; collections: CollectionDef[] }) {
   const sp = useSearchParams();
   const initial = (sp.get("c") as Filter) || "all";
   const [filter, setFilter] = useState<Filter>(initial);
@@ -29,7 +29,7 @@ export default function ShopGrid({ works }: { works: Work[] }) {
   const chips: { key: Filter; label: string }[] = [
     { key: "all", label: "Everything" },
     { key: "available", label: "Available now" },
-    ...collections.map((c) => ({ key: c.key as Filter, label: c.name })),
+    ...collections.map((c) => ({ key: c.id as Filter, label: c.name })),
   ];
 
   return (

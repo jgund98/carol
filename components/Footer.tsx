@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { site, nav } from "@/lib/site";
-import { collections } from "@/lib/content";
+import { getCollections } from "@/lib/store";
 import Newsletter from "./Newsletter";
 
-export default function Footer() {
+export default async function Footer() {
+  const collections = await getCollections();
   return (
     <footer className="relative bg-midnight text-white">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
@@ -76,7 +77,9 @@ export default function Footer() {
         </p>
 
         <div className="mt-8 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-6 text-[0.8rem] text-white/50 sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} Carol Calicchio. All artwork © the artist.</p>
+          <p>
+            © {new Date().getFullYear()} Carol Calicchio. All artwork © the artist. <Link href="/office" className="ml-2 text-white/40 hover:text-white">Studio office</Link>
+          </p>
           <a href={site.epic.url} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2.5 opacity-80 transition-opacity hover:opacity-100">
             <span>Site by</span>
             <Image src="/brand/epic-logo-white.webp" alt={site.epic.name} width={116} height={28} className="h-7 w-auto" />
