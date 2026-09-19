@@ -2,6 +2,8 @@ import { listOrders } from "@/lib/studio/store";
 import { money } from "@/lib/site";
 import type { OrderStatus } from "@/lib/studio/types";
 import { Empty, OrderStatusChip, PageHead, Row, Thumb, timeAgo } from "@/components/office/ui";
+import Link from "next/link";
+import { FileText } from "lucide-react";
 import { Tabs } from "@/components/office/Tabs";
 
 const OPEN: OrderStatus[] = ["new", "contacted"];
@@ -18,7 +20,13 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <PageHead kicker="Orders" title={newCount ? `${newCount} new order${newCount === 1 ? "" : "s"}.` : "Orders from the website."} text="Open orders are still being settled with the buyer. Paid orders have been paid and are being shipped or delivered." />
+      <PageHead kicker="Orders" title={newCount ? `${newCount} new order${newCount === 1 ? "" : "s"}.` : "Orders from the website."} text="Open orders are still being settled with the buyer. Paid orders have been paid and are being shipped or delivered."
+        action={
+          <Link href="/office/invoices" className="btn btn-line btn-sm w-full sm:w-auto">
+            <FileText className="h-4 w-4" /> Invoices
+          </Link>
+        }
+      />
 
       <Tabs
         current={tab}

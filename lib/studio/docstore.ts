@@ -10,7 +10,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export type Table = "work" | "collection" | "inquiry" | "order" | "setting";
+export type Table = "work" | "collection" | "inquiry" | "order" | "invoice" | "setting";
 export type StoreMode = "postgres" | "file" | "readonly";
 
 export interface DocStore {
@@ -39,6 +39,7 @@ const TABLES: Record<Table, string> = {
   collection: "studio_collection",
   inquiry: "studio_inquiry",
   order: "studio_order",
+  invoice: "studio_invoice",
   setting: "studio_setting",
 };
 
@@ -133,7 +134,7 @@ export function projectRoot(): string {
 const FILE = path.join(projectRoot(), ".data", "studio.json");
 
 function emptyShape(): FileShape {
-  return { work: {}, collection: {}, inquiry: {}, order: {}, setting: {} };
+  return { work: {}, collection: {}, inquiry: {}, order: {}, invoice: {}, setting: {} };
 }
 function readFile(): FileShape {
   try {

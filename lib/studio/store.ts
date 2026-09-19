@@ -35,6 +35,7 @@ function seedShape() {
     collection: Object.fromEntries(SEED_COLLECTIONS.map((c) => [c.id, c])),
     inquiry: Object.fromEntries(DEMO_INQUIRIES.map((i) => [i.id, i])),
     order: Object.fromEntries(DEMO_ORDERS.map((o) => [o.id, o])),
+    invoice: {},
     setting: { seeded: { value: "1" }, settings: DEFAULT_SETTINGS },
   };
 }

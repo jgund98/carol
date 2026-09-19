@@ -126,8 +126,13 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                 <p className="whitespace-pre-line text-[1.05rem] leading-[1.65]">{o.message}</p>
               </blockquote>
             )}
-            <div className="mt-7">
+            <div className="mt-7 flex flex-wrap items-center gap-2.5">
               <ContactButtons name={o.name} phone={o.phone} email={o.email} subject={`Your order ${o.ref} from Carol Calicchio Art`} />
+              {(o.status === "new" || o.status === "contacted") && (
+                <Link href={`/office/invoices/new?order=${o.id}`} className="btn btn-pink btn-sm">
+                  Send an invoice
+                </Link>
+              )}
             </div>
           </section>
 

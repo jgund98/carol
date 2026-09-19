@@ -20,11 +20,14 @@ import {
   saveInquiry,
   saveOrder,
   saveSettings,
+  getSettings,
   saveWork,
   slugify,
   uniqueSlug,
 } from "@/lib/studio/store";
 import { removeStored } from "@/lib/studio/images";
+import { emailInvoice, getInvoice, newInvoice, nextNumber, saveInvoice, textInvoice } from "@/lib/studio/invoices";
+import type { InvoiceItem } from "@/lib/studio/invoice-shared";
 import type { Kind, Work } from "@/lib/works";
 import type { CollectionDef, OrderStatus, Settings } from "@/lib/studio/types";
 
@@ -377,6 +380,68 @@ export async function markOrderSoldAction(id: string): Promise<Result<{ count: n
     }
     refreshSite();
     return { ok: true, count };
+  } catch (e) {
+    return { ok: false, error: explain(e) };
+  }
+}
+
+/* ───────── invoices ───────── */
+
+export type InvoiceInput = { name: string; email: string; phone: string; dueDate: string | null; note: string; orderId: string | null; items: InvoiceItem[] };
+
+export async function createInvoiceAction(input: InvoiceInput): Promise<Result<{ id: string }>> {
+  await guard();
+  try {
+    if (!input.name.trim()) return { ok: false, error: "Who is this invoice for?" };
+    if (!input.email.trim() && !input.phone.trim()) return { ok: false, error: "Add an email or a mobile number so it can be sent." };
+    if (!input.items.length) return { ok: false, error: "Add at least one line with an amount." };
+    const inv = newInvoice({ number: await nextNumber(), name: input.name.trim(), email: input.email.trim(), phone: input.phone.trim(), dueDate: input.dueDate, note: input.note.trim(), orderId: input.orderId, items: input.items });
+    await saveInvoice(inv);
+    revalidatePath("/office", "layout");
+    return { ok: true, id: inv.id };
+  } catch (e) {
+    return { ok: false, error: explain(e) };
+  }
+}
+
+export async function sendInvoiceAction(id: string, via: "email" | "text"): Promise<Result> {
+  await guard();
+  try {
+    const inv = await getInvoice(id);
+    if (!inv) return { ok: false, error: "That invoice is gone." };
+    if (inv.status === "paid" || inv.status === "void") return { ok: false, error: "This invoice is closed." };
+    const now = new Date().toISOString();
+    if (via === "email") {
+      if (!inv.email) return { ok: false, error: "There is no email address on this invoice." };
+      const ok = await emailInvoice(inv, (await getSettings()).payInstructions);
+      if (!ok) return { ok: false, error: "The email could not be sent right now. Copy the link and send it yourself, or try again in a minute." };
+      await saveInvoice({ ...inv, status: "sent", sentAt: inv.sentAt ?? now, emailedAt: now });
+    } else {
+      if (!inv.phone) return { ok: false, error: "There is no mobile number on this invoice." };
+      const ok = await textInvoice(inv);
+      if (!ok) return { ok: false, error: "The text could not be sent right now. Copy the link and send it yourself, or try again in a minute." };
+      await saveInvoice({ ...inv, status: "sent", sentAt: inv.sentAt ?? now, textedAt: now });
+    }
+    revalidatePath("/office", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: explain(e) };
+  }
+}
+
+export async function markInvoiceAction(id: string, status: "paid" | "void" | "sent" | "draft"): Promise<Result> {
+  await guard();
+  try {
+    const inv = await getInvoice(id);
+    if (!inv) return { ok: false, error: "That invoice is gone." };
+    await saveInvoice({ ...inv, status, paidAt: status === "paid" ? inv.paidAt ?? new Date().toISOString() : null });
+    // a paid invoice tied to an order marks the order paid too
+    if (status === "paid" && inv.orderId) {
+      const o = await getOrder(inv.orderId);
+      if (o && (o.status === "new" || o.status === "contacted")) await saveOrder({ ...o, status: "paid", paidAt: new Date().toISOString() });
+    }
+    revalidatePath("/office", "layout");
+    return { ok: true };
   } catch (e) {
     return { ok: false, error: explain(e) };
   }

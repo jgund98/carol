@@ -30,20 +30,19 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </aside>
 
         {/* the form */}
-        <main className="flex min-h-[100svh] flex-col items-center justify-center px-5 py-10 sm:px-10">
+        <main className="flex min-h-[100svh] flex-col items-center justify-center px-4 py-5 sm:px-10 sm:py-10">
           <div className="o-card o-in-view w-full max-w-[26rem] overflow-hidden">
             {/* phones: a strip of the painting above the form */}
-            <div className="relative h-36 overflow-hidden lg:hidden">
+            <div className="relative h-24 overflow-hidden lg:hidden">
               <Image src="/art/celestial-moonlight.jpg" alt="" fill priority sizes="100vw" className="object-cover object-[50%_35%]" />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,23,43,0)_40%,rgba(255,255,255,0.92))]" />
             </div>
-            <div className="p-7 sm:p-10 lg:pt-10">
-              <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="-mt-2 h-auto w-[200px] lg:mt-0" priority />
-              <p className="o-label mt-5">Studio office</p>
-              <h1 className="o-h1 mt-2">Sign in.</h1>
-              <p className="o-muted mt-2 text-[1rem]">The private office for the studio.</p>
+            <div className="p-5 sm:p-10 lg:pt-10">
+              <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="-mt-1 h-auto w-[150px] sm:w-[200px] lg:mt-0" priority />
+              <p className="o-label mt-3 sm:mt-5">Studio office</p>
+              <h1 className="o-h1 mt-1">Sign in.</h1>
 
-              <form action={loginAction} className="mt-7 grid gap-5">
+              <form action={loginAction} className="mt-4 grid gap-3.5 sm:mt-7 sm:gap-5">
                 <label className="o-field">
                   <span>Name</span>
                   <div className="relative">
@@ -69,7 +68,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               </form>
             </div>
           </div>
-          <Link href="/" className="mt-8 text-[0.95rem] font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
+          <Link href="/" className="mt-5 text-[0.95rem] font-semibold text-[var(--o-soft)] hover:text-[var(--o-ink)]">
             ← Back to the website
           </Link>
         </main>
