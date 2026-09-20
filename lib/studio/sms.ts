@@ -3,6 +3,7 @@
 // Sender comes from BREVO_SMS_SENDER (a registered 10DLC number once there is
 // one); until then an alphanumeric "CarolArt". No-ops cleanly without a key.
 import { gsm, smsLength, SMS_LIMIT } from "./texts";
+import { brevoKey } from "./brevo";
 
 const ENDPOINT = "https://api.brevo.com/v3/transactionalSMS/sms";
 
@@ -15,11 +16,11 @@ export function smsNumber(raw: string | null | undefined): string | null {
 }
 
 export function smsEnabled(): boolean {
-  return Boolean(process.env.BREVO_API_KEY);
+  return Boolean(brevoKey());
 }
 
 export async function sendSms(to: string | null | undefined, content: string): Promise<{ ok: boolean; skipped?: boolean }> {
-  const key = process.env.BREVO_API_KEY;
+  const key = brevoKey();
   const recipient = smsNumber(to);
   if (!key || !recipient) return { ok: false, skipped: true };
   const text = gsm(content);

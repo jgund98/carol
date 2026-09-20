@@ -2,6 +2,7 @@
 // signature on top, plain type, the studio's address at the bottom, reply-to
 // Carol. Through Brevo on the same key as the alerts. No-ops without a key.
 import { site } from "@/lib/site";
+import { brevoKey } from "./brevo";
 
 export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
 
@@ -22,7 +23,7 @@ export function shell(body: string): string {
 }
 
 export async function sendMail(opts: { to: string; name?: string; subject: string; html: string }): Promise<boolean> {
-  const key = process.env.BREVO_API_KEY;
+  const key = brevoKey();
   if (!key || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(opts.to)) return false;
   try {
     const res = await fetch("https://api.brevo.com/v3/smtp/email", {

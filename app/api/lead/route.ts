@@ -4,6 +4,7 @@
 // so nothing is ever lost.
 import { alertCarol, type Field as LeadField } from "@/lib/studio/alerts";
 import { carol } from "@/lib/studio/texts";
+import { brevoKey } from "@/lib/studio/brevo";
 import { newId, saveInquiry } from "@/lib/studio/store";
 import type { Inquiry, InquiryKind } from "@/lib/studio/types";
 
@@ -104,7 +105,7 @@ export async function POST(req: Request) {
   const extra: LeadField[] = Object.entries(extraFields).map(([k, v]) => [k, v] as LeadField);
   // If saving failed (no database yet) fall back to a plain wording so Carol still hears.
   const fallback = carol.inquiry(KIND[formType] || "other", "", body.name);
-  if (formType !== "newsletter" || !process.env.BREVO_API_KEY) {
+  if (formType !== "newsletter" || !brevoKey()) {
     await alertCarol({
       subject: alert?.subject || subject,
       sms: alert ? alert.sms : fallback.sms.replace(/ \S+\/q\/$/, ""),
@@ -112,7 +113,7 @@ export async function POST(req: Request) {
       link: officeLink,
     });
   }
-  if (!process.env.BREVO_API_KEY) {
+  if (!brevoKey()) {
     console.log("[lead:" + subject + "]", JSON.stringify([...known, ...extra]));
     return Response.json({ ok: true, skipped: true });
   }

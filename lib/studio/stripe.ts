@@ -8,8 +8,9 @@ import type { StudioInvoice } from "./invoice-shared";
 import type { OrderItem } from "./types";
 import { packPurchase, type Buyer, type CartLine } from "./purchase";
 
-const key = process.env.STRIPE_SECRET_KEY;
-export const stripe = key ? new Stripe(key) : null;
+// Only a real Stripe secret counts; anything else pasted in the env var is ignored.
+const key = (process.env.STRIPE_SECRET_KEY || "").trim();
+export const stripe = /^(sk|rk)_(live|test)_/.test(key) ? new Stripe(key) : null;
 export const stripeEnabled = () => Boolean(stripe);
 
 /** Hosted Checkout for one invoice. Returns the URL to send the buyer to. */
