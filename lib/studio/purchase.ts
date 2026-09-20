@@ -13,6 +13,7 @@ import { officeBase } from "./mail";
 import { carol } from "./texts";
 import { money } from "@/lib/site";
 import { dims, img } from "@/lib/catalog";
+import { maxQty } from "@/lib/works";
 import type { OrderItem, StudioOrder } from "./types";
 
 export type Buyer = { name: string; email: string; phone: string; address: string; city: string; state: string; zip: string; delivery: string; message: string };
@@ -28,7 +29,11 @@ export async function priceCart(lines: CartLine[]): Promise<{ items: OrderItem[]
     if (!w || w.hidden) throw new PurchaseError("One of the pieces is no longer available.");
     if (w.sold) throw new PurchaseError(`${w.name} has just sold.`);
     if (!w.price || w.price <= 0) throw new PurchaseError(`${w.name} is not priced for online purchase. Please call the studio.`);
-    const qty = w.kind === "book" ? Math.max(1, Math.min(10, Math.floor(l.qty || 1))) : 1;
+    const cap = maxQty(w);
+    if (cap < 1) throw new PurchaseError(`${w.name} has just sold out.`);
+    const wanted = Math.max(1, Math.floor(l.qty || 1));
+    if (wanted > cap) throw new PurchaseError(`Only ${cap} of ${w.name} ${cap === 1 ? "is" : "are"} left.`);
+    const qty = wanted;
     items.push({ slug: w.slug, name: w.name, qty, price: w.price, image: img(w, "sm"), dims: dims(w) });
   }
   if (!items.length) throw new PurchaseError("Your selection is empty.");
@@ -98,10 +103,14 @@ export async function completePurchase(buyer: Buyer, lines: CartLine[], sessionI
   };
   await saveOrder(o);
 
-  // Originals are one of a kind: the moment one is paid for it comes off the shop.
+  // Take what was bought off the shelf: a count goes down, a one-of-a-kind original becomes Sold.
   for (const it of items) {
     const w = await getWorkBySlug(it.slug);
-    if (w && w.kind !== "book" && !w.sold) await saveWork({ ...w, sold: true, updatedAt: now });
+    if (!w) continue;
+    if (w.stock != null) {
+      const left = Math.max(0, w.stock - it.qty);
+      await saveWork({ ...w, stock: left, sold: left === 0, updatedAt: now });
+    } else if (w.kind !== "book" && !w.sold) await saveWork({ ...w, sold: true, updatedAt: now });
   }
   try {
     revalidatePath("/", "layout");

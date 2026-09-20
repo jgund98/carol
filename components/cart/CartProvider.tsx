@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { Work } from "@/lib/works";
+import { maxQty, type Work } from "@/lib/works";
 
 export type CartLine = { slug: string; qty: number };
 
@@ -45,15 +45,15 @@ export function CartProvider({ children, works }: { children: ReactNode; works: 
       const w = works.find((x) => x.slug === slug);
       if (!w) return ls;
       const ex = ls.find((l) => l.slug === slug);
-      // Originals are one of a kind: quantity is capped at 1 for paintings and surfboards.
-      const unique = w.kind !== "book";
-      if (ex) return unique ? ls : ls.map((l) => (l.slug === slug ? { ...l, qty: l.qty + 1 } : l));
+      // Quantity is capped by what the studio has: one for an original, the stock count otherwise.
+      const cap = maxQty(w);
+      if (ex) return ls.map((l) => (l.slug === slug ? { ...l, qty: Math.min(cap, l.qty + 1) } : l));
       return [...ls, { slug, qty: 1 }];
     });
     setOpen(true);
   }, [works]);
   const remove = useCallback((slug: string) => setLines((ls) => ls.filter((l) => l.slug !== slug)), []);
-  const setQty = useCallback((slug: string, qty: number) => setLines((ls) => ls.map((l) => (l.slug === slug ? { ...l, qty: Math.max(1, qty) } : l))), []);
+  const setQty = useCallback((slug: string, qty: number) => setLines((ls) => ls.map((l) => { if (l.slug !== slug) return l; const w = works.find((x) => x.slug === slug); return { ...l, qty: Math.min(w ? maxQty(w) : 1, Math.max(1, Math.floor(qty) || 1)) }; })), [works]);
   const clear = useCallback(() => setLines([]), []);
 
   const value = useMemo<Ctx>(() => {

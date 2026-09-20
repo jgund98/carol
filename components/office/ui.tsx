@@ -1,5 +1,6 @@
 // Small shared pieces for the office. No client state here, so any page can use them.
 import Link from "next/link";
+import { stockLabel } from "@/lib/works";
 import type { ReactNode } from "react";
 import { ChevronLeft } from "lucide-react";
 import type { Inquiry, InquiryKind, OrderStatus } from "@/lib/studio/types";
@@ -78,7 +79,8 @@ export function WorkStatusChip({ work }: { work: Work }) {
   if (work.hidden) return <span className="o-chip o-chip-muted">Hidden</span>;
   if (work.sold) return <span className="o-chip o-chip-ink">Sold</span>;
   if (!work.available) return <span className="o-chip o-chip-gold">On hold</span>;
-  return <span className="o-chip o-chip-green">For sale</span>;
+  const left = stockLabel(work);
+  return <span className="o-chip o-chip-green">{left ? `For sale · ${left}` : "For sale"}</span>;
 }
 
 export function NewDot({ on }: { on: boolean }) {

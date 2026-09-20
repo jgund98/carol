@@ -101,6 +101,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
                 {w.medium && <span>{w.medium}</span>}
               </p>
               <p className="display mt-6 text-[2rem]">{w.sold ? "Sold" : money(w.price)}</p>
+              {!w.sold && w.stock != null && w.stock > 0 && <p className="mt-1 text-sm text-muted">{w.stock === 1 ? "Only one available" : `${w.stock} available`}</p>}
               {w.story && <p className="pretty mt-6 text-[1rem] leading-[1.7] text-ink/75">{w.story}</p>}
               <div className="mt-6">
                 <AddToCart work={w} />

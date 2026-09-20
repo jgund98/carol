@@ -48,6 +48,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
 
   const [name, setName] = useState(work?.name ?? "");
   const [price, setPrice] = useState(work ? String(work.price) : "");
+  const [stock, setStock] = useState(work && work.stock != null ? String(work.stock) : "");
   const [status, setStatus] = useState<WorkInput["status"]>(statusOf(work));
   const [kind, setKind] = useState<Kind>(work?.kind ?? "painting");
   const [medium, setMedium] = useState(work?.medium ?? "");
@@ -68,6 +69,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
 
   const currentPhoto = photo ?? (work ? { image: work.image, imageSm: work.imageSm, iw: work.iw, ih: work.ih, color: work.color } : null);
   const priceNum = Math.max(0, Math.round(Number(price.replace(/[^\d.]/g, "")) || 0));
+  const stockNum = stock.trim() === "" ? null : Math.max(0, Math.floor(Number(stock) || 0));
 
   const preview: Work | null = useMemo(() => {
     if (!currentPhoto) return null;
@@ -76,7 +78,8 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       file: work?.file ?? "preview",
       name: name || "Untitled",
       price: priceNum,
-      sold: status === "sold",
+      stock: stockNum,
+      sold: status === "sold" || stockNum === 0,
       available: status !== "hold",
       hidden: status === "hidden",
       medium: effectiveMedium || null,
@@ -96,13 +99,13 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       createdAt: "",
       updatedAt: "",
     };
-  }, [currentPhoto, work, name, priceNum, status, effectiveMedium, width, height, colls, shownDescription, story, kind, featured]);
+  }, [currentPhoto, work, name, priceNum, stockNum, status, effectiveMedium, width, height, colls, shownDescription, story, kind, featured]);
 
   const canSave = name.trim().length > 0 && Boolean(currentPhoto) && !busy;
   const needsPrice = status === "sale" && priceNum <= 0;
 
   // Leaving with unsaved changes should ask first (the browser's own dialog).
-  const snapshot = JSON.stringify({ name, price, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, featured, photo });
+  const snapshot = JSON.stringify({ name, price, stock, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, featured, photo });
   const [saved, setSaved] = useState(snapshot);
   const dirty = snapshot !== saved;
   useEffect(() => {
@@ -124,6 +127,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
         slug: work?.slug,
         name,
         price: priceNum,
+        stock: stockNum,
         status,
         kind,
         medium: effectiveMedium,
@@ -142,7 +146,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       if (status === "hidden") toast("Saved. It is hidden from the website until you change its status.");
       else toast(r.created ? "Saved. It is live at the top of the shop." : "Saved. The website is updated.", "ok", { href: `/shop/${r.slug}`, label: "See it" });
       setPhoto(null);
-      setSaved(JSON.stringify({ name, price, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, featured, photo: null }));
+      setSaved(JSON.stringify({ name, price, stock, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, featured, photo: null }));
       if (r.created) router.replace(`/office/artwork/${r.slug}`);
       else router.refresh();
     });
@@ -172,12 +176,19 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
               <span>Title</span>
               <input value={name} onChange={(e) => setName(e.target.value)} className="o-in" placeholder="Celestial Moonlight" autoComplete="off" />
             </label>
-            <label className="o-field">
-              <span>Price</span>
-              <div className="o-money">
-                <input value={price} onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" className="o-in" placeholder="14000" />
-              </div>
-            </label>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className="o-field">
+                <span>Price</span>
+                <div className="o-money">
+                  <input value={price} onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" className="o-in" placeholder="14000" />
+                </div>
+              </label>
+              <label className="o-field">
+                <span>How many you have</span>
+                <input value={stock} onChange={(e) => setStock(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" className="o-in" placeholder="One of a kind" />
+                <span className="o-help">Leave empty for a one-of-a-kind original. For boards, books or prints, enter the number. It counts down with each sale and shows Sold at 0.</span>
+              </label>
+            </div>
             <div className="o-field">
               <span className="o-field-label">Status</span>
               <div className="flex flex-wrap gap-2">

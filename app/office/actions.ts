@@ -76,6 +76,8 @@ export type WorkInput = {
   name: string;
   price: number;
   status: "sale" | "sold" | "hold" | "hidden";
+  /** null = one of a kind */
+  stock: number | null;
   kind: Kind;
   medium: string;
   width: number | null;
@@ -108,12 +110,15 @@ export async function saveWorkAction(input: WorkInput): Promise<Result<{ slug: s
       await removeStored(existing.imageSm);
     }
     const now = new Date().toISOString();
+    // A count of 0 means sold out; "Sold" as a status zeroes a count.
+    const stock = input.stock == null ? null : input.status === "sold" ? 0 : Math.max(0, Math.floor(input.stock));
     const w: Work = {
       slug,
       file: existing?.file ?? slug,
       name,
       price: Math.max(0, Math.round(input.price || 0)),
-      sold: input.status === "sold",
+      stock,
+      sold: input.status === "sold" || stock === 0,
       available: input.status === "sale" || input.status === "sold" || input.status === "hidden",
       hidden: input.status === "hidden",
       medium: input.medium.trim() || null,
@@ -146,7 +151,7 @@ export async function setWorkStatusAction(slug: string, status: WorkInput["statu
   try {
     const w = await getWorkBySlug(slug);
     if (!w) return { ok: false, error: "That piece is no longer in the shop." };
-    await saveWork({ ...w, sold: status === "sold", hidden: status === "hidden", available: status !== "hold" });
+    await saveWork({ ...w, sold: status === "sold", hidden: status === "hidden", available: status !== "hold", stock: w.stock == null ? null : status === "sold" ? 0 : Math.max(1, w.stock) });
     refreshSite();
     return { ok: true };
   } catch (e) {
@@ -364,9 +369,9 @@ export async function setOrderPieceAction(orderId: string, slug: string, what: "
   try {
     const w = await getWorkBySlug(slug);
     if (!w) return { ok: false, error: "That piece is no longer in the shop." };
-    if (what === "sold") await saveWork({ ...w, sold: true, hidden: false });
+    if (what === "sold") await saveWork({ ...w, sold: true, hidden: false, stock: w.stock == null ? null : 0 });
     else if (what === "hide") await saveWork({ ...w, hidden: true });
-    else await saveWork({ ...w, sold: false, hidden: false, available: true });
+    else await saveWork({ ...w, sold: false, hidden: false, available: true, stock: w.stock == null ? null : Math.max(1, w.stock) });
     refreshSite();
     return { ok: true };
   } catch (e) {

@@ -14,6 +14,8 @@ export type Work = {
   available: boolean;
   /** hidden from the website entirely (a draft, or something Carol is not ready to show) */
   hidden: boolean;
+  /** how many are available; null = one of a kind (the default for an original) */
+  stock?: number | null;
   medium: string | null;
   width: number | null;
   height: number | null;
@@ -36,6 +38,11 @@ export type Work = {
   createdAt: string;
   updatedAt: string;
 };
+
+/** The most of this piece one order can take. */
+export const maxQty = (w: Pick<Work, "stock" | "kind">) => (w.stock != null ? Math.max(0, w.stock) : w.kind === "book" ? 10 : 1);
+/** Shown in the office and on the piece's page when there is more than one. */
+export const stockLabel = (w: Pick<Work, "stock" | "sold">) => (w.stock == null || w.sold ? null : w.stock === 1 ? "1 left" : `${w.stock} left`);
 
 export type SeedWork = Omit<Work, "hidden" | "story" | "image" | "imageSm" | "position" | "createdAt" | "updatedAt" | "featured">;
 

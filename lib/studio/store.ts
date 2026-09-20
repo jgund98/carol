@@ -104,6 +104,7 @@ function normalizeWork(w: Partial<Work> & { slug: string }): Work {
     sold: Boolean(w.sold),
     available: w.available ?? true,
     hidden: Boolean(w.hidden),
+    stock: typeof w.stock === "number" && Number.isFinite(w.stock) ? Math.max(0, Math.floor(w.stock)) : null,
     medium: w.medium ?? null,
     width: w.width ?? null,
     height: w.height ?? null,

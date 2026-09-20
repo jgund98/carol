@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { MapPin, Pencil } from "lucide-react";
 import { getOrder, getWorkBySlug } from "@/lib/studio/store";
 import { money } from "@/lib/site";
+import { stockLabel } from "@/lib/works";
 import { ContactButtons, OrderStatusChip, PageHead, Thumb, fullDate } from "@/components/office/ui";
 import { ActionButton, NotesBox, OrderStatusStepper } from "@/components/office/Controls";
 import { RefundBox, ShippingBox } from "@/components/office/OrderBoxes";
@@ -45,7 +46,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                       </p>
                       <p className="text-[0.88rem] text-[var(--o-soft)]">{it.dims ?? work?.medium ?? ""}</p>
                       <div className="mt-1.5">
-                        {work ? work.hidden ? <span className="o-chip o-chip-muted">Off the website</span> : work.sold ? <span className="o-chip o-chip-ink">Marked sold</span> : <span className="o-chip o-chip-green">For sale online</span> : <span className="o-chip o-chip-muted">No longer in the shop</span>}
+                        {work ? work.hidden ? <span className="o-chip o-chip-muted">Off the website</span> : work.sold ? <span className="o-chip o-chip-ink">Marked sold</span> : <span className="o-chip o-chip-green">{stockLabel(work) ? `For sale online · ${stockLabel(work)}` : "For sale online"}</span> : <span className="o-chip o-chip-muted">No longer in the shop</span>}
                       </div>
                     </div>
                     <p className="o-num shrink-0 text-[1.25rem]">{money(it.price * it.qty)}</p>

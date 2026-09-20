@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { maxQty } from "@/lib/works";
 import Image from "next/image";
 import { useCart } from "@/components/cart/CartProvider";
 import { money } from "@/lib/site";
@@ -31,10 +32,10 @@ export default function CartPage() {
                     <p className="mt-1 text-sm text-muted">{[dims(work), work.medium].filter(Boolean).join(" · ")}</p>
                     <div className="mt-auto flex flex-wrap items-center gap-4 pt-4">
                       <p className="text-lg font-semibold">{money(work.price * qty)}</p>
-                      {work.kind === "book" && (
+                      {maxQty(work) > 1 && (
                         <label className="flex items-center gap-2 text-sm text-muted">
                           Qty
-                          <input type="number" min={1} value={qty} onChange={(e) => setQty(work.slug, Number(e.target.value))} className="field h-9 w-16 px-2 py-1" />
+                          <input type="number" min={1} max={maxQty(work)} value={qty} onChange={(e) => setQty(work.slug, Number(e.target.value))} className="field h-9 w-16 px-2 py-1" />
                         </label>
                       )}
                       <button type="button" onClick={() => remove(work.slug)} className="text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline">Remove</button>
