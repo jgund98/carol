@@ -8,7 +8,7 @@ import { getInvoice, saveInvoice } from "@/lib/studio/invoices";
 import { getOrder, getSettings, saveOrder } from "@/lib/studio/store";
 import { sessionPaid, stripeEnabled } from "@/lib/studio/stripe";
 import { settleInvoice } from "@/lib/studio/settle";
-import { fmtMoney } from "@/lib/studio/invoice-shared";
+import { fmtDate, fmtMoney } from "@/lib/studio/invoice-shared";
 import { officeBase } from "@/lib/studio/mail";
 import InvoiceDocument from "@/components/office/InvoiceDocument";
 import PrintButton from "@/components/office/PrintButton";
@@ -41,9 +41,21 @@ export default async function PublicInvoice({ params, searchParams }: { params: 
         {err && <p className="o-card mx-auto mb-5 max-w-2xl p-4 text-center text-[0.95rem] text-[var(--o-red)] print:hidden">The payment page could not open just now. Please try again in a minute.</p>}
         {open && stripeEnabled() && (
           <form method="post" action={`/api/invoice/${inv.id}/checkout?k=${inv.token}`} className="o-paybar mx-auto mb-5 max-w-2xl print:hidden">
-            <button type="submit" className="btn btn-pink w-full sm:w-auto">
-              <CreditCard className="h-4 w-4" /> Pay {fmtMoney(inv.totalCents)} by card
-            </button>
+            {/* desk: a payment row as wide as the invoice; phone: the pinned bar below */}
+            <div className="o-card hidden items-center justify-between gap-5 px-6 py-4 sm:flex">
+              <div>
+                <p className="text-[1.05rem] font-semibold">{fmtMoney(inv.totalCents)} due{inv.dueDate ? ` by ${fmtDate(inv.dueDate)}` : ""}</p>
+                <p className="o-muted text-[0.9rem]">Secure card payment through Stripe. Or pay Carol directly, see below.</p>
+              </div>
+              <button type="submit" className="btn btn-pink shrink-0">
+                <CreditCard className="h-4 w-4" /> Pay {fmtMoney(inv.totalCents)} by card
+              </button>
+            </div>
+            <div className="sm:hidden">
+              <button type="submit" className="btn btn-pink w-full">
+                <CreditCard className="h-4 w-4" /> Pay {fmtMoney(inv.totalCents)} by card
+              </button>
+            </div>
           </form>
         )}
         <InvoiceDocument inv={inv} payInstructions={settings.payInstructions} />
