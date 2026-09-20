@@ -1,68 +1,55 @@
-// Back from Stripe after a website order. Verifies the session server-side,
-// marks the order paid, tells Carol, sends the buyer a receipt. If the buyer
-// backed out, the request still stands and they can pay now or later.
+// Back from Stripe after a purchase. The session is verified server-side,
+// the order is recorded (once), Carol is told and the buyer gets a receipt.
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getOrder, saveOrder } from "@/lib/studio/store";
+import { getOrder } from "@/lib/studio/store";
 import { paidSession } from "@/lib/studio/stripe";
-import { alertCarol } from "@/lib/studio/alerts";
-import { sendOrderPaid } from "@/lib/studio/customer-notify";
+import { completePurchase, unpackPurchase } from "@/lib/studio/purchase";
 import { money, site } from "@/lib/site";
-import { officeBase } from "@/lib/studio/mail";
-import { carol } from "@/lib/studio/texts";
-import { stripeEnabled } from "@/lib/studio/stripe";
+import ClearCart from "@/components/cart/ClearCart";
+import type { StudioOrder } from "@/lib/studio/types";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Thank you", robots: { index: false, follow: false } };
 
-export default async function PaidPage({ searchParams }: { searchParams: Promise<{ session_id?: string; order?: string; cancelled?: string; err?: string }> }) {
-  const { session_id, order, cancelled, err } = await searchParams;
+export default async function PaidPage({ searchParams }: { searchParams: Promise<{ session_id?: string; order?: string }> }) {
+  const { session_id, order } = await searchParams;
+  let o: StudioOrder | null = null;
 
   if (session_id) {
     const p = await paidSession(session_id);
     if (p && p.kind === "order") {
-      let o = await getOrder(p.id);
-      if (o && o.status !== "paid" && o.status !== "shipped" && o.status !== "delivered") {
-        const now = new Date().toISOString();
-        o = { ...o, status: "paid", paidAt: now, stripeSessionId: session_id };
-        await saveOrder(o);
+      const u = unpackPurchase(p.metadata);
+      if (u) {
         try {
-          await Promise.all([
-            alertCarol({
-              ...carol.orderPaid(o),
-              fields: [["Buyer", o.name], ["Email", o.email], ["Phone", o.phone], ["Pieces", o.items.map((i) => `${i.name} × ${i.qty}`).join(", ")], ["Amount", money(o.subtotal)], ["Ship to", [o.address, o.city, o.state, o.zip].filter(Boolean).join(", ")], ["Delivery", o.delivery]],
-              link: `${officeBase()}/office/orders/${o.id}`,
-            }),
-            sendOrderPaid(o),
-          ]);
+          o = await completePurchase(u.buyer, u.lines, session_id);
         } catch (e) {
-          console.error("[checkout/paid] notify:", e);
+          console.error("[checkout/paid]", e);
         }
       }
-      if (o)
-        return (
-          <Wrap kicker={`Order ${o.ref}`} title="Paid. Thank you." text="Your payment went through and a receipt is on its way to your email. Carol will call to arrange delivery or installation personally.">
-            <Link href="/shop" className="btn btn-line">Back to the collection</Link>
-          </Wrap>
-        );
     }
+  } else if (order) {
+    o = await getOrder(order);
+    if (o && o.status !== "paid" && o.status !== "shipped" && o.status !== "delivered") o = null;
   }
 
-  if (order) {
-    const o = await getOrder(order);
-    if (o)
-      return (
-        <Wrap kicker={`Order request ${o.ref}`} title={cancelled ? "No charge was made." : "Carol has your request."} text={err ? "The card page could not open just now. Your request is with Carol and she will call within one business day to settle it your way." : "Your request is with Carol either way. You can pay by card now, or wait for her call and settle it your way."}>
-          {(o.status === "new" || o.status === "contacted") && stripeEnabled() && !err && <a href={`/p/${o.id}`} className="btn btn-pink">Pay {money(o.subtotal)} by card</a>}
-          <a href={site.phoneHref} className="btn btn-line">Call {site.phone}</a>
-        </Wrap>
-      );
-  }
+  if (!o)
+    return (
+      <Wrap kicker="Checkout" title="We could not confirm that payment." text={`If your card was charged, Carol has the record and will be in touch. Otherwise please call ${site.phone} and she will take care of it.`}>
+        <a href={site.phoneHref} className="btn btn-ink">Call {site.phone}</a>
+        <Link href="/shop" className="btn btn-line">Back to the collection</Link>
+      </Wrap>
+    );
 
+  const first = o.name.trim().split(/\s+/)[0] || "";
   return (
-    <Wrap kicker="Checkout" title="Thank you." text="If you completed a payment, Carol has it and will be in touch.">
-      <Link href="/shop" className="btn btn-ink">Back to the collection</Link>
-    </Wrap>
+    <>
+      <ClearCart />
+      <Wrap kicker={`Order ${o.ref} · ${money(o.subtotal)}`} title={first ? `Thank you, ${first}.` : "Thank you."} text={`${o.items.map((i) => i.name).join(", ")} is yours. A receipt is on its way to ${o.email}, and Carol will call you personally to arrange ${o.delivery ? o.delivery.toLowerCase() : "delivery"}.`}>
+        <Link href="/shop" className="btn btn-ink">Back to the collection</Link>
+        <a href={site.phoneHref} className="btn btn-line">Call {site.phone}</a>
+      </Wrap>
+    </>
   );
 }
 

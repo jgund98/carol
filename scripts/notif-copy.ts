@@ -26,9 +26,8 @@ const show = (title: string, t: { subject: string; sms: string }) => {
 };
 
 console.log("=== TO CAROL ===");
-show("New order request (one piece)", carol.newOrder(o));
-show("New order request (two pieces)", carol.newOrder(two));
-show("Website order paid by card", carol.orderPaid(o));
+show("New sale on the website (one piece)", carol.newSale(o));
+show("New sale on the website (two pieces)", carol.newSale(two));
 show("Invoice paid by card", carol.invoicePaid(inv));
 show("Artwork inquiry", carol.inquiry("inquiry", "inq_a1b2c3d4ef", "Jane Whitfield", "Sunlit Study"));
 show("Commission request", carol.inquiry("commission", "inq_a1b2c3d4ef", "Jane Whitfield"));
@@ -37,9 +36,8 @@ show("Contact message", carol.inquiry("contact", "inq_a1b2c3d4ef", "Jane Whitfie
 show("Newsletter signup", carol.newsletter("jane@example.com"));
 
 console.log("\n=== TO THE BUYER ===");
-show("Order received", buyer.orderReceived(o));
-show("Order received (two pieces)", buyer.orderReceived(two));
-show("Order paid by card (receipt)", buyer.orderPaid(o));
+show("Purchase receipt", buyer.receipt(o));
+show("Purchase receipt (two pieces)", buyer.receipt(two));
 show("Shipped, with tracking", buyer.shipped(o, true));
 show("Shipped, carrier without a tracking page", buyer.shipped({ ...o, carrier: "Other" }, false));
 show("Invoice sent", buyer.invoiceSent(inv));

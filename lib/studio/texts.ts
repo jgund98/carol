@@ -3,7 +3,7 @@
 // Rules for the texts: professional, one sentence of fact, no fluff. Plain
 // GSM-7 characters only and at most 160 of them, so a message is always one
 // SMS segment and never falls back to MMS. Links are the site's short paths
-// (/o /q /v for Carol's office, /i /p /t for buyers). Each builder tries a
+// (/o /q /v for Carol's office, /i /t for buyers). Each builder tries a
 // full wording first and steps down to a shorter one only if it would not fit.
 import { fmtMoney, type StudioInvoice } from "./invoice-shared";
 import { calendarDate } from "./time";
@@ -62,21 +62,13 @@ const phoneOf = (p: string | null | undefined) => {
 /* ───────── to Carol ───────── */
 
 export const carol = {
-  /** A buyer sent an order request from the website. */
-  newOrder(o: StudioOrder) {
+  /** A piece was bought and paid for on the website. */
+  newSale(o: StudioOrder) {
     const link = shortLink(`/o/${o.id}`);
     const who = [o.name, phoneOf(o.phone)].filter(Boolean).join(", ");
     return {
-      subject: `New order request: ${piecesOf(o)}, ${money(o.subtotal)} (${o.name})`,
-      sms: fit(`New order request: ${piecesOf(o)}, ${money(o.subtotal)}. ${who}. ${link}`, `New order request: ${piecesOf(o)}, ${money(o.subtotal)}. ${o.name}. ${link}`, `New order request, ${money(o.subtotal)}. ${link}`),
-    };
-  },
-  /** A website order was paid by card. */
-  orderPaid(o: StudioOrder) {
-    const link = shortLink(`/o/${o.id}`);
-    return {
-      subject: `Paid by card: ${piecesOf(o)}, ${money(o.subtotal)} (${o.name})`,
-      sms: fit(`Paid by card: ${piecesOf(o)}, ${money(o.subtotal)}. ${o.name}. ${link}`, `Paid by card: ${money(o.subtotal)}. ${o.name}. ${link}`),
+      subject: `New sale: ${piecesOf(o)}, ${money(o.subtotal)} (${o.name})`,
+      sms: fit(`New sale: ${piecesOf(o)}, ${money(o.subtotal)}, paid by card. ${who}. ${link}`, `New sale: ${piecesOf(o)}, ${money(o.subtotal)}, paid by card. ${o.name}. ${link}`, `New sale, ${money(o.subtotal)}, paid by card. ${link}`),
     };
   },
   /** An invoice was paid by card. */
@@ -106,24 +98,12 @@ export const carol = {
 /* ───────── to buyers ───────── */
 
 export const buyer = {
-  orderReceived(o: StudioOrder) {
+  receipt(o: StudioOrder) {
     const p = piecesOf(o);
     const amt = money(o.subtotal);
     return {
-      subject: `Your request ${o.ref} is with the studio`,
-      sms: fit(
-        `${STUDIO}: your request for ${p} (${amt}) is received. Carol will call within one business day. Nothing charged yet. ${STOP}`,
-        `${STUDIO}: your request (${amt}) is received. Carol will call within one business day. Nothing charged yet. ${STOP}`,
-        `${STUDIO}: your request is received. Carol will call within one business day. ${STOP}`
-      ),
-    };
-  },
-  orderPaid(o: StudioOrder) {
-    const p = piecesOf(o);
-    const amt = money(o.subtotal);
-    return {
-      subject: `Receipt for ${o.ref}: ${amt} paid`,
-      sms: fit(`${STUDIO}: payment of ${amt} received for ${p}, thank you. Carol will call about delivery.`, `${STUDIO}: payment of ${amt} received, thank you. Carol will call about delivery.`),
+      subject: `Receipt ${o.ref}: ${amt}, ${p}`,
+      sms: fit(`${STUDIO}: thank you, your payment of ${amt} for ${p} is received. Carol will call you to arrange delivery. ${STOP}`, `${STUDIO}: thank you, your payment of ${amt} is received. Carol will call you to arrange delivery. ${STOP}`),
     };
   },
   shipped(o: StudioOrder, hasTrackingLink: boolean) {

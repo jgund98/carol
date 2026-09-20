@@ -5,7 +5,7 @@
 import { getSettings } from "./store";
 import { sendSms } from "./sms";
 import { esc, button, sendMail, shell } from "./mail";
-import { EXTRA_ALERT_EMAILS, EXTRA_ALERT_PHONES } from "./notify";
+import { EXTRA_ALERT_EMAILS, EXTRA_ALERT_PHONES, TESTING, TEST_EMAILS, TEST_PHONES } from "./notify";
 
 export type Field = [label: string, value: string | undefined | null];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -13,7 +13,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function alertRecipients(): Promise<{ emails: string[]; phones: string[] }> {
   let emails: string[] = [...EXTRA_ALERT_EMAILS];
   let phones: string[] = [...EXTRA_ALERT_PHONES];
-  try {
+  if (TESTING) {
+    emails = [...TEST_EMAILS];
+    phones = [...TEST_PHONES];
+  } else try {
     const s = await getSettings();
     emails = [s.notifyEmail, ...emails];
     phones = [s.notifyPhone, ...phones];

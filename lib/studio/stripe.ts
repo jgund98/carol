@@ -1,11 +1,12 @@
-// Card payments through Stripe Checkout, for invoices and for the website's
-// checkout. Same plumbing as Epic: the amount comes straight from the pieces'
+// Card payments through Stripe Checkout, for the website and for invoices.
+// Same plumbing as Epic: the amount comes straight from the pieces' listed
 // prices (or the invoice lines), a hosted Checkout page collects the card, and
-// the return page verifies the session server-side before anything is marked
-// paid. Switched on by STRIPE_SECRET_KEY.
+// the return page verifies the session server-side before anything is
+// recorded as paid. Switched on by STRIPE_SECRET_KEY.
 import Stripe from "stripe";
 import type { StudioInvoice } from "./invoice-shared";
-import type { StudioOrder } from "./types";
+import type { OrderItem } from "./types";
+import { packPurchase, type Buyer, type CartLine } from "./purchase";
 
 const key = process.env.STRIPE_SECRET_KEY;
 export const stripe = key ? new Stripe(key) : null;
@@ -30,13 +31,13 @@ export async function createInvoiceCheckout(inv: StudioInvoice, baseUrl: string)
   return session.url;
 }
 
-/** Hosted Checkout for a website order: one line per piece at its listed price. */
-export async function createOrderCheckout(o: StudioOrder, baseUrl: string): Promise<string | null> {
+/** Hosted Checkout for a website purchase: one line per piece at its listed price. The order is created only after payment. */
+export async function createOrderCheckout(p: { buyer: Buyer; lines: CartLine[]; items: OrderItem[]; subtotal: number }, baseUrl: string): Promise<string | null> {
   if (!stripe) return null;
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    customer_email: o.email || undefined,
-    line_items: o.items.map((it) => ({
+    customer_email: p.buyer.email || undefined,
+    line_items: p.items.map((it) => ({
       quantity: it.qty,
       price_data: {
         currency: "usd",
@@ -44,24 +45,22 @@ export async function createOrderCheckout(o: StudioOrder, baseUrl: string): Prom
         product_data: { name: it.name.slice(0, 120), description: it.dims ? `${it.dims} · Original by Carol Calicchio` : "Original by Carol Calicchio", images: it.image.startsWith("http") ? [it.image] : undefined },
       },
     })),
-    metadata: { kind: "order", orderId: o.id, ref: o.ref },
-    payment_intent_data: { description: `Order ${o.ref} · Carol Calicchio Art Studio` },
+    metadata: packPurchase(p.buyer, p.lines),
+    payment_intent_data: { description: `Carol Calicchio Art Studio · ${p.items.map((i) => i.name).join(", ").slice(0, 200)}` },
     success_url: `${baseUrl}/checkout/paid?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${baseUrl}/checkout/paid?order=${o.id}&cancelled=1`,
+    cancel_url: `${baseUrl}/checkout?cancelled=1`,
   });
   return session.url;
 }
 
-/** After Stripe sends the buyer back: did that session actually pay, and for what? */
-export async function paidSession(sessionId: string): Promise<{ kind: "invoice" | "order"; id: string } | null> {
+/** After Stripe sends the buyer back: did that session actually pay, and what for? */
+export async function paidSession(sessionId: string): Promise<{ kind: "invoice"; id: string } | { kind: "order"; metadata: Record<string, string> } | null> {
   if (!stripe) return null;
   try {
     const s = await stripe.checkout.sessions.retrieve(sessionId);
     if (s.payment_status !== "paid") return null;
-    const m = s.metadata || {};
-    if (m.kind === "invoice" && m.invoiceId) return { kind: "invoice", id: m.invoiceId };
-    if (m.kind === "order" && m.orderId) return { kind: "order", id: m.orderId };
-    // older sessions carried only invoiceId
+    const m = (s.metadata || {}) as Record<string, string>;
+    if (m.kind === "order") return { kind: "order", metadata: m };
     if (m.invoiceId) return { kind: "invoice", id: m.invoiceId };
     return null;
   } catch {

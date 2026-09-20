@@ -1,6 +1,6 @@
 // What the studio sends to buyers, email and text together:
-//   order received · paid by card · shipped (only once there is a tracking
-//   number) · invoice receipt · a gentle reminder on an overdue invoice.
+//   receipt for a purchase · shipped (only once there is a tracking number) ·
+//   invoice receipt · a gentle reminder on an overdue invoice.
 // Wording for every text and subject line lives in texts.ts. Each function
 // returns what went out; nothing here ever throws into a page.
 import { money } from "@/lib/site";
@@ -9,7 +9,6 @@ import { sendSms } from "./sms";
 import { trackingLink } from "./shipping";
 import { calendarDate } from "./time";
 import { fmtMoney, type StudioInvoice } from "./invoice-shared";
-import { stripeEnabled } from "./stripe";
 import { buyer } from "./texts";
 import type { StudioOrder } from "./types";
 
@@ -21,28 +20,14 @@ function orderRows(o: StudioOrder, totalLabel: string): string {
   return `<table style="width:100%;border-collapse:collapse;margin-top:14px">${rows}<tr><td style="padding:12px 0 0;font-weight:600">${esc(totalLabel)}</td><td style="padding:12px 0 0;text-align:right;font:600 20px Georgia,serif">${money(o.subtotal)}</td></tr></table>`;
 }
 
-export async function sendOrderReceived(o: StudioOrder): Promise<{ email: boolean; sms: boolean }> {
-  const t = buyer.orderReceived(o);
-  const card = stripeEnabled();
-  const html = shell(`
-    ${dear(o.name)}
-    <p>Thank you. Your request <strong>${esc(o.ref)}</strong> has reached the studio.</p>
-    ${orderRows(o, "Subtotal")}
-    ${card ? button(`${officeBase()}/p/${o.id}`, `Pay ${money(o.subtotal)} by card`) : ""}
-    <p style="margin-top:18px">${card ? "You can pay securely by card above, or wait for Carol's call. " : ""}Carol will call you within one business day to confirm the piece is still available, settle payment your way (${esc(o.payment || "card, PayPal, wire or check")}) and arrange ${esc(o.delivery ? o.delivery.toLowerCase() : "delivery")}. Shipping or installation is quoted separately.</p>
-    <p>Nothing has been charged.</p>`);
-  const email = o.email ? await sendMail({ to: o.email, name: o.name, subject: t.subject, html }) : false;
-  const sms = o.phone ? (await sendSms(o.phone, t.sms)).ok : false;
-  return { email, sms };
-}
-
 export async function sendOrderPaid(o: StudioOrder): Promise<{ email: boolean; sms: boolean }> {
-  const t = buyer.orderPaid(o);
+  const t = buyer.receipt(o);
   const html = shell(`
     ${dear(o.name)}
-    <p>Payment received, thank you. This is your receipt for order <strong>${esc(o.ref)}</strong>.</p>
+    <p>Thank you for your purchase. Your payment has been received and this is your receipt for order <strong>${esc(o.ref)}</strong>.</p>
     ${orderRows(o, "Paid by card")}
-    <p style="margin-top:18px">Carol will call to arrange ${esc(o.delivery ? o.delivery.toLowerCase() : "delivery")}. Every piece is original and signed by the artist.</p>`);
+    <p style="margin-top:18px">Carol will call you personally to arrange ${esc(o.delivery ? o.delivery.toLowerCase() : "delivery")}. Shipping or installation is quoted separately at that point.</p>
+    <p>Every piece is an original, signed by the artist. Thank you for bringing one home.</p>`);
   const email = o.email ? await sendMail({ to: o.email, name: o.name, subject: t.subject, html }) : false;
   const sms = o.phone ? (await sendSms(o.phone, t.sms)).ok : false;
   return { email, sms };
