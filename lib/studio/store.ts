@@ -21,10 +21,10 @@ const SEED_COLLECTIONS: CollectionDef[] = seedCollections.map((c, i) => ({
 }));
 
 const DEFAULT_SETTINGS: Settings = {
-  // TESTING: alerts go to Jordan. Switch to "Carol@carolcalicchioart.com" (or set it in Settings) when she takes over.
-  notifyEmail: process.env.LEAD_TO_EMAIL || "jgundyt@gmail.com",
+  // Alerts go to Carol. lib/studio/notify.ts ALERT_OVERRIDE wins over these while it is set.
+  notifyEmail: process.env.LEAD_TO_EMAIL || "carol@carolcalicchioart.com",
   notifyEmail2: "",
-  notifyPhone: "",
+  notifyPhone: "561-400-0678",
   notifyPhone2: "",
   textAlerts: true,
   payInstructions: "Credit and debit cards, PayPal, wire or check. Carol will confirm the details with you personally.",
