@@ -56,5 +56,11 @@ Delete rows whose id starts with `demo_` from `studio_inquiry` and `studio_order
 - **Stripe** (`lib/studio/stripe.ts`, on when `STRIPE_SECRET_KEY` is set, Epic's key as placeholder): the amount Stripe charges is exactly the invoice lines (cents) or the order's pieces at their listed prices, one line item each. Website checkout saves the request, then hands off to `/p/<id>` -> Stripe Checkout -> `/checkout/paid?session_id=` verifies server-side, marks the order Paid, alerts Carol, receipts the buyer. Invoices: Pay button on `/invoice/<id>` -> `/api/invoice/<id>/checkout` -> back to the invoice with `session_id`. No webhook yet (verification happens on return).
 - Still to do: paste the RAW `xkeysib-...` Brevo key into Vercel (the one on file is base64-wrapped and sends nothing), add `STRIPE_SECRET_KEY`, register a 10DLC number for `BREVO_SMS_SENDER`, switch alert recipients to Carol, wipe `demo_*`.
 
+### Buy-first checkout + testing mode (2026-09-20, later)
+- There is no "order request" any more. Checkout prices the selection server-side (`lib/studio/purchase.ts`), opens Stripe Checkout for exactly that amount, and only once Stripe confirms payment does the order exist: recorded as Paid, the piece marked sold, Carol texted + emailed "New sale", the buyer receipted. Nothing is saved for an abandoned card page.
+- `lib/studio/notify.ts` **TESTING = true**: every Carol alert goes only to jgundyt@gmail.com + 561-324-9522, and a purchase by that test email is recorded as paid without Stripe. Set TESTING = false (and Carol's email/mobile in Settings) at handover.
+- `lib/studio/brevo.ts` accepts the Brevo key raw (xkeysib-…) or as the base64 JSON blob Brevo's MCP page shows. `STRIPE_SECRET_KEY` must start with sk_ or rk_; anything else is ignored and cards stay off.
+- `scripts/live-notif-test.js` fires every scenario at production as Jordan (buys alluring-light, then puts it back on sale). `npx tsx scripts/notif-copy.ts` prints all wording.
+
 ### Verify locally
 `pnpm dev` (port 3540), sign in at /login, then `MSYS_NO_PATHCONV=1 node scripts/office-test.js` runs the full add-a-piece flow headlessly and screenshots every office screen at phone and desktop sizes into `shots/office/`.

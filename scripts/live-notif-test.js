@@ -30,7 +30,7 @@ const clickText = (page, re) => page.evaluate((src) => { const r = new RegExp(sr
 
 (async () => {
   // ── 1. inquiries from the website (four kinds) ──
-  log("contact:", JSON.stringify(await lead({ formType: "contact", name: "Margaret Ellison", email: ME.email, phone: ME.phone, message: "Hello Carol, I saw your work at the Boca museum show and would love to know whether you have anything in blues around 48 by 60 available this fall." })));
+  if (!process.env.SKIP_CONTACT) log("contact:", JSON.stringify(await lead({ formType: "contact", name: "Margaret Ellison", email: ME.email, phone: ME.phone, message: "Hello Carol, I saw your work at the Boca museum show and would love to know whether you have anything in blues around 48 by 60 available this fall." })));
   await sleep(1500);
   log("inquiry:", JSON.stringify(await lead({ formType: "inquiry", subject: "New Artwork Inquiry · Alluring Light", name: "Daniel Whitmore", email: ME.email, phone: ME.phone, workSlug: PIECE, message: "Is Alluring Light still available, and could it be framed in white oak before shipping to Greenwich?", fields: { Artwork: "Alluring Light (60 × 48 in.) $14,000" } })));
   await sleep(1500);
