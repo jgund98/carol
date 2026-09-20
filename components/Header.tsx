@@ -63,7 +63,7 @@ export default function Header({ collections }: { collections: CollectionView[] 
               }
             }}
           >
-            <Image src="/brand/sig-ink.png" alt="Carol Calicchio" fill priority sizes="176px" className="object-contain object-left" />
+            <Image src="/brand/sig-pink.png" alt="Carol Calicchio" fill priority sizes="176px" className="object-contain object-left" />
           </Link>
 
           <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
@@ -172,7 +172,7 @@ export default function Header({ collections }: { collections: CollectionView[] 
       >
         <div className="wrap flex items-center justify-between" style={{ height: "var(--header-h)" }}>
           <Link href="/" onClick={() => setMenu(false)} aria-label="Carol Calicchio, home" className="relative block h-[44px] w-[150px]">
-            <Image src="/brand/sig-ink.png" alt="Carol Calicchio" fill sizes="150px" className="object-contain object-left" />
+            <Image src="/brand/sig-pink.png" alt="Carol Calicchio" fill sizes="150px" className="object-contain object-left" />
           </Link>
           <button type="button" onClick={() => setMenu(false)} className="grid h-11 w-11 place-items-center rounded-full bg-ink/5 text-ink" aria-label="Close menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>

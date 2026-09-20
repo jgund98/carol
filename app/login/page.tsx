@@ -38,7 +38,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,23,43,0)_40%,rgba(255,255,255,0.92))]" />
             </div>
             <div className="p-5 sm:p-10 lg:pt-10">
-              <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="-mt-1 h-auto w-[150px] sm:w-[200px] lg:mt-0" priority />
+              <Image src="/brand/sig-pink.png" alt="Carol Calicchio" width={420} height={132} className="-mt-1 h-auto w-[150px] sm:w-[200px] lg:mt-0" priority />
               <p className="o-label mt-3 sm:mt-5">Studio office</p>
               <h1 className="o-h1 mt-1">Sign in.</h1>
 

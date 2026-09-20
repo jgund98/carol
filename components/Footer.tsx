@@ -12,7 +12,7 @@ export default async function Footer() {
       <div className="wrap section">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
           <div>
-            <Image src="/brand/sig-white.png" alt="Carol Calicchio" width={260} height={82} className="h-auto w-[240px]" />
+            <Image src="/brand/sig-pink.png" alt="Carol Calicchio" width={260} height={82} className="h-auto w-[240px]" />
             <p className="pretty mt-6 max-w-sm text-[0.98rem] leading-relaxed text-white/70">{site.tagline}</p>
             <div className="mt-6 flex gap-3">
               <a href={site.social.instagram} target="_blank" rel="noopener" className="grid h-11 w-11 place-items-center rounded-full border border-white/20 transition-colors hover:bg-white/10" aria-label="Instagram">

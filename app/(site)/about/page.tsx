@@ -24,7 +24,7 @@ export default function AboutPage() {
             <div className="wrap-edge relative aspect-[4/5] overflow-hidden bg-linen">
               <Image src="/photos/carol-easel-portrait.jpg" alt="Carol Calicchio standing beside a floral painting on her easel" fill priority sizes="(min-width:1024px) 42vw, 100vw" className="object-cover" />
             </div>
-            <Image src="/brand/sig-ink.png" alt="" aria-hidden width={220} height={70} className="mt-6 h-auto w-[200px] opacity-80" />
+            <Image src="/brand/sig-pink.png" alt="" aria-hidden width={220} height={70} className="mt-6 h-auto w-[200px] opacity-80" />
           </Reveal>
           <div className="space-y-6 text-[1.05rem] leading-[1.75] text-ink/80 md:text-[1.12rem]">
             {bio.map((p, i) => (

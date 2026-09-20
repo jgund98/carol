@@ -60,7 +60,7 @@ export default function LeadForm({
   if (state === "done")
     return (
       <div id="form-success" className="py-10 text-center">
-        <Image src={dark ? "/brand/sig-white.png" : "/brand/sig-ink.png"} alt="" aria-hidden width={220} height={70} className="mx-auto h-auto w-[180px] opacity-90" />
+        <Image src="/brand/sig-pink.png" alt="" aria-hidden width={220} height={70} className="mx-auto h-auto w-[180px] opacity-90" />
         <p className={`display mt-6 text-3xl ${ink}`}>{success.title}</p>
         <p className={`pretty mx-auto mt-3 max-w-md ${soft}`}>{success.text}</p>
         <a href={site.phoneHref} className={`btn mt-6 ${dark ? "btn-white" : "btn-ink"}`}>
@@ -100,7 +100,7 @@ export default function LeadForm({
           </button>
           <span className={`max-w-[16rem] text-xs leading-snug ${soft}`}>{note}</span>
         </div>
-        <Image src={dark ? "/brand/sig-white.png" : "/brand/sig-ink.png"} alt="Carol Calicchio" width={200} height={63} className="h-auto w-[150px] opacity-80" />
+        <Image src="/brand/sig-pink.png" alt="Carol Calicchio" width={200} height={63} className="h-auto w-[150px] opacity-80" />
       </div>
       {state === "error" && (
         <p className="sm:col-span-2 text-sm text-coral">

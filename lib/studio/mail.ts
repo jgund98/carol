@@ -20,7 +20,7 @@ export function button(href: string, label: string): string {
 export function shell(body: string): string {
   return `<div style="background:#f6f2ea;padding:32px 16px;font-family:system-ui,-apple-system,Segoe UI,sans-serif">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:20px;padding:36px 32px;border:1px solid #ece7de">
-    <img src="${officeBase()}/brand/sig-ink.png" alt="Carol Calicchio" width="180" style="display:block;width:180px;height:auto" />
+    <img src="${officeBase()}/brand/sig-pink.png" alt="Carol Calicchio" width="180" style="display:block;width:180px;height:auto" />
     <div style="margin-top:22px;font:15px/1.6 system-ui;color:#12172b">${body}</div>
     <p style="margin:26px 0 0;padding-top:18px;border-top:1px solid #ece7de;font:13px/1.55 system-ui;color:#7a7f8e">${esc(site.studio.name)} · ${esc(site.studio.street)}, ${esc(site.studio.city)}, ${esc(site.studio.state)} ${esc(site.studio.zip)} · ${esc(site.phone)}<br>Reply to this email to reach Carol directly.</p>
   </div>

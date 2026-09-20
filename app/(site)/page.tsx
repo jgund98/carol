@@ -77,7 +77,7 @@ export default async function Home() {
             <p className="mt-4 text-center text-xs text-muted">Carol in the studio, loading the brush. Tap for sound.</p>
           </Reveal>
           <Reveal delay={100}>
-            <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[260px] md:w-[340px]" priority />
+            <Image src="/brand/sig-pink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[260px] md:w-[340px]" priority />
             <p className="pretty mt-6 max-w-[38rem] text-[1.08rem] leading-[1.7] text-ink/80 md:text-[1.18rem]">
               A Fairfield County native and one of South Florida&rsquo;s leading contemporary artists. Carol studied interior design at the New York School of Interior Design, then painting and drawing at the School of Visual Arts, and found her real subject in the art she had been curating for other people&rsquo;s homes. Her paintings hang in private collections from Palm Beach to Nantucket and New York.
             </p>

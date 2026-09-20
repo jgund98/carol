@@ -15,7 +15,7 @@ export default function InvoiceDocument({ inv, payInstructions }: { inv: StudioI
   return (
     <article className="o-card mx-auto max-w-2xl p-6 sm:p-10 print:max-w-none print:border-0 print:shadow-none">
       <div className="flex items-start justify-between gap-4">
-        <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[170px] sm:w-[200px]" />
+        <Image src="/brand/sig-pink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[170px] sm:w-[200px]" />
         <div className="text-right">
           <p className="o-h2">Invoice</p>
           <p className="text-[0.9rem] text-[var(--o-soft)]">{inv.number}</p>

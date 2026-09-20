@@ -80,7 +80,7 @@ export default function OfficeNav({ initial }: { initial: Counts }) {
       {/* Desk: the sidebar */}
       <aside className="hidden border-r border-[var(--o-hair)] bg-[var(--o-paper)] lg:sticky lg:top-0 lg:flex lg:h-[100svh] lg:flex-col lg:px-5 lg:py-8">
         <Link href="/office/home" className="block px-3">
-          <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[170px]" priority />
+          <Image src="/brand/sig-pink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[170px]" priority />
           <span className="o-label mt-3 block">Studio office</span>
         </Link>
         <Link href="/office/artwork/new" className="btn btn-pink mt-7">
@@ -113,7 +113,7 @@ export default function OfficeNav({ initial }: { initial: Counts }) {
       {/* Phone: top bar + bottom tabs */}
       <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--o-hair)] bg-[rgba(251,249,245,0.9)] px-3 py-1.5 backdrop-blur-xl lg:hidden">
         <Link href="/office/home" className="flex items-center gap-3 pl-1">
-          <Image src="/brand/sig-ink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[104px]" priority />
+          <Image src="/brand/sig-pink.png" alt="Carol Calicchio" width={420} height={132} className="h-auto w-[104px]" priority />
         </Link>
         <div className="flex items-center gap-0.5">
           <Link href="/office/settings" className="grid h-10 w-10 place-items-center rounded-full text-[var(--o-soft)] hover:bg-[var(--o-hair)]" aria-label="Settings">
