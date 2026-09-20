@@ -75,7 +75,7 @@ export function OrderStatusChip({ status }: { status: OrderStatus }) {
   return <span className={`o-chip ${ORDER_TONE[status]}`}>{ORDER_LABEL[status]}</span>;
 }
 
-export function WorkStatusChip({ work }: { work: Work }) {
+export function WorkStatusChip({ work }: { work: Pick<Work, "hidden" | "sold" | "available" | "stock"> }) {
   if (work.hidden) return <span className="o-chip o-chip-muted">Hidden</span>;
   if (work.sold) return <span className="o-chip o-chip-ink">Sold</span>;
   if (!work.available) return <span className="o-chip o-chip-gold">On hold</span>;

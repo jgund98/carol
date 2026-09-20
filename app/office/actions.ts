@@ -161,6 +161,24 @@ export async function setWorkStatusAction(slug: string, status: WorkInput["statu
   }
 }
 
+/** Several pieces at once, from the Artwork list: hide, mark sold, or put back for sale. */
+export async function bulkWorkStatusAction(slugs: string[], status: "sale" | "sold" | "hidden"): Promise<Result<{ count: number }>> {
+  await guard();
+  try {
+    let count = 0;
+    for (const slug of slugs.slice(0, 200)) {
+      const w = await getWorkBySlug(slug);
+      if (!w) continue;
+      await saveWork({ ...w, sold: status === "sold", hidden: status === "hidden", available: true, stock: w.stock == null ? null : status === "sold" ? 0 : Math.max(1, w.stock), updatedAt: new Date().toISOString() });
+      count++;
+    }
+    refreshSite();
+    return { ok: true, count };
+  } catch (e) {
+    return { ok: false, error: explain(e) };
+  }
+}
+
 export async function moveWorkTopAction(slug: string): Promise<Result> {
   await guard();
   try {

@@ -675,3 +675,50 @@ select.o-in {
 @media print {
   .office .o-paybar { display: none; }
 }
+
+/* Select mode on the Artwork list */
+.office .o-selecting .o-card { cursor: pointer; }
+.office .o-card-picked { outline: 3px solid var(--o-pink); outline-offset: -3px; }
+.office .o-tick {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 4px rgba(18, 23, 43, 0.25);
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+.office .o-tick-on { background: var(--o-pink); border-color: var(--o-pink); }
+.office .o-bulkbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--o-tab-h) + env(safe-area-inset-bottom));
+  z-index: 45;
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--o-line);
+  box-shadow: 0 -8px 24px rgba(18, 23, 43, 0.08);
+}
+.office .o-bulkbar-count { font-weight: 600; font-size: 0.95rem; }
+.office .o-bulkbar-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.office .o-bulkbar-actions .btn { flex: 1 1 auto; justify-content: center; }
+@media (min-width: 1024px) {
+  .office .o-bulkbar {
+    left: 17rem;
+    bottom: 0;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    padding: 0.9rem 2rem;
+  }
+  .office .o-bulkbar-actions { justify-content: flex-end; }
+  .office .o-bulkbar-actions .btn { flex: 0 0 auto; }
+}

@@ -4,7 +4,8 @@ import { Plus, Layers } from "lucide-react";
 import { listAllWorks, listCollections } from "@/lib/studio/store";
 import { money } from "@/lib/site";
 import { dims, shopOrder } from "@/lib/catalog";
-import { Empty, PageHead, WorkStatusChip } from "@/components/office/ui";
+import { Empty, PageHead } from "@/components/office/ui";
+import ArtworkGrid from "@/components/office/ArtworkGrid";
 import ArtworkSearch from "@/components/office/ArtworkSearch";
 
 export default async function ArtworkPage({ searchParams }: { searchParams: Promise<{ f?: string; q?: string }> }) {
@@ -34,7 +35,7 @@ export default async function ArtworkPage({ searchParams }: { searchParams: Prom
       <PageHead
         kicker="Your shop"
         title={`${works.length} pieces.`}
-        text="Tap any piece to change its photo, price, size, words or collections, or to mark it sold. New pieces go to the top of the shop."
+        text="Tap any piece to change its photo, price, size, words or collections. Use Select to hide or mark several at once. New pieces go to the top of the shop."
         action={
           <span className="hidden sm:block">
             <Link href="/office/artwork/new" className="btn btn-pink">
@@ -72,34 +73,7 @@ export default async function ArtworkPage({ searchParams }: { searchParams: Prom
           }
         />
       ) : (
-        <div className="o-in-view grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
-          {list.map((w) => {
-            const a = w.iw / w.ih;
-            const board = w.kind === "surfboard";
-            const widthPct = board ? 100 : a >= 0.8 ? 86 : 107.5 * a;
-            return (
-              <Link key={w.slug} href={`/office/artwork/${w.slug}`} className="o-card group overflow-hidden transition-transform hover:-translate-y-0.5">
-                <div className="plaster relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden border-b border-[var(--o-hair)]">
-                  <div className="spot pointer-events-none absolute -top-[30%] left-1/2 h-[60%] w-[140%] -translate-x-1/2 opacity-70" />
-                  <div className="wrap-edge relative overflow-hidden bg-linen transition-transform duration-500 group-hover:-translate-y-1" style={board ? { width: "100%", height: "100%" } : { width: `${widthPct}%`, aspectRatio: `${w.iw} / ${w.ih}` }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={w.imageSm} alt={w.name} className="h-full w-full object-cover" loading="lazy" />
-                  </div>
-                  {w.hidden && <div className="absolute inset-0 bg-[rgba(246,242,234,0.55)]" />}
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[9%] bg-[linear-gradient(180deg,rgba(18,23,43,0.03),rgba(18,23,43,0.09))]" />
-                </div>
-                <div className="p-3.5 sm:p-4">
-                  <p className="truncate text-[1rem] font-semibold leading-tight sm:text-[1.05rem]">{w.name}</p>
-                  <p className="mt-1 truncate text-[0.82rem] text-[var(--o-soft)]">{dims(w) ?? w.medium ?? w.kind}</p>
-                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                    <p className="o-num text-[1.15rem]">{w.sold ? "Sold" : money(w.price)}</p>
-                    <WorkStatusChip work={w} />
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        <ArtworkGrid list={list.map((w) => ({ slug: w.slug, name: w.name, price: w.price, sold: w.sold, hidden: w.hidden, available: w.available, stock: w.stock ?? null, kind: w.kind, iw: w.iw, ih: w.ih, imageSm: w.imageSm, medium: w.medium, line: dims(w) ?? w.medium ?? w.kind }))} />
       )}
 
     </>

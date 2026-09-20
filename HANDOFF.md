@@ -62,5 +62,13 @@ Delete rows whose id starts with `demo_` from `studio_inquiry` and `studio_order
 - `lib/studio/brevo.ts` accepts the Brevo key raw (xkeysib-…) or as the base64 JSON blob Brevo's MCP page shows. `STRIPE_SECRET_KEY` must start with sk_ or rk_; anything else is ignored and cards stay off.
 - `scripts/live-notif-test.js` fires every scenario at production as Jordan (buys alluring-light, then puts it back on sale). `npx tsx scripts/notif-copy.ts` prints all wording.
 
+### Stripe, refunds, bulk edits (2026-09-20, later)
+- Stripe is Carol's own account (Jordan is Super Administrator). `STRIPE_SECRET_KEY` holds the sandbox key for now; swap to the live `sk_live_` key once her account is activated. Verified on production: website purchase through hosted Checkout, partial refund from the office (`refundSession` in `lib/studio/stripe.ts`), invoice paid through Stripe and refunded to the card (invoice status `refunded`).
+- `/api/stripe/webhook` is registered in the sandbox as "Carol website" for checkout.session.completed + async_payment_succeeded. Its signing secret must be in `STRIPE_WEBHOOK_SECRET` or the endpoint answers 503. Register the same URL again in live mode when she activates.
+- Stripe branding (sandbox): her signature on a white background as icon and logo, brand color white, accent pink. Repeat in live mode after activation (Settings → Business → Branding).
+- Buyer invoice on a phone keeps the Pay button pinned at the bottom (`.o-paybar`).
+- Artwork tab: **Select** mode (`components/office/ArtworkGrid.tsx`) hides, marks sold or restores many pieces at once (`bulkWorkStatusAction`).
+- Rigs: `scripts/live-stripe-test.js` and `scripts/live-invoice-pay.js` pay through Stripe Checkout headlessly (card fields need a real mouse click on the Card option). Every run texts and emails the test recipients, so run sparingly.
+
 ### Verify locally
 `pnpm dev` (port 3540), sign in at /login, then `MSYS_NO_PATHCONV=1 node scripts/office-test.js` runs the full add-a-piece flow headlessly and screenshots every office screen at phone and desktop sizes into `shots/office/`.
