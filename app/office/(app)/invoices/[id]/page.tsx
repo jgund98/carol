@@ -6,8 +6,8 @@ import InvoiceDocument from "@/components/office/InvoiceDocument";
 import InvoiceActions from "@/components/office/InvoiceActions";
 import { stripeEnabled } from "@/lib/studio/stripe";
 
-const LABEL = { draft: "Not sent yet", sent: "Sent", paid: "Paid", void: "Void" } as const;
-const TONE = { draft: "o-chip-muted", sent: "o-chip-ocean", paid: "o-chip-green", void: "o-chip-red" } as const;
+const LABEL = { draft: "Not sent yet", sent: "Sent", paid: "Paid", refunded: "Refunded", void: "Void" } as const;
+const TONE = { draft: "o-chip-muted", sent: "o-chip-ocean", paid: "o-chip-green", refunded: "o-chip-red", void: "o-chip-red" } as const;
 
 export default async function InvoicePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ sent?: string }> }) {
   const [{ id }, { sent }] = await Promise.all([params, searchParams]);

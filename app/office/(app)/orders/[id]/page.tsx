@@ -154,7 +154,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "160ms" }}>
             <p className="o-label">Refund</p>
             <div className="mt-3">
-              <RefundBox id={o.id} subtotal={o.subtotal} refundedAt={o.refundedAt} refundAmount={o.refundAmount} refundNote={o.refundNote} />
+              <RefundBox id={o.id} subtotal={o.subtotal} refundedAt={o.refundedAt} refundAmount={o.refundAmount} refundNote={o.refundNote} byCard={Boolean(o.stripeSessionId && o.stripeSessionId.startsWith("cs_"))} />
             </div>
           </section>
         </div>

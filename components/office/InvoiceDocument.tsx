@@ -21,6 +21,7 @@ export default function InvoiceDocument({ inv, payInstructions }: { inv: StudioI
           <p className="text-[0.9rem] text-[var(--o-soft)]">{inv.number}</p>
           {inv.status === "paid" && <p className="mt-1 text-[0.9rem] font-semibold text-[var(--o-green)]">Paid{inv.paidAt ? ` · ${fmtDate(inv.paidAt)}` : ""}</p>}
           {inv.status === "void" && <p className="mt-1 text-[0.9rem] font-semibold text-[var(--o-red)]">Void</p>}
+          {inv.status === "refunded" && <p className="mt-1 text-[0.9rem] font-semibold text-[var(--o-red)]">Refunded{inv.refundedAt ? ` · ${fmtDate(inv.refundedAt)}` : ""}</p>}
         </div>
       </div>
 

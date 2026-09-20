@@ -72,6 +72,8 @@ export type StudioOrder = {
   refundNote: string | null;
   /** payment-processor reference, when there is one */
   stripeSessionId: string | null;
+  /** Stripe refund id, when the refund went back to the card */
+  refundId?: string | null;
   /** buyer notifications already sent */
   confirmationSentAt?: string | null;
   shippedNoticeFor?: string | null;

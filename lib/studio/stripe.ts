@@ -73,3 +73,16 @@ export async function sessionPaid(sessionId: string, invoiceId: string): Promise
   const p = await paidSession(sessionId);
   return Boolean(p && p.kind === "invoice" && p.id === invoiceId);
 }
+
+/** Was this paid through a real Stripe Checkout session (not a simulated test purchase)? */
+export const isStripeSession = (id: string | null | undefined) => Boolean(id && id.startsWith("cs_"));
+
+/** Send money back to the card that paid a Checkout session. `cents` may be less than the charge (partial refund). */
+export async function refundSession(sessionId: string, cents: number, reason?: string): Promise<{ id: string; amount: number }> {
+  if (!stripe) throw new Error("Card payments are not switched on.");
+  const s = await stripe.checkout.sessions.retrieve(sessionId);
+  const pi = typeof s.payment_intent === "string" ? s.payment_intent : s.payment_intent?.id;
+  if (!pi) throw new Error("No payment found for this order in Stripe.");
+  const r = await stripe.refunds.create({ payment_intent: pi, amount: Math.round(cents), metadata: reason ? { reason: reason.slice(0, 500) } : undefined });
+  return { id: r.id, amount: r.amount };
+}

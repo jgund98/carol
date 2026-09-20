@@ -5,9 +5,9 @@ import type { StudioInvoice } from "@/lib/studio/invoice-shared";
 import { Empty, PageHead, Row, timeAgo } from "@/components/office/ui";
 import { SelectFilter, Tabs } from "@/components/office/Tabs";
 
-const LABEL = { draft: "Not sent yet", sent: "Sent, awaiting payment", paid: "Paid ✓", void: "Void" } as const;
-const TONE = { draft: "o-chip-gold", sent: "o-chip-ocean", paid: "o-chip-green", void: "o-chip-red" } as const;
-const RANK = { draft: 0, sent: 1, paid: 2, void: 3 } as const;
+const LABEL = { draft: "Not sent yet", sent: "Sent, awaiting payment", paid: "Paid ✓", refunded: "Refunded", void: "Void" } as const;
+const TONE = { draft: "o-chip-gold", sent: "o-chip-ocean", paid: "o-chip-green", refunded: "o-chip-red", void: "o-chip-red" } as const;
+const RANK = { draft: 0, sent: 1, paid: 2, refunded: 3, void: 4 } as const;
 
 const SORTS = [
   { key: "newest", label: "Newest first" },

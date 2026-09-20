@@ -1,6 +1,6 @@
 // Invoice types + money formatting that both server and client code can import.
 export type InvoiceItem = { description: string; cents: number };
-export type InvoiceStatus = "draft" | "sent" | "paid" | "void";
+export type InvoiceStatus = "draft" | "sent" | "paid" | "refunded" | "void";
 export type StudioInvoice = {
   id: string;
   number: string;
@@ -22,6 +22,8 @@ export type StudioInvoice = {
   paidHow: string | null;
   orderId: string | null;
   stripeSessionId: string | null;
+  refundedAt?: string | null;
+  refundId?: string | null;
   receiptSentAt?: string | null;
   remindedAt?: string | null;
   remindCount?: number;

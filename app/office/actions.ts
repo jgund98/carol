@@ -29,6 +29,8 @@ import { removeStored } from "@/lib/studio/images";
 import { emailInvoice, getInvoice, newInvoice, nextNumber, saveInvoice, textInvoice } from "@/lib/studio/invoices";
 import type { InvoiceItem } from "@/lib/studio/invoice-shared";
 import { sendOrderShipped, sendPaymentReceipt } from "@/lib/studio/customer-notify";
+import { isStripeSession, refundSession, stripeEnabled } from "@/lib/studio/stripe";
+import { money } from "@/lib/site";
 import type { Kind, Work } from "@/lib/works";
 import type { CollectionDef, OrderStatus, Settings } from "@/lib/studio/types";
 
@@ -354,8 +356,19 @@ export async function recordRefundAction(id: string, amount: number, note: strin
     const o = await getOrder(id);
     if (!o) return { ok: false, error: "That order is gone." };
     const amt = Math.max(0, Math.round(amount || 0));
-    if (!amt) return { ok: false, error: "Enter the amount you refunded." };
-    await saveOrder({ ...o, status: "refunded", refundedAt: new Date().toISOString(), refundAmount: amt, refundNote: note.trim() || null });
+    if (!amt) return { ok: false, error: "Enter the amount to refund." };
+    if (amt > o.subtotal) return { ok: false, error: `The order total was ${money(o.subtotal)}; you cannot refund more than that.` };
+    let refundId: string | null = null;
+    if (isStripeSession(o.stripeSessionId) && stripeEnabled()) {
+      // Paid by card: the money goes back to the card through Stripe. If Stripe says no, nothing is recorded.
+      try {
+        refundId = (await refundSession(o.stripeSessionId!, amt * 100, note)).id;
+      } catch (e) {
+        console.error("[refund]", e);
+        return { ok: false, error: "Stripe could not process this refund. Nothing was changed. " + ((e as Error).message || "") };
+      }
+    }
+    await saveOrder({ ...o, status: "refunded", refundedAt: new Date().toISOString(), refundAmount: amt, refundNote: note.trim() || null, refundId });
     revalidatePath("/office", "layout");
     return { ok: true };
   } catch (e) {
@@ -474,6 +487,34 @@ export async function markInvoiceAction(id: string, status: "paid" | "void" | "s
     if (status === "paid" && inv.orderId) {
       const o = await getOrder(inv.orderId);
       if (o && (o.status === "new" || o.status === "contacted")) await saveOrder({ ...o, status: "paid", paidAt: new Date().toISOString() });
+    }
+    revalidatePath("/office", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: explain(e) };
+  }
+}
+
+/** Refund a card-paid invoice in full through Stripe. */
+export async function refundInvoiceAction(id: string): Promise<Result> {
+  await guard();
+  try {
+    const inv = await getInvoice(id);
+    if (!inv) return { ok: false, error: "That invoice is gone." };
+    if (inv.status !== "paid") return { ok: false, error: "Only a paid invoice can be refunded." };
+    if (!isStripeSession(inv.stripeSessionId) || !stripeEnabled()) return { ok: false, error: "This invoice was not paid by card here, so there is nothing to send back through Stripe. Mark it Void if the sale fell through." };
+    let refundId: string;
+    try {
+      refundId = (await refundSession(inv.stripeSessionId!, inv.totalCents, `Invoice ${inv.number}`)).id;
+    } catch (e) {
+      console.error("[refund invoice]", e);
+      return { ok: false, error: "Stripe could not process this refund. Nothing was changed. " + ((e as Error).message || "") };
+    }
+    const now = new Date().toISOString();
+    await saveInvoice({ ...inv, status: "refunded", refundedAt: now, refundId });
+    if (inv.orderId) {
+      const o = await getOrder(inv.orderId);
+      if (o && o.status === "paid") await saveOrder({ ...o, status: "refunded", refundedAt: now, refundAmount: Math.round(inv.totalCents / 100), refundNote: `Invoice ${inv.number} refunded`, refundId });
     }
     revalidatePath("/office", "layout");
     return { ok: true };

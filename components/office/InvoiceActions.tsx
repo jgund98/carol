@@ -5,8 +5,8 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, CheckCircle2, Copy, Mail, MessageSquare, Printer } from "lucide-react";
-import { markInvoiceAction, sendInvoiceAction } from "@/app/office/actions";
-import type { StudioInvoice } from "@/lib/studio/invoice-shared";
+import { markInvoiceAction, refundInvoiceAction, sendInvoiceAction } from "@/app/office/actions";
+import { fmtDate, fmtMoney, type StudioInvoice } from "@/lib/studio/invoice-shared";
 import { timeAgo } from "@/lib/studio/time";
 import { useToast } from "./Toast";
 
@@ -43,6 +43,7 @@ export default function InvoiceActions({ inv, url, justSent = [] }: { inv: Studi
       } else toast(r.error ?? "That did not work.", "error");
     });
   const open = inv.status === "draft" || inv.status === "sent";
+  const [confirmRefund, setConfirmRefund] = useState(false);
 
   return (
     <div className="grid gap-3">
@@ -109,11 +110,29 @@ export default function InvoiceActions({ inv, url, justSent = [] }: { inv: Studi
           </button>
         </div>
       )}
-      {inv.status === "paid" && (
+      {inv.status === "paid" && inv.paidHow === "card" && inv.stripeSessionId?.startsWith("cs_") && (
+        <div className="grid gap-2">
+          {!confirmRefund ? (
+            <button type="button" disabled={busy} onClick={() => setConfirmRefund(true)} className="btn btn-danger btn-sm w-full">
+              Refund {fmtMoney(inv.totalCents)} to their card
+            </button>
+          ) : (
+            <div className="o-card-soft grid gap-2 p-3">
+              <p className="text-[0.95rem]">Send {fmtMoney(inv.totalCents)} back to the card through Stripe? This cannot be undone.</p>
+              <button type="button" disabled={busy} onClick={() => run(() => refundInvoiceAction(inv.id), "Refunded. The money is on its way back to their card.")} className="btn btn-sm w-full bg-[var(--o-red)] text-white">
+                {busy ? "Refunding…" : "Yes, refund it"}
+              </button>
+              <button type="button" disabled={busy} onClick={() => setConfirmRefund(false)} className="btn btn-line btn-sm w-full">Keep the payment</button>
+            </div>
+          )}
+        </div>
+      )}
+      {inv.status === "paid" && inv.paidHow !== "card" && (
         <button type="button" disabled={busy} onClick={() => run(() => markInvoiceAction(inv.id, "sent"), "Back to unpaid.")} className="btn btn-line btn-sm w-full">
           Actually, not paid yet
         </button>
       )}
+      {inv.status === "refunded" && <p className="text-[0.95rem] font-semibold text-[var(--o-red)]">Refunded to their card{inv.refundedAt ? ` on ${fmtDate(inv.refundedAt)}` : ""}.</p>}
       {inv.status === "void" && (
         <button type="button" disabled={busy} onClick={() => run(() => markInvoiceAction(inv.id, "draft"), "Invoice restored.")} className="btn btn-line btn-sm w-full">
           Restore this invoice

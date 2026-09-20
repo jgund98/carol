@@ -79,7 +79,7 @@ export function ShippingBox({ id, carrier, tracking, shippedAt, deliveredAt, tol
   );
 }
 
-export function RefundBox({ id, subtotal, refundedAt, refundAmount, refundNote }: { id: string; subtotal: number; refundedAt: string | null; refundAmount: number | null; refundNote: string | null }) {
+export function RefundBox({ id, subtotal, refundedAt, refundAmount, refundNote, byCard = false }: { id: string; subtotal: number; refundedAt: string | null; refundAmount: number | null; refundNote: string | null; byCard?: boolean }) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState(String(subtotal));
   const [note, setNote] = useState("");
@@ -100,7 +100,7 @@ export function RefundBox({ id, subtotal, refundedAt, refundAmount, refundNote }
   if (!open)
     return (
       <div className="flex flex-wrap items-center gap-3">
-        <p className="o-muted flex-1 text-[0.95rem]">If the sale falls through after payment, record the refund here so the order reads right.</p>
+        <p className="o-muted flex-1 text-[0.95rem]">{byCard ? "If the sale falls through, refund here and the money goes straight back to their card through Stripe." : "If the sale falls through after payment, record the refund here so the order reads right."}</p>
         <button type="button" onClick={() => setOpen(true)} className="btn btn-danger btn-sm">
           Refund this order
         </button>
@@ -114,7 +114,7 @@ export function RefundBox({ id, subtotal, refundedAt, refundAmount, refundNote }
         <div className="o-money">
           <input value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" className="o-in" />
         </div>
-        <span className="o-help">The order total was {money(subtotal)}.</span>
+        <span className="o-help">The order total was {money(subtotal)}.{byCard ? " You can refund part of it." : ""}</span>
       </label>
       <label className="o-field">
         <span>Why · optional</span>
@@ -129,14 +129,14 @@ export function RefundBox({ id, subtotal, refundedAt, refundAmount, refundNote }
             start(async () => {
               const r = await recordRefundAction(id, Number(amount), note);
               if (r.ok) {
-                toast("Refund recorded. The order is marked Refunded.");
+                toast(byCard ? "Refunded. The money is on its way back to their card." : "Refund recorded. The order is marked Refunded.");
                 setOpen(false);
                 router.refresh();
               } else toast(r.error, "error");
             })
           }
         >
-          {busy ? "Saving…" : `Record a ${money(Number(amount) || 0)} refund`}
+          {busy ? (byCard ? "Refunding…" : "Saving…") : byCard ? `Refund ${money(Number(amount) || 0)} to their card` : `Record a ${money(Number(amount) || 0)} refund`}
         </button>
         <button type="button" onClick={() => setOpen(false)} className="btn btn-line btn-sm">
           Never mind
