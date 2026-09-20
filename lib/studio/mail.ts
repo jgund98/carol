@@ -8,6 +8,11 @@ export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", 
 
 export const officeBase = () => process.env.OFFICE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://carol.epicdevsolutions.com";
 
+/** The money line at the foot of an itemised table: short label, amount that never wraps, an optional quiet note beneath (date, method). */
+export function totalRows(label: string, amount: string, note?: string): string {
+  return `<tr><td style="padding:14px 0 0;font-weight:600;vertical-align:baseline">${esc(label)}</td><td style="padding:14px 0 0 16px;text-align:right;white-space:nowrap;vertical-align:baseline;font:600 22px Georgia,serif;letter-spacing:-0.01em">${esc(amount)}</td></tr>${note ? `<tr><td colspan="2" style="padding:4px 0 0;font-size:13px;color:#7a7f8e">${esc(note)}</td></tr>` : ""}`;
+}
+
 export function button(href: string, label: string): string {
   return `<a href="${href}" style="display:inline-block;margin-top:22px;background:#e8397f;color:#fff;text-decoration:none;font:700 15px system-ui;padding:14px 26px;border-radius:999px">${esc(label)}</a>`;
 }

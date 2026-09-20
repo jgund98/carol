@@ -4,7 +4,7 @@
 import { randomBytes } from "node:crypto";
 import { store, newId } from "./store";
 import { sendSms } from "./sms";
-import { esc, officeBase, sendMail, shell } from "./mail";
+import { esc, officeBase, sendMail, shell, totalRows } from "./mail";
 import { buyer } from "./texts";
 
 export type { InvoiceItem, InvoiceStatus, StudioInvoice } from "./invoice-shared";
@@ -64,13 +64,13 @@ export const invoiceShortUrl = (inv: StudioInvoice) => `${officeBase().replace(/
 
 export function invoiceEmailHtml(inv: StudioInvoice, payInstructions: string): string {
   const url = invoiceUrl(inv);
-  const rows = inv.items.map((it) => `<tr><td style="padding:9px 0;border-bottom:1px solid #ece7de">${esc(it.description)}</td><td style="padding:9px 0;border-bottom:1px solid #ece7de;text-align:right;white-space:nowrap">${fmtMoney(it.cents)}</td></tr>`).join("");
+  const rows = inv.items.map((it) => `<tr><td style="padding:9px 0;border-bottom:1px solid #ece7de">${esc(it.description)}</td><td style="padding:9px 0;border-bottom:1px solid #ece7de;text-align:right;white-space:nowrap;vertical-align:top;padding-left:16px">${fmtMoney(it.cents)}</td></tr>`).join("");
   const first = inv.name.trim().split(/\s+/)[0] || "";
   return shell(`
     <p>${first ? `Dear ${esc(first)},` : "Hello,"}</p>
     <p>Here is your invoice from Carol Calicchio Art Studio${inv.dueDate ? `, due ${esc(fmtDate(inv.dueDate))}` : ""}.</p>
     <p style="margin:22px 0 6px;font-size:13px;color:#7a7f8e">Invoice ${esc(inv.number)}</p>
-    <table style="width:100%;border-collapse:collapse">${rows}<tr><td style="padding:14px 0 0;font-weight:600">Total</td><td style="padding:14px 0 0;text-align:right;font:600 22px Georgia,serif">${fmtMoney(inv.totalCents)}</td></tr></table>
+    <table style="width:100%;border-collapse:collapse">${rows}${totalRows("Total due", fmtMoney(inv.totalCents), inv.dueDate ? `Due ${fmtDate(inv.dueDate)}` : undefined)}</table>
     ${inv.note ? `<p style="margin:18px 0 0;color:#4b5060">${esc(inv.note).replace(/\n/g, "<br>")}</p>` : ""}
     <a href="${url}" style="display:inline-block;margin-top:24px;background:#e8397f;color:#fff;text-decoration:none;font:700 15px system-ui;padding:14px 26px;border-radius:999px">View and pay the invoice</a>
     ${payInstructions ? `<p style="margin:22px 0 0;padding-top:18px;border-top:1px solid #ece7de;font-size:13px;color:#4b5060"><strong style="color:#12172b">How to pay.</strong> ${esc(payInstructions)}</p>` : ""}`);
