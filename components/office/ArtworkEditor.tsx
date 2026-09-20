@@ -60,6 +60,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
   const [description, setDescription] = useState(work?.description ?? "");
   const [descTouched, setDescTouched] = useState(Boolean(work && work.description && work.description !== initialAuto));
   const [story, setStory] = useState(work?.story ?? "");
+  const [location, setLocation] = useState(work?.location ?? "");
   const [featured, setFeatured] = useState(work?.featured ?? false);
   const [photo, setPhoto] = useState<Photo | null>(null);
 
@@ -91,6 +92,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       collections: colls,
       description: shownDescription,
       story: story || null,
+      location: location.trim() || null,
       featured,
       kind,
       image: currentPhoto.image,
@@ -99,13 +101,13 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       createdAt: "",
       updatedAt: "",
     };
-  }, [currentPhoto, work, name, priceNum, stockNum, status, effectiveMedium, width, height, colls, shownDescription, story, kind, featured]);
+  }, [currentPhoto, work, name, priceNum, stockNum, status, effectiveMedium, width, height, colls, shownDescription, story, location, kind, featured]);
 
   const canSave = name.trim().length > 0 && Boolean(currentPhoto) && !busy;
   const needsPrice = status === "sale" && priceNum <= 0;
 
   // Leaving with unsaved changes should ask first (the browser's own dialog).
-  const snapshot = JSON.stringify({ name, price, stock, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, featured, photo });
+  const snapshot = JSON.stringify({ name, price, stock, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, location, featured, photo });
   const [saved, setSaved] = useState(snapshot);
   const dirty = snapshot !== saved;
   useEffect(() => {
@@ -136,6 +138,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
         collections: colls,
         description: shownDescription,
         story,
+        location,
         featured,
         photo,
       });
@@ -146,7 +149,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       if (status === "hidden") toast("Saved. It is hidden from the website until you change its status.");
       else toast(r.created ? "Saved. It is live at the top of the shop." : "Saved. The website is updated.", "ok", { href: `/shop/${r.slug}`, label: "See it" });
       setPhoto(null);
-      setSaved(JSON.stringify({ name, price, stock, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, featured, photo: null }));
+      setSaved(JSON.stringify({ name, price, stock, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, location, featured, photo: null }));
       if (r.created) router.replace(`/office/artwork/${r.slug}`);
       else router.refresh();
     });
@@ -189,6 +192,11 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
                 <span className="o-help">Leave empty for a one-of-a-kind original. For boards, books or prints, enter the number. It counts down with each sale and shows Sold at 0.</span>
               </label>
             </div>
+            <label className="o-field">
+              <span>Where it hangs now · optional</span>
+              <input value={location} onChange={(e) => setLocation(e.target.value)} className="o-in" placeholder="The Breakers, Palm Beach" autoComplete="off" />
+              <span className="o-help">Shown on the piece's page so people know where to see it in person. Leave empty if it is at the studio or already delivered.</span>
+            </label>
             <div className="o-field">
               <span className="o-field-label">Status</span>
               <div className="flex flex-wrap gap-2">

@@ -87,6 +87,8 @@ export type WorkInput = {
   collections: string[];
   description: string;
   story: string;
+  /** where it hangs now, optional */
+  location: string;
   featured: boolean;
   photo: { image: string; imageSm: string; iw: number; ih: number; color: string } | null;
 };
@@ -132,6 +134,7 @@ export async function saveWorkAction(input: WorkInput): Promise<Result<{ slug: s
       collections: input.collections,
       description: input.description.trim(),
       story: input.story.trim() || null,
+      location: input.location.trim() || null,
       kind: input.kind,
       featured: input.featured,
       image: photo.image,

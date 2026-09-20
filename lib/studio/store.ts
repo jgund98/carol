@@ -114,6 +114,7 @@ function normalizeWork(w: Partial<Work> & { slug: string }): Work {
     collections: w.collections ?? [],
     description: w.description ?? "",
     story: w.story ?? null,
+    location: typeof w.location === "string" && w.location.trim() ? w.location.trim() : null,
     kind: w.kind ?? "painting",
     image: w.image ?? `/art/${w.file ?? w.slug}.jpg`,
     imageSm: w.imageSm ?? `/art-sm/${w.file ?? w.slug}.jpg`,

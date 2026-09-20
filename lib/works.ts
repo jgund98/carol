@@ -16,6 +16,8 @@ export type Work = {
   hidden: boolean;
   /** how many are available; null = one of a kind (the default for an original) */
   stock?: number | null;
+  /** where the piece hangs right now (a hotel, a gallery, the studio); shown on its page */
+  location?: string | null;
   medium: string | null;
   width: number | null;
   height: number | null;

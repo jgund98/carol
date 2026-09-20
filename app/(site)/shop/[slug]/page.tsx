@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { MapPin } from "lucide-react";
 import { bySlug, collectionsOf, dims, img, related } from "@/lib/catalog";
 import { getCatalog } from "@/lib/store";
 import { money, site } from "@/lib/site";
@@ -100,6 +101,11 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
                 {d && w.medium && <span> · </span>}
                 {w.medium && <span>{w.medium}</span>}
               </p>
+              {w.location && (
+                <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-paper px-3.5 py-1.5 text-[0.9rem] text-ink/80">
+                  <MapPin className="h-3.5 w-3.5 text-pink" aria-hidden /> On view at {w.location}
+                </p>
+              )}
               <p className="display mt-6 text-[2rem]">{w.sold ? "Sold" : money(w.price)}</p>
               {!w.sold && w.stock != null && w.stock > 0 && <p className="mt-1 text-sm text-muted">{w.stock === 1 ? "Only one available" : `${w.stock} available`}</p>}
               {w.story && <p className="pretty mt-6 text-[1rem] leading-[1.7] text-ink/75">{w.story}</p>}
@@ -110,7 +116,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
                 <li className="flex gap-3"><span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-hibiscus" />Original, signed by the artist. One of a kind.</li>
                 {w.kind === "painting" && <li className="flex gap-3"><span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-hibiscus" />Painted in Carol&rsquo;s studio in Delray Beach, Florida.</li>}
                 <li className="flex gap-3"><span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-hibiscus" />Shipping, delivery and installation arranged individually with the studio. Credit and debit cards, PayPal and offline payment accepted.</li>
-                <li className="flex gap-3"><span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-hibiscus" />See it in person by appointment: <a href={site.phoneHref} className="font-semibold text-ink">{site.phone}</a>.</li>
+                <li className="flex gap-3"><span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-hibiscus" /><span>{w.location ? `On view at ${w.location}, or in person by appointment: ` : "See it in person by appointment: "}<a href={site.phoneHref} className="whitespace-nowrap font-semibold text-ink">{site.phone}</a>.</span></li>
               </ul>
               {w.kind === "painting" && w.width && w.height && (
                 <div className="mt-8">
