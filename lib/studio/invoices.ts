@@ -3,8 +3,9 @@
 // link, no login. Money is stored in whole cents.
 import { randomBytes } from "node:crypto";
 import { store, newId } from "./store";
-import { site } from "@/lib/site";
 import { sendSms } from "./sms";
+import { esc, officeBase, sendMail, shell } from "./mail";
+import { buyer } from "./texts";
 
 export type { InvoiceItem, InvoiceStatus, StudioInvoice } from "./invoice-shared";
 export { fmtMoney, fmtDate } from "./invoice-shared";
@@ -56,59 +57,33 @@ export function newInvoice(partial: Partial<StudioInvoice>): StudioInvoice {
   };
 }
 
-export const officeBase = () => process.env.OFFICE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://carol.epicdevsolutions.com";
+export { officeBase };
 export const invoiceUrl = (inv: StudioInvoice) => `${officeBase()}/invoice/${inv.id}?k=${inv.token}`;
 /** Short and plain for a text message, so it stays one SMS and never turns into an MMS. */
 export const invoiceShortUrl = (inv: StudioInvoice) => `${officeBase().replace(/^https?:\/\//, "")}/i/${inv.id}`;
 
-const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
-
 export function invoiceEmailHtml(inv: StudioInvoice, payInstructions: string): string {
   const url = invoiceUrl(inv);
-  const rows = inv.items
-    .map((it) => `<tr><td style="padding:9px 0;border-bottom:1px solid #ece7de;font:15px Georgia,serif;color:#12172b">${esc(it.description)}</td><td style="padding:9px 0;border-bottom:1px solid #ece7de;text-align:right;font:15px Georgia,serif;color:#12172b;white-space:nowrap">${fmtMoney(it.cents)}</td></tr>`)
-    .join("");
+  const rows = inv.items.map((it) => `<tr><td style="padding:9px 0;border-bottom:1px solid #ece7de">${esc(it.description)}</td><td style="padding:9px 0;border-bottom:1px solid #ece7de;text-align:right;white-space:nowrap">${fmtMoney(it.cents)}</td></tr>`).join("");
   const first = inv.name.trim().split(/\s+/)[0] || "";
-  return `<div style="background:#f6f2ea;padding:32px 16px;font-family:system-ui,-apple-system,Segoe UI,sans-serif">
-  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:20px;padding:36px 32px;border:1px solid #ece7de">
-    <img src="${officeBase()}/brand/sig-ink.png" alt="Carol Calicchio" width="180" style="display:block;width:180px;height:auto" />
-    <p style="margin:22px 0 0;font:15px/1.55 system-ui;color:#12172b">${first ? `Dear ${esc(first)},` : "Hello,"}</p>
-    <p style="margin:10px 0 0;font:15px/1.55 system-ui;color:#12172b">Here is your invoice from Carol Calicchio Art Studio${inv.dueDate ? `, due ${esc(fmtDate(inv.dueDate))}` : ""}.</p>
-    <p style="margin:22px 0 6px;font:13px system-ui;color:#7a7f8e">Invoice ${esc(inv.number)}</p>
-    <table style="width:100%;border-collapse:collapse">${rows}
-      <tr><td style="padding:14px 0 0;font:600 16px system-ui;color:#12172b">Total</td><td style="padding:14px 0 0;text-align:right;font:600 22px Georgia,serif;color:#12172b">${fmtMoney(inv.totalCents)}</td></tr>
-    </table>
-    ${inv.note ? `<p style="margin:18px 0 0;font:14px/1.55 system-ui;color:#4b5060">${esc(inv.note).replace(/\n/g, "<br>")}</p>` : ""}
+  return shell(`
+    <p>${first ? `Dear ${esc(first)},` : "Hello,"}</p>
+    <p>Here is your invoice from Carol Calicchio Art Studio${inv.dueDate ? `, due ${esc(fmtDate(inv.dueDate))}` : ""}.</p>
+    <p style="margin:22px 0 6px;font-size:13px;color:#7a7f8e">Invoice ${esc(inv.number)}</p>
+    <table style="width:100%;border-collapse:collapse">${rows}<tr><td style="padding:14px 0 0;font-weight:600">Total</td><td style="padding:14px 0 0;text-align:right;font:600 22px Georgia,serif">${fmtMoney(inv.totalCents)}</td></tr></table>
+    ${inv.note ? `<p style="margin:18px 0 0;color:#4b5060">${esc(inv.note).replace(/\n/g, "<br>")}</p>` : ""}
     <a href="${url}" style="display:inline-block;margin-top:24px;background:#e8397f;color:#fff;text-decoration:none;font:700 15px system-ui;padding:14px 26px;border-radius:999px">View and pay the invoice</a>
-    ${payInstructions ? `<p style="margin:22px 0 0;padding-top:18px;border-top:1px solid #ece7de;font:13px/1.55 system-ui;color:#4b5060"><strong style="color:#12172b">How to pay.</strong> ${esc(payInstructions)}</p>` : ""}
-    <p style="margin:22px 0 0;font:13px/1.55 system-ui;color:#7a7f8e">${esc(site.studio.name)} · ${esc(site.studio.street)}, ${esc(site.studio.city)}, ${esc(site.studio.state)} ${esc(site.studio.zip)} · ${esc(site.phone)}<br>Reply to this email to reach Carol directly.</p>
-  </div>
-</div>`;
+    ${payInstructions ? `<p style="margin:22px 0 0;padding-top:18px;border-top:1px solid #ece7de;font-size:13px;color:#4b5060"><strong style="color:#12172b">How to pay.</strong> ${esc(payInstructions)}</p>` : ""}`);
 }
 
 /** Email the invoice through Brevo. Reply-to is Carol. */
 export async function emailInvoice(inv: StudioInvoice, payInstructions: string): Promise<boolean> {
-  const key = process.env.BREVO_API_KEY;
-  if (!key || !inv.email) return false;
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: { "api-key": key, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify({
-      sender: { email: process.env.LEAD_FROM_EMAIL || "noreply@epicdevsolutions.com", name: "Carol Calicchio Art" },
-      to: [{ email: inv.email, name: inv.name || undefined }],
-      replyTo: { email: site.email, name: "Carol Calicchio" },
-      subject: `Invoice ${inv.number} from Carol Calicchio Art Studio · ${fmtMoney(inv.totalCents)}`,
-      htmlContent: invoiceEmailHtml(inv, payInstructions),
-    }),
-  });
-  if (!res.ok) console.error("[invoice] email failed:", res.status, await res.text().catch(() => ""));
-  return res.ok;
+  if (!inv.email) return false;
+  return sendMail({ to: inv.email, name: inv.name, subject: buyer.invoiceSent(inv).subject, html: invoiceEmailHtml(inv, payInstructions) });
 }
 
 /** Text a short link. Plain ASCII so it stays one cheap segment. */
 export async function textInvoice(inv: StudioInvoice): Promise<boolean> {
-  const first = inv.name.trim().split(/\s+/)[0];
-  const text = `${first ? `Hi ${first}, ` : "Hi, "}this is Carol Calicchio Art Studio. Your invoice ${inv.number} for ${fmtMoney(inv.totalCents)} is ready. View and pay here: ${invoiceShortUrl(inv)} Reply STOP to opt out.`;
-  const r = await sendSms(inv.phone, text);
+  const r = await sendSms(inv.phone, buyer.invoiceSent(inv).sms);
   return r.ok;
 }

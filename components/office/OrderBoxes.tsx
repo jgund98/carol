@@ -8,8 +8,9 @@ import { money } from "@/lib/site";
 import { recordRefundAction, saveShippingAction } from "@/app/office/actions";
 import { useToast } from "./Toast";
 import { fullDate } from "@/lib/studio/time";
+import { trackingLink } from "@/lib/studio/shipping";
 
-export function ShippingBox({ id, carrier, tracking, shippedAt, deliveredAt }: { id: string; carrier: string | null; tracking: string | null; shippedAt: string | null; deliveredAt: string | null }) {
+export function ShippingBox({ id, carrier, tracking, shippedAt, deliveredAt, toldFor }: { id: string; carrier: string | null; tracking: string | null; shippedAt: string | null; deliveredAt: string | null; toldFor?: string | null }) {
   const [c, setC] = useState(carrier ?? "");
   const [custom, setCustom] = useState(carrier && !CARRIERS.includes(carrier) ? carrier : "");
   const [t, setT] = useState(tracking ?? "");
@@ -27,6 +28,7 @@ export function ShippingBox({ id, carrier, tracking, shippedAt, deliveredAt }: {
           <Truck className="h-4 w-4" /> {deliveredAt ? `Delivered ${fullDate(deliveredAt)}` : `Shipped ${fullDate(shippedAt!)}`}
         </p>
       )}
+      {toldFor && toldFor === tracking && <p className="text-[0.88rem] text-[var(--o-soft)]">The buyer was sent this tracking number by email and text.</p>}
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="o-field">
           <span>How it is going</span>
@@ -64,7 +66,7 @@ export function ShippingBox({ id, carrier, tracking, shippedAt, deliveredAt }: {
             start(async () => {
               const r = await saveShippingAction(id, effective, t);
               if (r.ok) {
-                toast("Shipping saved.");
+                toast(r.told ? "Shipping saved. The buyer has been emailed and texted the tracking number." : "Shipping saved.");
                 router.refresh();
               } else toast(r.error, "error");
             })
@@ -75,16 +77,6 @@ export function ShippingBox({ id, carrier, tracking, shippedAt, deliveredAt }: {
       )}
     </div>
   );
-}
-
-function trackingLink(carrier: string, n: string): string | null {
-  const num = n.replace(/\s+/g, "");
-  if (!num) return null;
-  if (/ups/i.test(carrier)) return `https://www.ups.com/track?tracknum=${encodeURIComponent(num)}`;
-  if (/fedex/i.test(carrier)) return `https://www.fedex.com/fedextrack/?trknbr=${encodeURIComponent(num)}`;
-  if (/usps/i.test(carrier)) return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${encodeURIComponent(num)}`;
-  if (/dhl/i.test(carrier)) return `https://www.dhl.com/en/express/tracking.html?AWB=${encodeURIComponent(num)}`;
-  return null;
 }
 
 export function RefundBox({ id, subtotal, refundedAt, refundAmount, refundNote }: { id: string; subtotal: number; refundedAt: string | null; refundAmount: number | null; refundNote: string | null }) {

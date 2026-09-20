@@ -85,7 +85,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
           {/* the buyer */}
           <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "80ms" }}>
-            <p className="o-label">The buyer</p>
+            <p className="o-label">The buyer{o.confirmationSentAt ? " · sent an order confirmation" : ""}</p>
             <p className="o-h2 mt-2">{o.name}</p>
             <dl className="mt-4 grid gap-4 sm:grid-cols-2">
               <div>
@@ -139,9 +139,9 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           {/* shipping */}
           <section className="o-card o-in-view p-4 sm:p-7" style={{ animationDelay: "120ms" }}>
             <p className="o-label">Shipping</p>
-            <p className="o-muted mt-1 text-[0.95rem]">When it leaves the studio, note how it went and the tracking number. Saving this moves the order to Shipped.</p>
+            <p className="o-muted mt-1 text-[0.95rem]">When it leaves the studio, note how it went and the tracking number. Saving a tracking number moves the order to Shipped and sends the buyer the tracking link by email and text.</p>
             <div className="mt-4">
-              <ShippingBox id={o.id} carrier={o.carrier} tracking={o.tracking} shippedAt={o.shippedAt} deliveredAt={o.deliveredAt} />
+              <ShippingBox id={o.id} carrier={o.carrier} tracking={o.tracking} shippedAt={o.shippedAt} deliveredAt={o.deliveredAt} toldFor={o.shippedNoticeFor ?? null} />
             </div>
           </section>
 

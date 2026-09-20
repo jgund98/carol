@@ -48,9 +48,15 @@ export default function CheckoutPage() {
     try {
       const r = await fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       if (r.ok) {
+        const d = (await r.json().catch(() => ({}))) as { orderId?: string; pay?: boolean };
+        clear();
+        // Card payments on: straight to Stripe's secure page; the request is already with Carol.
+        if (d.pay && d.orderId) {
+          window.location.href = `/p/${d.orderId}`;
+          return;
+        }
         setOrderRef(ref);
         setState("done");
-        clear();
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else setState("error");
     } catch {
@@ -131,8 +137,8 @@ export default function CheckoutPage() {
             </fieldset>
             <label className="block sm:col-span-2"><span className="label mb-2 block text-muted">Anything Carol should know · optional</span><textarea name="message" rows={3} className="field resize-y" placeholder="Wall size, framing, a date you need it by…" /></label>
             <div className="sm:col-span-2 flex flex-wrap items-center gap-4">
-              <button type="submit" disabled={state === "sending"} className="btn btn-pink">{state === "sending" ? "Sending…" : `Request this order · ${money(subtotal)}`}</button>
-              <span className="text-xs text-muted">No payment is taken on this page.</span>
+              <button type="submit" disabled={state === "sending"} className="btn btn-pink">{state === "sending" ? "One moment…" : `Continue · ${money(subtotal)}`}</button>
+              <span className="text-xs text-muted">Card payments are taken on a secure Stripe page after this step.</span>
             </div>
             {state === "error" && <p className="sm:col-span-2 text-sm text-coral">That did not go through. Call {site.phone} or email {site.email}.</p>}
           </form>

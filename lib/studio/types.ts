@@ -72,6 +72,9 @@ export type StudioOrder = {
   refundNote: string | null;
   /** payment-processor reference, when there is one */
   stripeSessionId: string | null;
+  /** buyer notifications already sent */
+  confirmationSentAt?: string | null;
+  shippedNoticeFor?: string | null;
 };
 
 export type Settings = {

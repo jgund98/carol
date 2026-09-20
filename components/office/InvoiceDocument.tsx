@@ -3,6 +3,14 @@ import Image from "next/image";
 import { site } from "@/lib/site";
 import { fmtDate, fmtMoney, type StudioInvoice } from "@/lib/studio/invoice-shared";
 
+/** 5615550142 → 561-555-0142; anything else is shown as typed. */
+function prettyPhone(p: string | null | undefined): string {
+  const d = (p || "").replace(/D/g, "");
+  if (d.length === 10) return `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`;
+  if (d.length === 11 && d[0] === "1") return `${d.slice(1, 4)}-${d.slice(4, 7)}-${d.slice(7)}`;
+  return p || "";
+}
+
 export default function InvoiceDocument({ inv, payInstructions }: { inv: StudioInvoice; payInstructions: string }) {
   return (
     <article className="o-card mx-auto max-w-2xl p-6 sm:p-10 print:max-w-none print:border-0 print:shadow-none">
@@ -25,7 +33,9 @@ export default function InvoiceDocument({ inv, payInstructions }: { inv: StudioI
             <br />
             {site.studio.city}, {site.studio.state} {site.studio.zip}
             <br />
-            {site.phone} · {site.email}
+            {site.phone}
+            <br />
+            {site.email}
           </p>
         </div>
         <div>
@@ -34,7 +44,7 @@ export default function InvoiceDocument({ inv, payInstructions }: { inv: StudioI
           <p className="break-words text-[var(--o-soft)]">
             {inv.email}
             {inv.email && inv.phone ? <br /> : null}
-            {inv.phone}
+            {prettyPhone(inv.phone)}
           </p>
           <p className="mt-3 text-[var(--o-soft)]">
             Issued <span className="font-semibold text-[var(--o-ink)]">{fmtDate(inv.createdAt)}</span>

@@ -2,11 +2,12 @@
 // into the Studio Office (Inquiries, or Orders for a checkout) and Carol gets
 // an email about it. If the email cannot be sent the message is still saved,
 // so nothing is ever lost.
-import { sendLead, type LeadField } from "@/lib/lead-email";
-import { sendSms } from "@/lib/studio/sms";
 import { money } from "@/lib/site";
-import { EXTRA_ALERT_EMAILS, EXTRA_ALERT_PHONES } from "@/lib/studio/notify";
-import { getSettings, newId, saveInquiry, saveOrder } from "@/lib/studio/store";
+import { alertCarol, type Field as LeadField } from "@/lib/studio/alerts";
+import { stripeEnabled } from "@/lib/studio/stripe";
+import { carol } from "@/lib/studio/texts";
+import { sendOrderReceived } from "@/lib/studio/customer-notify";
+import { newId, saveInquiry, saveOrder } from "@/lib/studio/store";
 import type { Inquiry, InquiryKind, OrderItem, StudioOrder } from "@/lib/studio/types";
 
 export const dynamic = "force-dynamic";
@@ -76,12 +77,14 @@ export async function POST(req: Request) {
 
   // 1. Save it where Carol will see it.
   let officeLink = `${officeBase()}/office/inbox`;
+  let orderId: string | null = null;
+  let alert: { subject: string; sms: string } | null = null;
   try {
     if (formType === "order" && body.order) {
       const id = newId("ord");
       const o: StudioOrder = {
         id,
-        ref: body.order.ref,
+        ref: (body.order.ref || "").trim() || `CC-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
         createdAt: now,
         updatedAt: now,
         name: body.name || "",
@@ -109,7 +112,16 @@ export async function POST(req: Request) {
         stripeSessionId: null,
       };
       await saveOrder(o);
+      orderId = id;
       officeLink = `${officeBase()}/office/orders/${id}`;
+      alert = carol.newOrder(o);
+      // The buyer hears back right away, email and text.
+      try {
+        const r = await sendOrderReceived(o);
+        if (r.email || r.sms) await saveOrder({ ...o, confirmationSentAt: new Date().toISOString() });
+      } catch (e) {
+        console.error("[lead] order confirmation:", e);
+      }
     } else {
       const id = newId("inq");
       const kind: InquiryKind = KIND[formType] || "other";
@@ -131,13 +143,15 @@ export async function POST(req: Request) {
       };
       await saveInquiry(i);
       officeLink = `${officeBase()}/office/inbox/${id}`;
+      const about = (extraFields.Artwork || "").replace(/\s*\(.*$/, "").trim() || null;
+      alert = kind === "newsletter" ? carol.newsletter(body.email || "") : carol.inquiry(kind, id, body.name, about);
     }
   } catch (err) {
     // Read-only deployment (no database yet) or a hiccup: the email below still goes out.
     console.error("[lead] could not save to the office:", err);
   }
 
-  // 2. Email Carol.
+  // 2. Tell Carol, email and text. Newsletter signups are quiet.
   const known: LeadField[] = [
     ["Name", body.name],
     ["Email", body.email],
@@ -146,39 +160,19 @@ export async function POST(req: Request) {
     ["Message", body.message],
   ];
   const extra: LeadField[] = Object.entries(extraFields).map(([k, v]) => [k, v] as LeadField);
-  const replyTo = body.email && EMAIL_RE.test(body.email) ? { email: body.email, name: body.name } : undefined;
-
-  let to: string[] | undefined;
-  let phones: string[] = [];
-  try {
-    const s = await getSettings();
-    to = [s.notifyEmail, ...EXTRA_ALERT_EMAILS].filter((e) => e && EMAIL_RE.test(e));
-    phones = [...new Set([s.notifyPhone, ...EXTRA_ALERT_PHONES].map((p) => p.replace(/\D/g, "")).filter((p) => p.length >= 10))];
-  } catch {
-    /* defaults inside sendLead */
+  // If saving failed (no database yet) fall back to a plain wording so Carol still hears.
+  const fallback = carol.inquiry(KIND[formType] || "other", "", body.name);
+  if (formType !== "newsletter" || !process.env.BREVO_API_KEY) {
+    await alertCarol({
+      subject: alert?.subject || subject,
+      sms: alert ? alert.sms : fallback.sms.replace(/ \S+\/q\/$/, ""),
+      fields: [...known, ...extra],
+      link: officeLink,
+    });
   }
-
-  // 3. Text her (and a second number) unless it is only a newsletter signup.
-  if (phones.length && formType !== "newsletter") {
-    const who = body.name || body.email || "Someone";
-    const line =
-      formType === "order" && body.order
-        ? `New sale request from ${who}: ${money(Number(body.order.subtotal || 0))} for ${body.order.items.map((i) => i.name).join(", ")}.`
-        : `New ${(KIND[formType] || "message").replace("inquiry", "artwork inquiry").replace("contact", "message")} from ${who}${body.message ? `: "${body.message.slice(0, 90)}${body.message.length > 90 ? "…" : ""}"` : "."}`;
-    await Promise.all(phones.map((p) => sendSms(p, `${line} Open: ${officeLink}`)));
-  }
-
-  const res = await sendLead({
-    subject,
-    fields: [...known, ...extra],
-    replyTo,
-    to,
-    footer: `Open it in your Studio Office: ${officeLink}`,
-  });
-  if (res.skipped) {
+  if (!process.env.BREVO_API_KEY) {
     console.log("[lead:" + subject + "]", JSON.stringify([...known, ...extra]));
-    return Response.json({ ok: true, skipped: true });
+    return Response.json({ ok: true, skipped: true, orderId, pay: Boolean(orderId) && stripeEnabled() });
   }
-  // The message is already saved; a failed email should not show the visitor an error.
-  return Response.json({ ok: true, skipped: false, emailed: res.ok });
+  return Response.json({ ok: true, skipped: false, orderId, pay: Boolean(orderId) && stripeEnabled() });
 }

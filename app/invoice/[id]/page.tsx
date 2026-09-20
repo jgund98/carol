@@ -8,6 +8,10 @@ import { getInvoice, saveInvoice } from "@/lib/studio/invoices";
 import { getOrder, getSettings, saveOrder } from "@/lib/studio/store";
 import { sessionPaid, stripeEnabled } from "@/lib/studio/stripe";
 import { fmtMoney } from "@/lib/studio/invoice-shared";
+import { sendPaymentReceipt } from "@/lib/studio/customer-notify";
+import { alertCarol } from "@/lib/studio/alerts";
+import { carol } from "@/lib/studio/texts";
+import { officeBase } from "@/lib/studio/mail";
 import InvoiceDocument from "@/components/office/InvoiceDocument";
 import PrintButton from "@/components/office/PrintButton";
 import "../../office/office.css";
@@ -25,9 +29,24 @@ export default async function PublicInvoice({ params, searchParams }: { params: 
     const now = new Date().toISOString();
     inv = { ...inv, status: "paid", paidAt: now, paidHow: "card", stripeSessionId: session_id };
     await saveInvoice(inv);
+    try {
+      const r = await sendPaymentReceipt(inv);
+      if (r.email || r.sms) await saveInvoice({ ...inv, receiptSentAt: now });
+    } catch (e) {
+      console.error("[invoice] receipt:", e);
+    }
     if (inv.orderId) {
       const o = await getOrder(inv.orderId);
       if (o && (o.status === "new" || o.status === "contacted")) await saveOrder({ ...o, status: "paid", paidAt: now, stripeSessionId: session_id });
+    }
+    try {
+      await alertCarol({
+        ...carol.invoicePaid(inv),
+        fields: [["Buyer", inv.name], ["Email", inv.email], ["Phone", inv.phone], ["Invoice", inv.number], ["Amount", fmtMoney(inv.totalCents)], ["For", inv.items.map((i) => i.description).join(", ")]],
+        link: `${officeBase()}/office/invoices/${inv.id}`,
+      });
+    } catch (e) {
+      console.error("[invoice] alert:", e);
     }
   }
 

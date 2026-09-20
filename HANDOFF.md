@@ -49,8 +49,12 @@ Screens: **Today** (what is waiting, gold dots, count in the browser tab), **Inq
 ### Wiping the sample data later
 Delete rows whose id starts with `demo_` from `studio_inquiry` and `studio_order` (Neon console → carol-studio → SQL: `DELETE FROM studio_inquiry WHERE id LIKE 'demo_%'; DELETE FROM studio_order WHERE id LIKE 'demo_%';`).
 
-### Still to come
-Card payments at checkout (order rows already carry `stripeSessionId` / `paidAt`); text alerts (Settings stores a number). `BREVO_API_KEY` must be set in Vercel for emails.
+### Notifications + card payments (2026-09-20)
+- **Every text and subject line lives in `lib/studio/texts.ts`** (`carol.*` to her, `buyer.*` to clients). Texts are GSM-7 only, at most 160 characters (one segment, never MMS), and carry short links: `/o /q /v/<id>` open an order / inquiry / invoice in the office (via /login?next=... when signed out), `/i/<id>` the buyer invoice, `/p/<id>` pays a website order by card, `/t/<id>` the carrier tracking page. Review all wording with `npx tsx scripts/notif-copy.ts`. `lib/studio/sms.ts` squeezes anything to GSM-7 and warns if it would split.
+- **To Carol** (`lib/studio/alerts.ts`, recipients = Settings + `lib/studio/notify.ts`; during testing jgundyt@gmail.com + 561-324-9522): new order request, order paid by card, invoice paid by card, every inquiry type (newsletter = email only). Branded email (her signature, `lib/studio/mail.ts` shell) + text.
+- **To buyers** (`lib/studio/customer-notify.ts`): order received (with a Pay-by-card button when Stripe is on), receipt when paid by card, shipped (only once a tracking number is saved; sent once per number), invoice sent, invoice receipt, overdue-invoice reminder (daily cron `/api/cron/invoice-reminders`, `vercel.json`, first reminder after due, every 3 days, max 3).
+- **Stripe** (`lib/studio/stripe.ts`, on when `STRIPE_SECRET_KEY` is set, Epic's key as placeholder): the amount Stripe charges is exactly the invoice lines (cents) or the order's pieces at their listed prices, one line item each. Website checkout saves the request, then hands off to `/p/<id>` -> Stripe Checkout -> `/checkout/paid?session_id=` verifies server-side, marks the order Paid, alerts Carol, receipts the buyer. Invoices: Pay button on `/invoice/<id>` -> `/api/invoice/<id>/checkout` -> back to the invoice with `session_id`. No webhook yet (verification happens on return).
+- Still to do: paste the RAW `xkeysib-...` Brevo key into Vercel (the one on file is base64-wrapped and sends nothing), add `STRIPE_SECRET_KEY`, register a 10DLC number for `BREVO_SMS_SENDER`, switch alert recipients to Carol, wipe `demo_*`.
 
 ### Verify locally
 `pnpm dev` (port 3540), sign in at /login, then `MSYS_NO_PATHCONV=1 node scripts/office-test.js` runs the full add-a-piece flow headlessly and screenshots every office screen at phone and desktop sizes into `shots/office/`.

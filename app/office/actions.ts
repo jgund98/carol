@@ -28,6 +28,7 @@ import {
 import { removeStored } from "@/lib/studio/images";
 import { emailInvoice, getInvoice, newInvoice, nextNumber, saveInvoice, textInvoice } from "@/lib/studio/invoices";
 import type { InvoiceItem } from "@/lib/studio/invoice-shared";
+import { sendOrderShipped, sendPaymentReceipt } from "@/lib/studio/customer-notify";
 import type { Kind, Work } from "@/lib/works";
 import type { CollectionDef, OrderStatus, Settings } from "@/lib/studio/types";
 
@@ -54,12 +55,13 @@ export async function loginAction(formData: FormData): Promise<void> {
   const user = String(formData.get("user") || "");
   const password = String(formData.get("password") || "");
   const remember = formData.get("remember") !== "off";
+  const next = String(formData.get("next") || "");
   if (!checkCredentials(user, password)) {
     await new Promise((r) => setTimeout(r, 600));
-    redirect("/login?wrong=1");
+    redirect(`/login?wrong=1${next ? `&next=${encodeURIComponent(next)}` : ""}`);
   }
   await signIn(remember);
-  redirect("/office/home");
+  redirect(/^\/office\/[\w\-/]*$/.test(next) ? next : "/office/home");
 }
 
 export async function logoutAction(): Promise<void> {
@@ -310,23 +312,31 @@ export async function saveOrderNotesAction(id: string, notes: string): Promise<R
   }
 }
 
-export async function saveShippingAction(id: string, carrier: string, tracking: string): Promise<Result> {
+export async function saveShippingAction(id: string, carrier: string, tracking: string): Promise<Result<{ told?: boolean }>> {
   await guard();
   try {
     const o = await getOrder(id);
     if (!o) return { ok: false, error: "That order is gone." };
     const now = new Date().toISOString();
     const hasShip = Boolean(carrier.trim() || tracking.trim());
-    await saveOrder({
+    let next: typeof o = {
       ...o,
       carrier: carrier.trim() || null,
       tracking: tracking.trim() || null,
       // adding shipping details moves a paid order along to Shipped automatically
       status: hasShip && (o.status === "paid" || o.status === "contacted" || o.status === "new") ? "shipped" : o.status,
       shippedAt: hasShip ? o.shippedAt ?? now : o.shippedAt,
-    });
+    };
+    // The buyer is told only when there is a tracking number, and only once per number.
+    let told = false;
+    if (next.tracking && next.tracking !== o.shippedNoticeFor) {
+      const r = await sendOrderShipped(next);
+      told = r.email || r.sms;
+      if (told) next = { ...next, shippedNoticeFor: next.tracking };
+    }
+    await saveOrder(next);
     revalidatePath("/office", "layout");
-    return { ok: true };
+    return told ? { ok: true, told: true } : { ok: true };
   } catch (e) {
     return { ok: false, error: explain(e) };
   }
@@ -449,7 +459,12 @@ export async function markInvoiceAction(id: string, status: "paid" | "void" | "s
   try {
     const inv = await getInvoice(id);
     if (!inv) return { ok: false, error: "That invoice is gone." };
-    await saveInvoice({ ...inv, status, paidAt: status === "paid" ? inv.paidAt ?? new Date().toISOString() : null });
+    let next = { ...inv, status, paidAt: status === "paid" ? inv.paidAt ?? new Date().toISOString() : null };
+    if (status === "paid" && !inv.receiptSentAt) {
+      const r = await sendPaymentReceipt(next);
+      if (r.email || r.sms) next = { ...next, receiptSentAt: new Date().toISOString() };
+    }
+    await saveInvoice(next);
     // a paid invoice tied to an order marks the order paid too
     if (status === "paid" && inv.orderId) {
       const o = await getOrder(inv.orderId);

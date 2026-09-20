@@ -21,7 +21,8 @@ const SEED_COLLECTIONS: CollectionDef[] = seedCollections.map((c, i) => ({
 }));
 
 const DEFAULT_SETTINGS: Settings = {
-  notifyEmail: process.env.LEAD_TO_EMAIL || "Carol@carolcalicchioart.com",
+  // TESTING: alerts go to Jordan. Switch to "Carol@carolcalicchioart.com" (or set it in Settings) when she takes over.
+  notifyEmail: process.env.LEAD_TO_EMAIL || "jgundyt@gmail.com",
   notifyEmail2: "",
   notifyPhone: "",
   notifyPhone2: "",

@@ -8,9 +8,9 @@ import { loginAction } from "@/app/office/actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ wrong?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ wrong?: string; next?: string }> }) {
   if (await isSignedIn()) redirect("/office/home");
-  const { wrong } = await searchParams;
+  const { wrong, next } = await searchParams;
 
   return (
     <div className="office">
@@ -43,6 +43,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <h1 className="o-h1 mt-1">Sign in.</h1>
 
               <form action={loginAction} className="mt-4 grid gap-3.5 sm:mt-7 sm:gap-5">
+                {next && next.startsWith("/office/") && <input type="hidden" name="next" value={next} />}
                 <label className="o-field">
                   <span>Name</span>
                   <div className="relative">

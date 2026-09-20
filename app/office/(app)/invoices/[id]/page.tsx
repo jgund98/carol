@@ -32,6 +32,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
           {inv.paidAt && (
             <section className="o-card-soft p-4 text-[0.9rem]">
               <p className="font-semibold text-[var(--o-green)]">Paid {fullDate(inv.paidAt)}{inv.paidHow === "card" ? " by card" : ""}</p>
+              {inv.receiptSentAt && <p className="text-[var(--o-soft)]">Receipt sent to the buyer.</p>}
             </section>
           )}
         </aside>
