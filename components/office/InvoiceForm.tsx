@@ -1,6 +1,6 @@
 "use client";
 // Write an invoice: who, what, how much. Saves as a draft; sending is the next screen.
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { createInvoiceAction, type InvoiceInput } from "@/app/office/actions";
@@ -23,13 +23,23 @@ export default function InvoiceForm({ initial }: { initial?: Partial<InvoiceInpu
   const setRow = (i: number, patch: Partial<Row>) => setRows((rs) => rs.map((r, k) => (k === i ? { ...r, ...patch } : r)));
   const cents = (s: string) => Math.round((parseFloat(s.replace(/[^\d.]/g, "")) || 0) * 100);
   const total = rows.reduce((n, r) => n + cents(r.amount), 0);
-  const ready = name.trim() && (email.trim() || phone.trim()) && rows.some((r) => r.description.trim() && cents(r.amount) > 0);
+  const phoneDigits = phone.replace(/D/g, "");
+  const phoneShort = phone.trim() !== "" && phoneDigits.length < 10;
+  const hasLine = rows.some((r) => r.description.trim() && cents(r.amount) > 0);
+  const missing = !name.trim() ? "Add their name." : !(email.trim() || phone.trim()) ? "Add an email or a mobile number so it can be sent." : phoneShort ? "That mobile number is too short. It needs 10 digits." : !hasLine ? "Add what the invoice is for and the amount, below." : "";
+  const ready = !missing;
+  const linesRef = useRef<HTMLElement>(null);
 
   return (
     <form
       className="grid gap-3 sm:gap-5 lg:grid-cols-[1.25fr_0.85fr] lg:items-start"
       onSubmit={(e) => {
         e.preventDefault();
+        if (missing) {
+          toast(missing, "error");
+          if (!hasLine && name.trim()) linesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
         start(async () => {
           const r = await createInvoiceAction({
             name,
@@ -68,7 +78,7 @@ export default function InvoiceForm({ initial }: { initial?: Partial<InvoiceInpu
           </div>
         </section>
 
-        <section className="o-card p-4 sm:p-7">
+        <section ref={linesRef} className="o-card scroll-mt-24 p-4 sm:p-7">
           <h2 className="o-h2 mb-4">What it is for</h2>
           <div className="grid gap-3">
             {rows.map((r, i) => (
@@ -109,14 +119,16 @@ export default function InvoiceForm({ initial }: { initial?: Partial<InvoiceInpu
 
       <aside className="hidden lg:sticky lg:top-12 lg:block">
         <div className="o-card p-5">
-          <button type="submit" disabled={!ready || busy} className="btn btn-pink w-full">
+          <button type="submit" disabled={busy} className={`btn btn-pink w-full ${ready ? "" : "opacity-70"}`}>
             {busy ? "Sending…" : "Save and send"}
           </button>
+          {!ready && <p className="o-muted mt-2 text-center text-[0.9rem]">{missing}</p>}
         </div>
       </aside>
       <div className="fixed inset-x-0 bottom-[calc(var(--o-tab-h)+env(safe-area-inset-bottom))] z-50 border-t border-[var(--o-hair)] bg-[rgba(251,249,245,0.94)] px-4 py-3 backdrop-blur-xl lg:hidden">
-        <button type="submit" disabled={!ready || busy} className="btn btn-pink w-full">
-          {busy ? "Saving…" : "Save and continue"}
+        {!ready && <p className="o-muted mb-2 text-center text-[0.88rem]">{missing}</p>}
+        <button type="submit" disabled={busy} className={`btn btn-pink w-full ${ready ? "" : "opacity-70"}`}>
+          {busy ? "Sending…" : "Save and send"}
         </button>
       </div>
     </form>
