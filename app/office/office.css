@@ -245,6 +245,24 @@ a.o-row:active {
   color: rgba(18, 23, 43, 0.35);
 }
 /* room for a leading icon (Tailwind's pl-* loses to the rule above) */
+/* small pencil beside a piece title (order page) */
+.office .o-editlink {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  border-radius: 999px;
+  color: var(--o-soft);
+  border: 1px solid var(--o-line);
+  background: #fff;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.office .o-editlink:hover {
+  color: var(--o-ink);
+  border-color: var(--o-ink);
+}
+
 .o-in.o-in-icon {
   padding-left: 3rem !important;
 }

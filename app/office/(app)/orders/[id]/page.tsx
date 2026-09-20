@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { MapPin, Pencil } from "lucide-react";
 import { getOrder, getWorkBySlug } from "@/lib/studio/store";
 import { money } from "@/lib/site";
 import { ContactButtons, OrderStatusChip, PageHead, Thumb, fullDate } from "@/components/office/ui";
@@ -32,9 +32,16 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                   <div className="flex items-center gap-4">
                     <Thumb work={work ?? { ...it, imageSm: it.image, iw: 4, ih: 5, kind: "painting" }} size={72} />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[1.08rem] font-semibold leading-tight">
-                        {it.name}
-                        {it.qty > 1 ? ` × ${it.qty}` : ""}
+                      <p className="flex items-start gap-2 text-[1.08rem] font-semibold leading-tight">
+                        <span className="min-w-0">
+                          {it.name}
+                          {it.qty > 1 ? ` × ${it.qty}` : ""}
+                        </span>
+                        {work && work.kind !== "book" && (
+                          <Link href={`/office/artwork/${work.slug}`} aria-label={`Edit ${work.name}`} title="Edit the piece" className="o-editlink">
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Link>
+                        )}
                       </p>
                       <p className="text-[0.88rem] text-[var(--o-soft)]">{it.dims ?? work?.medium ?? ""}</p>
                       <div className="mt-1.5">
@@ -60,9 +67,6 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                           Put it back for sale
                         </ActionButton>
                       )}
-                      <Link href={`/office/artwork/${work.slug}`} className="btn btn-line btn-sm">
-                        Edit the piece
-                      </Link>
                     </div>
                   )}
                 </li>
@@ -129,7 +133,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
               <ContactButtons name={o.name} phone={o.phone} email={o.email} subject={`Your order ${o.ref} from Carol Calicchio Art`} />
               {(o.status === "new" || o.status === "contacted") && (
-                <Link href={`/office/invoices/new?order=${o.id}`} className="btn btn-pink btn-sm">
+                <Link href={`/office/invoices/new?order=${o.id}`} className="btn btn-line btn-sm">
                   Send an invoice
                 </Link>
               )}
