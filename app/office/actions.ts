@@ -454,7 +454,7 @@ export async function saveSettingsAction(input: Settings): Promise<Result> {
   try {
     const email = input.notifyEmail.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: "That first email address does not look right." };
-    await saveSettings({ notifyEmail: email, notifyEmail2: input.notifyEmail2.trim(), notifyPhone: input.notifyPhone.trim(), notifyPhone2: input.notifyPhone2.trim(), textAlerts: Boolean(input.textAlerts), payInstructions: input.payInstructions.trim() });
+    await saveSettings({ ...input, notifyEmail: email, notifyEmail2: "", notifyPhone: input.notifyPhone.trim(), notifyPhone2: "", textAlerts: true, payInstructions: input.payInstructions.trim() });
     revalidatePath("/office", "layout");
     return { ok: true };
   } catch (e) {

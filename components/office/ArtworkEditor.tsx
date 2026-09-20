@@ -2,7 +2,7 @@
 // The one screen where a piece is made or changed. Big fields, one column on a
 // phone, a live preview of the shop card and the true-to-scale view, and a
 // Save bar that never scrolls away.
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowUpToLine, Check, RotateCcw } from "lucide-react";
 import type { Kind, Work } from "@/lib/works";
@@ -99,8 +99,26 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
   }, [currentPhoto, work, name, priceNum, status, effectiveMedium, width, height, colls, shownDescription, story, kind, featured]);
 
   const canSave = name.trim().length > 0 && Boolean(currentPhoto) && !busy;
+  const needsPrice = status === "sale" && priceNum <= 0;
+
+  // Leaving with unsaved changes should ask first (the browser's own dialog).
+  const snapshot = JSON.stringify({ name, price, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, featured, photo });
+  const [saved, setSaved] = useState(snapshot);
+  const dirty = snapshot !== saved;
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
 
   function save() {
+    if (needsPrice) {
+      toast("Set a price, or change the status to On hold or Hidden.", "error");
+      return;
+    }
     start(async () => {
       const r = await saveWorkAction({
         slug: work?.slug,
@@ -124,6 +142,7 @@ export default function ArtworkEditor({ work, collections, mediums }: { work?: W
       if (status === "hidden") toast("Saved. It is hidden from the website until you change its status.");
       else toast(r.created ? "Saved. It is live at the top of the shop." : "Saved. The website is updated.", "ok", { href: `/shop/${r.slug}`, label: "See it" });
       setPhoto(null);
+      setSaved(JSON.stringify({ name, price, status, kind, medium, customMedium, width, height, colls, description, descTouched, story, featured, photo: null }));
       if (r.created) router.replace(`/office/artwork/${r.slug}`);
       else router.refresh();
     });

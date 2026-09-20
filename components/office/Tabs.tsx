@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export function Tabs({ tabs, current }: { tabs: { key: string; label: string; count?: number; href: string }[]; current: string }) {
   return (
-    <nav className="mb-4 grid gap-1 rounded-full bg-[rgba(18,23,43,0.06)] p-1" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }} aria-label="Filter">
+    <nav className="mb-4 grid gap-1 rounded-full bg-[rgba(18,23,43,0.06)] p-1 sm:max-w-md" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }} aria-label="Filter">
       {tabs.map((t) => {
         const on = t.key === current;
         return (
@@ -33,7 +33,7 @@ export function SelectFilter({ value, options, base, param, label }: { value: st
           if (e.target.value !== "all") url.searchParams.set(param, e.target.value);
           router.push(url.pathname + url.search);
         }}
-        className="o-in !min-h-[2.4rem] !w-auto !py-1 !pl-3 !pr-9 !text-[0.9rem]"
+        className="o-in !min-h-[2.6rem] !w-auto !py-1 !pl-3 !pr-9"
       >
         {options.map((o) => (
           <option key={o.key} value={o.key}>

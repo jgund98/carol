@@ -25,7 +25,5 @@ export type StudioInvoice = {
 
 export const fmtMoney = (cents: number) => (cents % 100 === 0 ? `$${(cents / 100).toLocaleString("en-US")}` : `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
 
-export function fmtDate(iso: string): string {
-  const d = new Date(iso.length === 10 ? `${iso}T12:00:00` : iso);
-  return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-}
+import { calendarDate } from "./time";
+export const fmtDate = calendarDate;

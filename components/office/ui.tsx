@@ -37,25 +37,8 @@ export function Empty({ title, text, action }: { title: string; text?: string; a
   );
 }
 
-/* ───── time ───── */
-
-export function timeAgo(iso: string): string {
-  const d = new Date(iso).getTime();
-  const s = Math.max(0, (Date.now() - d) / 1000);
-  if (s < 60) return "just now";
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m} minute${m === 1 ? "" : "s"} ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h} hour${h === 1 ? "" : "s"} ago`;
-  const days = Math.floor(h / 24);
-  if (days === 1) return "yesterday";
-  if (days < 7) return `${days} days ago`;
-  return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric" });
-}
-
-export function fullDate(iso: string): string {
-  return new Date(iso).toLocaleString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
-}
+/* ───── time (studio time, see lib/studio/time.ts) ───── */
+export { timeAgo, fullDate } from "@/lib/studio/time";
 
 /* ───── chips ───── */
 

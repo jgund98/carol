@@ -26,31 +26,14 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
       }}
     >
       <label className="o-field">
-        <span>Send new inquiries and orders to</span>
+        <span>Email alerts to</span>
         <input type="email" required value={s.notifyEmail} onChange={(e) => setS({ ...s, notifyEmail: e.target.value })} className="o-in" placeholder="Carol@carolcalicchioart.com" />
-        <span className="o-help">Every message and order also lands in this office, so nothing depends on email alone.</span>
-      </label>
+              </label>
       <label className="o-field">
-        <span>Also send a copy to · optional</span>
-        <input type="email" value={s.notifyEmail2} onChange={(e) => setS({ ...s, notifyEmail2: e.target.value })} className="o-in" placeholder="An assistant or a family member" />
+        <span>Text alerts to</span>
+        <input type="tel" value={s.notifyPhone} onChange={(e) => setS({ ...s, notifyPhone: e.target.value })} className="o-in" placeholder="561-400-0678" />
+        <span className="o-help">A short text for every new inquiry and order.</span>
       </label>
-      <div className="border-t border-[var(--o-hair)] pt-5">
-        <label className="o-choice relative mb-4" data-on={s.textAlerts}>
-          <input type="checkbox" checked={s.textAlerts} onChange={() => setS({ ...s, textAlerts: !s.textAlerts })} />
-          <span className="o-choice-dot" />
-          Text me when something comes in
-        </label>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="o-field">
-            <span>Mobile number</span>
-            <input type="tel" value={s.notifyPhone} onChange={(e) => setS({ ...s, notifyPhone: e.target.value })} className="o-in" placeholder="561-400-0678" />
-          </label>
-          <label className="o-field">
-            <span>Second number · optional</span>
-            <input type="tel" value={s.notifyPhone2} onChange={(e) => setS({ ...s, notifyPhone2: e.target.value })} className="o-in" placeholder="An assistant or family member" />
-          </label>
-        </div>
-      </div>
       <label className="o-field border-t border-[var(--o-hair)] pt-5">
         <span>How buyers can pay you · shown on invoices</span>
         <textarea value={s.payInstructions} onChange={(e) => setS({ ...s, payInstructions: e.target.value })} rows={3} className="o-in" placeholder="Card, PayPal, wire, check, Zelle…" />

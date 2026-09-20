@@ -7,7 +7,7 @@ import { CARRIERS } from "@/lib/studio/types";
 import { money } from "@/lib/site";
 import { recordRefundAction, saveShippingAction } from "@/app/office/actions";
 import { useToast } from "./Toast";
-import { fullDate } from "./ui";
+import { fullDate } from "@/lib/studio/time";
 
 export function ShippingBox({ id, carrier, tracking, shippedAt, deliveredAt }: { id: string; carrier: string | null; tracking: string | null; shippedAt: string | null; deliveredAt: string | null }) {
   const [c, setC] = useState(carrier ?? "");

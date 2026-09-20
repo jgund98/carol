@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sun, Inbox, ShoppingBag, Palette, Layers, Camera, Settings, ExternalLink, LogOut, Plus, FileText, X } from "lucide-react";
+import { Sun, Inbox, ShoppingBag, Palette, Layers, Settings, ExternalLink, LogOut, Plus, FileText, X } from "lucide-react";
 import { logoutAction } from "@/app/office/actions";
 
 type Counts = { inquiries: number; orders: number };
@@ -18,7 +18,6 @@ const ITEMS = [
   { href: "/office/artwork", label: "Artwork", Icon: Palette },
   { href: "/office/invoices", label: "Invoices", Icon: FileText },
   { href: "/office/collections", label: "Collections", Icon: Layers },
-  { href: "/office/guide", label: "Photo guide", Icon: Camera },
   { href: "/office/settings", label: "Settings", Icon: Settings },
 ];
 

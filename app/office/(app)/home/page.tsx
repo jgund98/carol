@@ -1,14 +1,10 @@
 // Today: what is waiting, at a glance, in the order it came in.
 import Link from "next/link";
 import { listInquiries, listOrders } from "@/lib/studio/store";
+import { dayLine, greeting } from "@/lib/studio/time";
 import { money } from "@/lib/site";
 import { KindChip, PageHead, Row, Thumb, timeAgo, personLine } from "@/components/office/ui";
 import SalesPanel, { type SlimOrder } from "@/components/office/SalesPanel";
-
-function greeting() {
-  const h = new Date().getHours();
-  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
-}
 
 export default async function Today() {
   const [inq, ord] = await Promise.all([listInquiries(), listOrders()]);
@@ -19,7 +15,7 @@ export default async function Today() {
     ...newInq.map((i) => ({ kind: "inquiry" as const, at: i.createdAt, i })),
   ].sort((a, b) => b.at.localeCompare(a.at));
   const total = waiting.length;
-  const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  const today = dayLine();
   const slim: SlimOrder[] = ord.map((o) => ({ id: o.id, name: o.name || "Someone", subtotal: o.subtotal, status: o.status, createdAt: o.createdAt, paidAt: o.paidAt, refundAmount: o.refundAmount, pieces: o.items.reduce((n, i) => n + i.qty, 0), first: o.items[0]?.name ?? "" }));
 
   return (

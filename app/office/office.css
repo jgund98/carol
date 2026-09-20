@@ -211,11 +211,10 @@ a.o-row:active {
 .o-field > span:first-child,
 .o-field-label {
   display: block;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 1.08rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   color: rgba(18, 23, 43, 0.72);
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.4rem;
 }
 .o-help {
   display: block;
@@ -345,9 +344,10 @@ select.o-in {
   color: #fff;
 }
 .btn:disabled {
-  opacity: 0.55;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none !important;
+  box-shadow: none;
 }
 
 /* navigation */
@@ -585,7 +585,7 @@ select.o-in {
   }
   .o-field > span:first-child,
   .o-field-label {
-    font-size: 1rem;
+    font-size: 0.88rem;
     margin-bottom: 0.3rem;
   }
   .o-tab {
@@ -611,6 +611,16 @@ select.o-in {
     height: 2.4rem;
     padding: 0 1rem;
     font-size: 0.82rem;
+  }
+}
+
+@media print {
+  .office::before,
+  .office::after {
+    display: none;
+  }
+  .office {
+    background: #fff;
   }
 }
 

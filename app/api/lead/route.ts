@@ -5,6 +5,7 @@
 import { sendLead, type LeadField } from "@/lib/lead-email";
 import { sendSms } from "@/lib/studio/sms";
 import { money } from "@/lib/site";
+import { EXTRA_ALERT_EMAILS, EXTRA_ALERT_PHONES } from "@/lib/studio/notify";
 import { getSettings, newId, saveInquiry, saveOrder } from "@/lib/studio/store";
 import type { Inquiry, InquiryKind, OrderItem, StudioOrder } from "@/lib/studio/types";
 
@@ -151,8 +152,8 @@ export async function POST(req: Request) {
   let phones: string[] = [];
   try {
     const s = await getSettings();
-    to = [s.notifyEmail, s.notifyEmail2].filter((e) => e && EMAIL_RE.test(e));
-    if (s.textAlerts) phones = [s.notifyPhone, s.notifyPhone2].filter(Boolean);
+    to = [s.notifyEmail, ...EXTRA_ALERT_EMAILS].filter((e) => e && EMAIL_RE.test(e));
+    phones = [s.notifyPhone, ...EXTRA_ALERT_PHONES].filter(Boolean);
   } catch {
     /* defaults inside sendLead */
   }

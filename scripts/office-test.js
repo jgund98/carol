@@ -46,14 +46,7 @@ async function main() {
   await sleep(300);
   await page.screenshot({ path: path.join(OUT, "m-crop-dragged.png") });
 
-  const looks = await page.$$("button");
-  for (const b of looks) {
-    const t = await b.evaluate((el) => el.textContent);
-    if (/Looks right/.test(t)) {
-      await b.click();
-      break;
-    }
-  }
+  await page.evaluate(() => { const b = [...document.querySelectorAll("button")].find((x) => /Looks right/.test(x.textContent || "")); b && b.click(); });
   await page.waitForFunction(() => document.body.innerText.includes("New photo ready"), { timeout: 60000 });
   await sleep(400);
   await page.screenshot({ path: path.join(OUT, "m-photo-ready.png") });
@@ -78,15 +71,7 @@ async function main() {
   void desc;
   await page.screenshot({ path: path.join(OUT, "m-editor-filled.png") });
 
-  const saveBtn = (await page.$$("button")).filter(async () => true);
-  for (const b of saveBtn) {
-    const t = await b.evaluate((el) => el.textContent);
-    const vis = await b.evaluate((el) => el.offsetParent !== null);
-    if (/Save and put it in the shop/.test(t) && vis) {
-      await b.click();
-      break;
-    }
-  }
+  await page.evaluate(() => { const b = [...document.querySelectorAll("button")].find((x) => /Save and put it in the shop/.test(x.textContent || "") && x.offsetParent !== null); b && b.click(); });
   await page.waitForFunction(() => location.pathname.startsWith("/office/artwork/test-piece"), { timeout: 30000 });
   await sleep(800);
   await page.screenshot({ path: path.join(OUT, "m-saved.png") });

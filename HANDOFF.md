@@ -38,6 +38,14 @@ Screens: **Today** (what is waiting, gold dots, count in the browser tab), **Inq
 - **Today:** greeting, one line (new inquiries · new sales · paid orders), Waiting for you, Sales panel (Today / 7 days / 30 days / All time; a sale = an order at Paid/Shipped/Delivered). New sales breathe faintly pink until opened.
 - Orders tabs: Open · Paid · All. Inquiries tabs: New · Handled · All + a type dropdown. Nothing but artwork can be removed.
 
+### Final polish (2026-09-20)
+- Every clock uses studio time (`lib/studio/time.ts`, America/New_York): greeting, dates, invoice dates.
+- Office has `loading.tsx` (skeleton while a tap loads), `error.tsx` and `not-found.tsx`.
+- Editor: leaving with unsaved changes asks first; "For sale" needs a price above $0.
+- Settings is just: alert email, alert mobile, how buyers can pay. Extra recipients are code, not UI: `lib/studio/notify.ts` (`EXTRA_ALERT_EMAILS`, `EXTRA_ALERT_PHONES`). Text alerts are always on when a number is set.
+- Photo guide is no longer in the nav (still at /office/guide, linked from the photo step). Phone + opens a sheet: add a piece / write an invoice.
+- Rigs: `scripts/office-test.js` and `scripts/invoice-test.js`. Never run `next build` while `next dev` is up; it corrupts .next/dev.
+
 ### Wiping the sample data later
 Delete rows whose id starts with `demo_` from `studio_inquiry` and `studio_order` (Neon console → carol-studio → SQL: `DELETE FROM studio_inquiry WHERE id LIKE 'demo_%'; DELETE FROM studio_order WHERE id LIKE 'demo_%';`).
 

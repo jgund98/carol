@@ -5,7 +5,7 @@ import { money } from "@/lib/site";
 import { dims } from "@/lib/catalog";
 import { ContactButtons, KindChip, PageHead, Thumb, fullDate, personLine } from "@/components/office/ui";
 import { ActionButton, NotesBox } from "@/components/office/Controls";
-import { saveInquiryNotesAction, setInquiryStatusAction } from "@/app/office/actions";
+import { saveInquiryNotesAction, setInquiryStatusAction, setWorkStatusAction } from "@/app/office/actions";
 
 export default async function InquiryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -73,6 +73,11 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
               <div className="mt-5 flex flex-wrap gap-2.5">
+                {!work.sold && (
+                  <ActionButton className="btn btn-ink btn-sm" done={`${work.name} is marked sold on the website.`} action={setWorkStatusAction} args={[work.slug, "sold"]}>
+                    Mark as sold
+                  </ActionButton>
+                )}
                 <Link href={`/office/artwork/${work.slug}`} className="btn btn-line btn-sm">
                   Edit this piece
                 </Link>
