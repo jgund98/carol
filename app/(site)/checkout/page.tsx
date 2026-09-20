@@ -1,15 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 import { useCart } from "@/components/cart/CartProvider";
 import { money, site } from "@/lib/site";
 import { dims, img } from "@/lib/catalog";
 
 export default function CheckoutPage() {
   const { items, subtotal } = useCart();
-  const cancelled = useSearchParams().get("cancelled") === "1";
+  const [cancelled, setCancelled] = useState(false);
+  useEffect(() => {
+    setCancelled(new URLSearchParams(window.location.search).get("cancelled") === "1");
+  }, []);
   const [state, setState] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState("");
   const [t0] = useState(() => Date.now());
