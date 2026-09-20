@@ -646,3 +646,32 @@ select.o-in {
   background: var(--o-pink);
   color: #fff;
 }
+
+/* Buyer invoice on a phone: the Pay button stays pinned at the bottom, no scrolling to find it. */
+@media (max-width: 639px) {
+  .office .o-paybar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    margin: 0;
+    max-width: none;
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--o-line);
+    box-shadow: 0 -8px 24px rgba(18, 23, 43, 0.08);
+  }
+  .office .o-paybar .btn {
+    width: 100%;
+    min-height: 3.25rem;
+    font-size: 1.05rem;
+  }
+  .office .o-has-paybar {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+}
+@media print {
+  .office .o-paybar { display: none; }
+}

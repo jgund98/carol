@@ -26,7 +26,15 @@ const clickText = (page, re) => page.evaluate((src) => { const r = new RegExp(sr
 
 /** Fill Stripe's hosted Checkout with the 4242 test card and pay. Resolves with the URL Stripe returned to. */
 async function payOnStripe(page) {
+  // payment methods sit in an accordion; open "Card" first
+  await page.waitForSelector("#payment-method-accordion-item-title-card", { timeout: 120000 });
+  await sleep(2000);
+  const radio = await page.$("#payment-method-accordion-item-title-card");
+  if (radio) { const box = await radio.boundingBox(); await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2); }
   await page.waitForSelector("#cardNumber, input[name=cardNumber]", { timeout: 60000 });
+  // no Link account: untick "save my information" so no phone number is demanded
+  const link = await page.$("#enableStripePass");
+  if (link && (await link.evaluate((el) => el.checked))) { const lb = await link.boundingBox(); await page.mouse.click(lb.x + lb.width / 2, lb.y + lb.height / 2); }
   await sleep(800);
   const type = async (sel, v) => { const el = await page.$(sel); if (!el) return false; await el.click({ clickCount: 3 }); await el.type(v, { delay: 20 }); return true; };
   await type("#cardNumber", "4242424242424242");
@@ -45,28 +53,31 @@ async function payOnStripe(page) {
 }
 
 (async () => {
-  const b = await puppeteer.launch({ headless: true, executablePath: "C:/Users/Lucky/.cache/puppeteer/chrome/win64-150.0.7871.24/chrome-win64/chrome.exe", args: ["--no-sandbox"] });
+  const b = await puppeteer.launch({ headless: true, protocolTimeout: 180000, executablePath: "C:/Users/Lucky/.cache/puppeteer/chrome/win64-150.0.7871.24/chrome-win64/chrome.exe", args: ["--no-sandbox"] });
   const token = createHash("sha256").update("carol-studio-office|carol|jordan123").digest("hex");
 
-  // ── 1. website purchase through Stripe ──
-  const buy = await fetch(`${BASE}/api/checkout`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: "Jordan Gundy", email: ME.email, phone: ME.phone, address: "210 Ocean Boulevard, Apt 4B", city: "Manalapan", state: "FL", zip: "33462", delivery: "White-glove delivery and installation", message: "Stripe test purchase.", items: [{ slug: PIECE, qty: 1 }] }) }).then((r) => r.json());
-  log("checkout session:", buy.ok ? buy.url.slice(0, 60) + "…" : JSON.stringify(buy));
-  if (!buy.ok) throw new Error("no session");
+  // ── 1. website purchase through Stripe (SKIP_BUY=1 reuses the newest paid order by Jordan Gundy) ──
   const buyer = await b.newPage();
+  await buyer.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36");
   await buyer.setViewport({ width: 1280, height: 900 });
-  await buyer.goto(buy.url, { waitUntil: "networkidle2" });
-  const back = await payOnStripe(buyer);
-  log("returned to:", back);
-  const thanks = await buyer.evaluate(() => document.body.innerText);
-  const ref = (thanks.match(/Order (CC-[A-Z0-9]+)/) || [])[1];
-  log("thank-you page:", /Thank you, Jordan/.test(thanks) ? "OK" : "MISSING", "| order", ref);
+  if (!process.env.SKIP_BUY) {
+    const buy = await fetch(`${BASE}/api/checkout`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: "Jordan Gundy", email: ME.email, phone: ME.phone, address: "210 Ocean Boulevard, Apt 4B", city: "Manalapan", state: "FL", zip: "33462", delivery: "White-glove delivery and installation", message: "Stripe test purchase.", items: [{ slug: PIECE, qty: 1 }] }) }).then((r) => r.json());
+    log("checkout session:", buy.ok ? buy.url.slice(0, 60) + "…" : JSON.stringify(buy));
+    if (!buy.ok) throw new Error("no session");
+    await buyer.goto(buy.url, { waitUntil: "networkidle2" });
+    const back = await payOnStripe(buyer);
+    log("returned to:", back);
+    const thanks = await buyer.evaluate(() => document.body.innerText);
+    log("thank-you page:", /Thank you, Jordan/.test(thanks) ? "OK" : "MISSING", "| order", (thanks.match(/Order (CC-[A-Z0-9]+)/) || [])[1]);
+  }
 
   // office
   const p = await b.newPage();
   await p.setCookie({ name: "cc_studio", value: token, domain: HOST, path: "/", secure: HOST !== "localhost" });
   await p.setViewport({ width: 1440, height: 1000 });
-  await p.goto(`${BASE}/office/orders?f=paid`, { waitUntil: "networkidle2" });
-  const orderHref = await p.evaluate((ref) => { const a = [...document.querySelectorAll("a")].find((a) => /\/office\/orders\/ord_/.test(a.getAttribute("href") || "") && (a.textContent || "").includes(ref)); return a ? a.getAttribute("href") : null; }, ref);
+  await p.goto(`${BASE}/office/orders?f=all`, { waitUntil: "networkidle2" });
+  await sleep(500);
+  const orderHref = process.env.ORDER_ID ? `/office/orders/${process.env.ORDER_ID}` : await p.evaluate(() => { const a = [...document.querySelectorAll("a")].find((a) => /\/office\/orders\/ord_/.test(a.getAttribute("href") || "") && /Jordan Gundy/.test(a.textContent || "")); return a ? a.getAttribute("href") : null; });
   log("order in office:", orderHref);
   if (!orderHref) throw new Error("order not found in office");
   await p.goto(`${BASE}${orderHref}`, { waitUntil: "networkidle2" });
@@ -75,10 +86,11 @@ async function payOnStripe(page) {
   log("piece on order page:", pieceState, "| payment:", await p.evaluate(() => (document.body.innerText.match(/Card \([^)]*\)/) || [""])[0]));
 
   // ── 2. partial refund from the office ($500) ──
-  log("refund button:", await clickText(p, /Refund this order/));
+  const canRefund = await clickText(p, /Refund this order/);
+  log("refund button:", canRefund);
   await sleep(500);
-  const amt = await p.$("div.o-money input.o-in");
-  await setVal(p, amt, "500");
+  const amt = canRefund ? await p.$("div.o-money input.o-in") : null;
+  if (amt) await setVal(p, amt, "500");
   const noteEl = await p.$('input.o-in[placeholder^="Changed their mind"]');
   if (noteEl) await setVal(p, noteEl, "Test partial refund");
   log("refund confirm:", await clickText(p, /Refund \$500 to their card/));
@@ -108,7 +120,7 @@ async function payOnStripe(page) {
   await buyer.waitForFunction(() => /checkout\.stripe\.com/.test(location.hostname), { timeout: 60000 });
   const back2 = await payOnStripe(buyer);
   log("returned to:", back2.replace(/k=[^&]+/, "k=…"));
-  log("invoice page says:", (await buyer.evaluate(() => document.body.innerText)).match(/Thank you, payment received|Paid[^\n]*/)?.[0]);
+  log("invoice page says:", (await buyer2.evaluate(() => document.body.innerText)).match(/Thank you, payment received|Paid[^\n]*/)?.[0]);
   await p.goto(invUrl, { waitUntil: "networkidle2" });
   await sleep(500);
   log("office invoice status:", await p.evaluate(() => (document.body.innerText.match(/\bPaid\b|Sent|Refunded/) || [""])[0]));

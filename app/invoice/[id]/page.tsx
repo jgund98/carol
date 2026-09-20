@@ -31,7 +31,7 @@ export default async function PublicInvoice({ params, searchParams }: { params: 
 
   return (
     <div className="office">
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-8 sm:py-14 print:p-0">
+      <main className={`mx-auto max-w-3xl px-4 py-8 sm:px-8 sm:py-14 print:p-0 ${open && stripeEnabled() ? "o-has-paybar" : ""}`}>
         {justPaid && (
           <div className="o-card mx-auto mb-5 max-w-2xl p-5 text-center print:hidden">
             <p className="o-h2 text-[var(--o-green)]">Thank you, payment received.</p>
@@ -40,7 +40,7 @@ export default async function PublicInvoice({ params, searchParams }: { params: 
         )}
         {err && <p className="o-card mx-auto mb-5 max-w-2xl p-4 text-center text-[0.95rem] text-[var(--o-red)] print:hidden">The payment page could not open just now. Please try again in a minute.</p>}
         {open && stripeEnabled() && (
-          <form method="post" action={`/api/invoice/${inv.id}/checkout?k=${inv.token}`} className="mx-auto mb-5 max-w-2xl print:hidden">
+          <form method="post" action={`/api/invoice/${inv.id}/checkout?k=${inv.token}`} className="o-paybar mx-auto mb-5 max-w-2xl print:hidden">
             <button type="submit" className="btn btn-pink w-full sm:w-auto">
               <CreditCard className="h-4 w-4" /> Pay {fmtMoney(inv.totalCents)} by card
             </button>
