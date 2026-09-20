@@ -106,7 +106,14 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
                   <MapPin className="h-3.5 w-3.5 text-pink" aria-hidden /> On view at {w.location}
                 </p>
               )}
-              <p className="display mt-6 text-[2rem]">{w.sold ? "Sold" : money(w.price)}</p>
+              {w.sold ? (
+                <p className="mt-6 flex flex-wrap items-baseline gap-3">
+                  <span className="display text-[2rem] text-sold line-through decoration-sold decoration-[3px]">{money(w.price)}</span>
+                  <span className="rounded-full bg-sold px-3 py-1 text-[0.72rem] font-bold tracking-[0.16em] text-white">SOLD</span>
+                </p>
+              ) : (
+                <p className="display mt-6 text-[2rem]">{money(w.price)}</p>
+              )}
               {!w.sold && w.stock != null && w.stock > 0 && <p className="mt-1 text-sm text-muted">{w.stock === 1 ? "Only one available" : `${w.stock} available`}</p>}
               {w.story && <p className="pretty mt-6 text-[1rem] leading-[1.7] text-ink/75">{w.story}</p>}
               <div className="mt-6">

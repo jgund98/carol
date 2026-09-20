@@ -30,7 +30,7 @@ export default function WorkCard({ work, priority = false, size = "md" }: { work
             className="object-cover"
           />
         </div>
-        {work.sold && <span className="absolute left-3 top-3 rounded-full bg-ink px-3 py-1 text-[0.65rem] font-bold tracking-[0.16em] text-white">SOLD</span>}
+        {work.sold && <span className="absolute left-3 top-3 rounded-full bg-sold px-3 py-1 text-[0.65rem] font-bold tracking-[0.16em] text-white">SOLD</span>}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[9%] bg-[linear-gradient(180deg,rgba(18,23,43,0.03),rgba(18,23,43,0.09))]" />
       </div>
       <div className="mt-4 flex items-start justify-between gap-3">
@@ -38,7 +38,14 @@ export default function WorkCard({ work, priority = false, size = "md" }: { work
           <p className="display text-[1.2rem] leading-tight">{work.name}</p>
           <p className="mt-1 text-[0.78rem] text-muted">{dims(work) ?? work.medium}</p>
         </div>
-        <p className="shrink-0 text-[0.9rem] font-semibold">{work.sold ? "Sold" : money(work.price)}</p>
+        {work.sold ? (
+          <p className="shrink-0 text-right text-[0.9rem] font-semibold">
+            <span className="text-sold line-through decoration-sold decoration-2">{money(work.price)}</span>
+            <span className="ml-2 text-[0.7rem] font-bold tracking-[0.14em] text-sold">SOLD</span>
+          </p>
+        ) : (
+          <p className="shrink-0 text-[0.9rem] font-semibold">{money(work.price)}</p>
+        )}
       </div>
     </Link>
   );

@@ -8,7 +8,7 @@ export default function AddToCart({ work }: { work: Work }) {
   if (work.sold)
     return (
       <div className="flex flex-wrap gap-3">
-        <span className="btn btn-line cursor-default">Sold</span>
+        <span className="btn btn-line cursor-default border-sold text-sold">Sold</span>
         <Link href={`/commissions?ref=${work.slug}`} className="btn btn-ink">
           Commission a similar piece
         </Link>
