@@ -153,7 +153,7 @@ export async function POST(req: Request) {
   try {
     const s = await getSettings();
     to = [s.notifyEmail, ...EXTRA_ALERT_EMAILS].filter((e) => e && EMAIL_RE.test(e));
-    phones = [s.notifyPhone, ...EXTRA_ALERT_PHONES].filter(Boolean);
+    phones = [...new Set([s.notifyPhone, ...EXTRA_ALERT_PHONES].map((p) => p.replace(/\D/g, "")).filter((p) => p.length >= 10))];
   } catch {
     /* defaults inside sendLead */
   }

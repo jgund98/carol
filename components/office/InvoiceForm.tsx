@@ -41,8 +41,8 @@ export default function InvoiceForm({ initial }: { initial?: Partial<InvoiceInpu
             items: rows.filter((x) => x.description.trim() && cents(x.amount) > 0).map((x) => ({ description: x.description.trim(), cents: cents(x.amount) })),
           });
           if (r.ok) {
-            toast("Invoice saved. Now send it.");
-            router.push(`/office/invoices/${r.id}`);
+            toast(r.sent.length ? `Invoice ${r.sent.join(" and ")} to ${name.trim().split(/\s+/)[0]}.` : "Invoice saved. It could not be sent automatically, use the buttons on the next screen.");
+            router.push(`/office/invoices/${r.id}${r.sent.length ? `?sent=${r.sent.join(",")}` : ""}`);
           } else toast(r.error, "error");
         });
       }}
@@ -110,7 +110,7 @@ export default function InvoiceForm({ initial }: { initial?: Partial<InvoiceInpu
       <aside className="hidden lg:sticky lg:top-12 lg:block">
         <div className="o-card p-5">
           <button type="submit" disabled={!ready || busy} className="btn btn-pink w-full">
-            {busy ? "Saving…" : "Save and continue"}
+            {busy ? "Sending…" : "Save and send"}
           </button>
         </div>
       </aside>

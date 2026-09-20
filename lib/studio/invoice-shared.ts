@@ -21,6 +21,7 @@ export type StudioInvoice = {
   paidAt: string | null;
   paidHow: string | null;
   orderId: string | null;
+  stripeSessionId: string | null;
 };
 
 export const fmtMoney = (cents: number) => (cents % 100 === 0 ? `$${(cents / 100).toLocaleString("en-US")}` : `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);

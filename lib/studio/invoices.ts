@@ -49,6 +49,7 @@ export function newInvoice(partial: Partial<StudioInvoice>): StudioInvoice {
     paidAt: null,
     paidHow: null,
     orderId: null,
+    stripeSessionId: null,
     ...partial,
     items,
     totalCents: items.reduce((n, i) => n + i.cents, 0),
@@ -57,6 +58,8 @@ export function newInvoice(partial: Partial<StudioInvoice>): StudioInvoice {
 
 export const officeBase = () => process.env.OFFICE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://carol.epicdevsolutions.com";
 export const invoiceUrl = (inv: StudioInvoice) => `${officeBase()}/invoice/${inv.id}?k=${inv.token}`;
+/** Short and plain for a text message, so it stays one SMS and never turns into an MMS. */
+export const invoiceShortUrl = (inv: StudioInvoice) => `${officeBase().replace(/^https?:\/\//, "")}/i/${inv.id}`;
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
 
@@ -76,7 +79,7 @@ export function invoiceEmailHtml(inv: StudioInvoice, payInstructions: string): s
       <tr><td style="padding:14px 0 0;font:600 16px system-ui;color:#12172b">Total</td><td style="padding:14px 0 0;text-align:right;font:600 22px Georgia,serif;color:#12172b">${fmtMoney(inv.totalCents)}</td></tr>
     </table>
     ${inv.note ? `<p style="margin:18px 0 0;font:14px/1.55 system-ui;color:#4b5060">${esc(inv.note).replace(/\n/g, "<br>")}</p>` : ""}
-    <a href="${url}" style="display:inline-block;margin-top:24px;background:#e8397f;color:#fff;text-decoration:none;font:700 15px system-ui;padding:14px 26px;border-radius:999px">View the invoice</a>
+    <a href="${url}" style="display:inline-block;margin-top:24px;background:#e8397f;color:#fff;text-decoration:none;font:700 15px system-ui;padding:14px 26px;border-radius:999px">View and pay the invoice</a>
     ${payInstructions ? `<p style="margin:22px 0 0;padding-top:18px;border-top:1px solid #ece7de;font:13px/1.55 system-ui;color:#4b5060"><strong style="color:#12172b">How to pay.</strong> ${esc(payInstructions)}</p>` : ""}
     <p style="margin:22px 0 0;font:13px/1.55 system-ui;color:#7a7f8e">${esc(site.studio.name)} · ${esc(site.studio.street)}, ${esc(site.studio.city)}, ${esc(site.studio.state)} ${esc(site.studio.zip)} · ${esc(site.phone)}<br>Reply to this email to reach Carol directly.</p>
   </div>
@@ -105,7 +108,7 @@ export async function emailInvoice(inv: StudioInvoice, payInstructions: string):
 /** Text a short link. Plain ASCII so it stays one cheap segment. */
 export async function textInvoice(inv: StudioInvoice): Promise<boolean> {
   const first = inv.name.trim().split(/\s+/)[0];
-  const text = `${first ? `Hi ${first}, ` : "Hi, "}this is Carol Calicchio Art Studio. Your invoice ${inv.number} for ${fmtMoney(inv.totalCents)} is ready: ${invoiceUrl(inv)} Reply STOP to opt out.`;
+  const text = `${first ? `Hi ${first}, ` : "Hi, "}this is Carol Calicchio Art Studio. Your invoice ${inv.number} for ${fmtMoney(inv.totalCents)} is ready. View and pay here: ${invoiceShortUrl(inv)} Reply STOP to opt out.`;
   const r = await sendSms(inv.phone, text);
   return r.ok;
 }

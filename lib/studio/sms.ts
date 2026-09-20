@@ -1,29 +1,32 @@
 // Text messages through Brevo's transactional SMS API, on the same key the
-// emails use. Used for Carol's own alerts and for texting an invoice link.
-// No-ops cleanly when the key is missing.
+// emails use. Same shape as Epic's lib/sms.ts, which is proven in production.
+// Sender comes from BREVO_SMS_SENDER (a registered 10DLC number once there is
+// one); until then an alphanumeric "CarolArt". No-ops cleanly without a key.
 const ENDPOINT = "https://api.brevo.com/v3/transactionalSMS/sms";
-const SENDER = (process.env.SMS_SENDER || "CarolArt").slice(0, 11);
 
-/** US-friendly E.164: "561-555-0142" → "+15615550142". Returns null if it cannot be a phone number. */
-export function e164(raw: string | null | undefined): string | null {
+/** Brevo wants the international number with no symbols: "561-555-0142" → "15615550142". */
+export function smsNumber(raw: string | null | undefined): string | null {
   if (!raw) return null;
-  const digits = raw.replace(/[^\d+]/g, "");
-  if (/^\+\d{10,15}$/.test(digits)) return digits;
-  const d = digits.replace(/\D/g, "");
-  if (d.length === 10) return `+1${d}`;
-  if (d.length === 11 && d.startsWith("1")) return `+${d}`;
-  return null;
+  let d = raw.replace(/\D/g, "");
+  if (d.length === 10) d = "1" + d;
+  return d.length >= 11 && d.length <= 15 ? d : null;
+}
+
+export function smsEnabled(): boolean {
+  return Boolean(process.env.BREVO_API_KEY);
 }
 
 export async function sendSms(to: string | null | undefined, content: string): Promise<{ ok: boolean; skipped?: boolean }> {
   const key = process.env.BREVO_API_KEY;
-  const recipient = e164(to);
+  const recipient = smsNumber(to);
   if (!key || !recipient) return { ok: false, skipped: true };
+  const rawSender = (process.env.BREVO_SMS_SENDER || process.env.SMS_SENDER || "CarolArt").trim();
+  const sender = /^\+?\d+$/.test(rawSender) ? rawSender.replace(/\D/g, "").slice(0, 15) : rawSender.slice(0, 11);
   try {
     const res = await fetch(ENDPOINT, {
       method: "POST",
       headers: { "api-key": key, "content-type": "application/json", accept: "application/json" },
-      body: JSON.stringify({ type: "transactional", unicodeEnabled: false, sender: SENDER, recipient, content: content.slice(0, 480) }),
+      body: JSON.stringify({ type: "transactional", sender, recipient, content: content.slice(0, 480) }),
     });
     if (!res.ok) {
       console.error("[sms] Brevo failed:", res.status, await res.text().catch(() => ""));

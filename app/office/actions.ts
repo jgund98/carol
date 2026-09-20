@@ -389,16 +389,28 @@ export async function markOrderSoldAction(id: string): Promise<Result<{ count: n
 
 export type InvoiceInput = { name: string; email: string; phone: string; dueDate: string | null; note: string; orderId: string | null; items: InvoiceItem[] };
 
-export async function createInvoiceAction(input: InvoiceInput): Promise<Result<{ id: string }>> {
+export async function createInvoiceAction(input: InvoiceInput): Promise<Result<{ id: string; sent: string[] }>> {
   await guard();
   try {
     if (!input.name.trim()) return { ok: false, error: "Who is this invoice for?" };
     if (!input.email.trim() && !input.phone.trim()) return { ok: false, error: "Add an email or a mobile number so it can be sent." };
     if (!input.items.length) return { ok: false, error: "Add at least one line with an amount." };
-    const inv = newInvoice({ number: await nextNumber(), name: input.name.trim(), email: input.email.trim(), phone: input.phone.trim(), dueDate: input.dueDate, note: input.note.trim(), orderId: input.orderId, items: input.items });
+    let inv = newInvoice({ number: await nextNumber(), name: input.name.trim(), email: input.email.trim(), phone: input.phone.trim(), dueDate: input.dueDate, note: input.note.trim(), orderId: input.orderId, items: input.items });
     await saveInvoice(inv);
+    // Send it straight away, email and text, the way Epic's portal does.
+    const now = new Date().toISOString();
+    const sent: string[] = [];
+    if (inv.email && (await emailInvoice(inv, (await getSettings()).payInstructions))) {
+      inv = { ...inv, status: "sent", sentAt: now, emailedAt: now };
+      sent.push("emailed");
+    }
+    if (inv.phone && (await textInvoice(inv))) {
+      inv = { ...inv, status: "sent", sentAt: now, textedAt: now };
+      sent.push("texted");
+    }
+    if (sent.length) await saveInvoice(inv);
     revalidatePath("/office", "layout");
-    return { ok: true, id: inv.id };
+    return { ok: true, id: inv.id, sent };
   } catch (e) {
     return { ok: false, error: explain(e) };
   }
@@ -411,13 +423,16 @@ export async function sendInvoiceAction(id: string, via: "email" | "text"): Prom
     if (!inv) return { ok: false, error: "That invoice is gone." };
     if (inv.status === "paid" || inv.status === "void") return { ok: false, error: "This invoice is closed." };
     const now = new Date().toISOString();
+    const recent = (iso: string | null) => Boolean(iso) && Date.now() - new Date(iso as string).getTime() < 60_000;
     if (via === "email") {
       if (!inv.email) return { ok: false, error: "There is no email address on this invoice." };
+      if (recent(inv.emailedAt)) return { ok: false, error: "That was emailed less than a minute ago. Give it a moment." };
       const ok = await emailInvoice(inv, (await getSettings()).payInstructions);
       if (!ok) return { ok: false, error: "The email could not be sent right now. Copy the link and send it yourself, or try again in a minute." };
       await saveInvoice({ ...inv, status: "sent", sentAt: inv.sentAt ?? now, emailedAt: now });
     } else {
       if (!inv.phone) return { ok: false, error: "There is no mobile number on this invoice." };
+      if (recent(inv.textedAt)) return { ok: false, error: "That was texted less than a minute ago. Give it a moment." };
       const ok = await textInvoice(inv);
       if (!ok) return { ok: false, error: "The text could not be sent right now. Copy the link and send it yourself, or try again in a minute." };
       await saveInvoice({ ...inv, status: "sent", sentAt: inv.sentAt ?? now, textedAt: now });
