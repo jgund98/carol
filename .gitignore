@@ -11,3 +11,8 @@ shots
 # studio office local data + local uploads
 .data
 public/uploads
+
+.env*
+
+# local backups of wiped data
+backups/
