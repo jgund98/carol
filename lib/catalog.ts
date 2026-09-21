@@ -69,7 +69,7 @@ export const related = (works: Work[], w: Work, n = 4) => {
   return [...same, ...rest].slice(0, n);
 };
 
-/** The shop's default order: Carol's position first, then recent, paintings, minis, boards, books; sold pieces last. */
+/** The shop's default order: Carol's position first, then recent, paintings, minis, boards, books. A sold piece keeps its place, marked Sold. */
 export const shopOrder = (works: Work[], collections: CollectionDef[]) => {
   const first = collections.map((c) => c.id);
   const rank = (s: Work) => {
@@ -81,5 +81,5 @@ export const shopOrder = (works: Work[], collections: CollectionDef[]) => {
   };
   // Pieces added in the Studio Office carry a negative position (newest lowest) and lead the shop.
   const pin = (w: Work) => (w.position < 0 ? w.position : 0);
-  return [...works].sort((a, b) => (a.sold === b.sold ? 0 : a.sold ? 1 : -1) || pin(a) - pin(b) || rank(a) - rank(b) || a.position - b.position);
+  return [...works].sort((a, b) => pin(a) - pin(b) || rank(a) - rank(b) || a.position - b.position);
 };
