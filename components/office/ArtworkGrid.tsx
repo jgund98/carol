@@ -85,7 +85,11 @@ export default function ArtworkGrid({ list }: { list: GridWork[] }) {
                 <p className="truncate text-[1rem] font-semibold leading-tight sm:text-[1.05rem]">{w.name}</p>
                 <p className="mt-1 truncate text-[0.82rem] text-[var(--o-soft)]">{w.line}</p>
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                  <p className="o-num text-[1.15rem]">{w.sold ? "Sold" : money(w.price)}</p>
+                  {w.sold ? (
+                    <p className="o-num text-[1.15rem] text-[var(--o-red)] line-through decoration-2">{money(w.price)}</p>
+                  ) : (
+                    <p className="o-num text-[1.15rem]">{money(w.price)}</p>
+                  )}
                   <WorkStatusChip work={w} />
                 </div>
               </div>

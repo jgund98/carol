@@ -77,7 +77,7 @@ export function OrderStatusChip({ status }: { status: OrderStatus }) {
 
 export function WorkStatusChip({ work }: { work: Pick<Work, "hidden" | "sold" | "available" | "stock"> }) {
   if (work.hidden) return <span className="o-chip o-chip-muted">Hidden</span>;
-  if (work.sold) return <span className="o-chip o-chip-ink">Sold</span>;
+  if (work.sold) return <span className="o-chip o-chip-red">SOLD</span>;
   if (!work.available) return <span className="o-chip o-chip-gold">On hold</span>;
   const left = stockLabel(work);
   return <span className="o-chip o-chip-green">{left ? `For sale · ${left}` : "For sale"}</span>;

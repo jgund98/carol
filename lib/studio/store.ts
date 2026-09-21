@@ -6,7 +6,6 @@ import { works as seedWorks, type Work } from "@/lib/works";
 import { collections as seedCollections } from "@/lib/content";
 import { pickStore, readonlyStore, StudioError, type DocStore, type StoreMode } from "./docstore";
 import type { CollectionDef, Inquiry, Settings, StudioOrder } from "./types";
-import { DEMO_INQUIRIES, DEMO_ORDERS } from "./demo";
 
 export { StudioError };
 
@@ -34,8 +33,8 @@ function seedShape() {
   return {
     work: Object.fromEntries(seedWorks.map((w) => [w.slug, w])),
     collection: Object.fromEntries(SEED_COLLECTIONS.map((c) => [c.id, c])),
-    inquiry: Object.fromEntries(DEMO_INQUIRIES.map((i) => [i.id, i])),
-    order: Object.fromEntries(DEMO_ORDERS.map((o) => [o.id, o])),
+    inquiry: {},
+    order: {},
     invoice: {},
     setting: { seeded: { value: "1" }, settings: DEFAULT_SETTINGS },
   };
@@ -53,9 +52,6 @@ export function store(): Promise<DocStore> {
       if (!flag) {
         if ((await s.count("work")) === 0) for (const w of seedWorks) await s.put("work", w.slug, w);
         if ((await s.count("collection")) === 0) for (const c of SEED_COLLECTIONS) await s.put("collection", c.id, c);
-        // Sample inquiries and orders (ids "demo_*") so the office is not empty on day one.
-        if ((await s.count("inquiry")) === 0) for (const i of DEMO_INQUIRIES) await s.put("inquiry", i.id, i);
-        if ((await s.count("order")) === 0) for (const o of DEMO_ORDERS) await s.put("order", o.id, o);
         await s.put("setting", "seeded", { value: "1" });
       }
     } catch (e) {
