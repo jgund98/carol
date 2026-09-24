@@ -8,7 +8,7 @@ import { getWork } from "@/lib/store";
 
 export const metadata: Metadata = {
   title: "Contact | Carol Calicchio Art Studio, Delray Beach",
-  description: "Contact Carol Calicchio about a painting, a commission or a studio visit. 2559 Webb Avenue, Delray Beach, FL. Call 561-400-0678 or email Carol@carolcalicchioart.com.",
+  description: "Contact Carol Calicchio about a painting, a commission or a studio visit. 2559 Webb Avenue, Delray Beach, FL. Call (561) 400-0678 or email Carol@carolcalicchioart.com.",
   alternates: { canonical: "/contact" },
 };
 

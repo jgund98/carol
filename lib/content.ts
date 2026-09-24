@@ -230,7 +230,7 @@ export const collections = [
 export const faqs = [
   {
     q: "Can I visit the studio in Delray Beach?",
-    a: "Yes. Carol Calicchio Art Studio at 2559 Webb Avenue, Delray Beach, is open by appointment. Call 561-400-0678 or email Carol@carolcalicchioart.com to arrange a private viewing.",
+    a: "Yes. Carol Calicchio Art Studio at 2559 Webb Avenue, Delray Beach, is open by appointment. Call (561) 400-0678 or email Carol@carolcalicchioart.com to arrange a private viewing.",
   },
   {
     q: "Do you take commissions for oversized paintings?",

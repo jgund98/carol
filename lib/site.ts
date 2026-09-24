@@ -8,7 +8,7 @@ export const site = {
   legalName: "Carol Calicchio Art Studio",
   tagline: "Abstract florals and seascapes, painted in the light of South Florida.",
   url: "https://www.carolcalicchioart.com",
-  phone: "561-400-0678",
+  phone: "(561) 400-0678",
   phoneHref: "tel:+15614000678",
   email: "Carol@carolcalicchioart.com",
   studio: {
