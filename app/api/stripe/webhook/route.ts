@@ -7,6 +7,7 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/studio/stripe";
 import { completePurchase, unpackPurchase } from "@/lib/studio/purchase";
 import { settleInvoice } from "@/lib/studio/settle";
+import { completeBooking, unpackBooking } from "@/lib/studio/bookings";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,9 @@ export async function POST(req: Request) {
         if (m.kind === "order") {
           const u = unpackPurchase(m);
           if (u) await completePurchase(u.buyer, u.lines, s.id);
+        } else if (m.kind === "class") {
+          const b = unpackBooking(m);
+          if (b) await completeBooking(b.guest, b.classId, b.qty, s.id);
         } else if (m.invoiceId) {
           await settleInvoice(m.invoiceId, s.id);
         }

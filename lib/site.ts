@@ -70,6 +70,7 @@ export const nav = [
   { href: "/collections", label: "Collections" },
   { href: "/shop", label: "Shop" },
   { href: "/studio", label: "Studio" },
+  { href: "/classes", label: "Classes" },
   { href: "/commissions", label: "Commissions" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },

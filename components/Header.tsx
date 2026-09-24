@@ -7,6 +7,7 @@ import { nav, site } from "@/lib/site";
 import { img } from "@/lib/catalog";
 import type { CollectionView } from "@/lib/store";
 import { useCart } from "./cart/CartProvider";
+import ClassBanner from "./classes/ClassBanner";
 
 export default function Header({ collections }: { collections: CollectionView[] }) {
   const [scrolled, setScrolled] = useState(false);
@@ -50,7 +51,8 @@ export default function Header({ collections }: { collections: CollectionView[] 
         }`}
         style={{ height: "var(--header-h)" }}
       >
-        <div className="wrap flex h-full items-center justify-between gap-6">
+        <ClassBanner />
+        <div className="wrap flex items-center justify-between gap-6" style={{ height: "var(--header-base)" }}>
           <Link
             href="/"
             aria-label="Carol Calicchio, home"
@@ -170,7 +172,7 @@ export default function Header({ collections }: { collections: CollectionView[] 
         className={`fixed inset-0 z-[140] flex flex-col bg-gallery transition-transform duration-500 ease-[cubic-bezier(.2,.8,.2,1)] lg:hidden ${menu ? "translate-x-0" : "translate-x-full"}`}
         aria-hidden={!menu}
       >
-        <div className="wrap flex items-center justify-between" style={{ height: "var(--header-h)" }}>
+        <div className="wrap flex items-center justify-between" style={{ height: "var(--header-base)" }}>
           <Link href="/" onClick={() => setMenu(false)} aria-label="Carol Calicchio, home" className="relative block h-[44px] w-[150px]">
             <Image src="/brand/sig-pink.png" alt="Carol Calicchio" fill sizes="150px" className="object-contain object-left" />
           </Link>

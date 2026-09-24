@@ -8,6 +8,7 @@
 import { fmtMoney, type StudioInvoice } from "./invoice-shared";
 import { calendarDate } from "./time";
 import type { InquiryKind, StudioOrder } from "./types";
+import { CLASS, classShortDay, classStart, type StudioClass } from "@/lib/classes";
 
 export const SMS_LIMIT = 160;
 const STUDIO = "Carol Calicchio Art Studio";
@@ -71,6 +72,16 @@ export const carol = {
       sms: fit(`New sale: ${piecesOf(o)}, ${money(o.subtotal)}, paid by card. ${who}. ${link}`, `New sale: ${piecesOf(o)}, ${money(o.subtotal)}, paid by card. ${o.name}. ${link}`, `New sale, ${money(o.subtotal)}, paid by card. ${link}`),
     };
   },
+  /** Seats at a class were reserved and paid on the website. */
+  newBooking(o: StudioOrder, c: StudioClass, qty: number) {
+    const link = shortLink(`/o/${o.id}`);
+    const who = [o.name, phoneOf(o.phone)].filter(Boolean).join(", ");
+    const seats = `${qty} ${qty === 1 ? "seat" : "seats"}`;
+    return {
+      subject: `Class booking: ${seats} for ${classShortDay(c)}, ${money(o.subtotal)} (${o.name})`,
+      sms: fit(`New class booking: ${seats} for ${classShortDay(c)}, ${money(o.subtotal)} paid by card. ${who}. ${link}`, `New class booking: ${seats} for ${classShortDay(c)}, ${money(o.subtotal)}. ${o.name}. ${link}`, `New class booking, ${money(o.subtotal)}. ${link}`),
+    };
+  },
   /** An invoice was paid by card. */
   invoicePaid(inv: StudioInvoice) {
     const link = shortLink(`/v/${inv.id}`);
@@ -104,6 +115,14 @@ export const buyer = {
     return {
       subject: `Receipt ${o.ref}: ${amt}, ${p}`,
       sms: fit(`${STUDIO}: thank you, your payment of ${amt} for ${p} is received. Carol will call you to arrange delivery. ${STOP}`, `${STUDIO}: thank you, your payment of ${amt} is received. Carol will call you to arrange delivery. ${STOP}`),
+    };
+  },
+  classConfirmed(o: StudioOrder, c: StudioClass, qty: number) {
+    const seats = `${qty} ${qty === 1 ? "seat" : "seats"}`;
+    const when = `${classShortDay(c)}, ${classStart(c)}`;
+    return {
+      subject: `You're in: ${c.title}, ${classShortDay(c)}`,
+      sms: fit(`${STUDIO}: you're booked! ${c.title}, ${when}, ${CLASS.venue.short}. ${seats}. ${STOP}`, `${STUDIO}: you're booked! ${c.title}, ${when}, ${CLASS.venue.short}. ${seats}.`, `${STUDIO}: you're booked for ${when}. ${seats}. Details by email.`),
     };
   },
   shipped(o: StudioOrder, hasTrackingLink: boolean) {

@@ -20,7 +20,8 @@
 }
 
 :root {
-  --header-h: 84px;
+  --header-base: 84px;
+  --header-h: var(--header-base);
   color-scheme: light;
 }
 

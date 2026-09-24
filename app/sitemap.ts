@@ -5,7 +5,7 @@ import { getCatalog } from "@/lib/store";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { works, collections } = await getCatalog();
   const now = new Date();
-  const statics = ["", "/collections", "/shop", "/studio", "/commissions", "/about", "/contact", "/exhibitions", "/press", "/surfboards", "/books", "/policies"];
+  const statics = ["", "/collections", "/shop", "/studio", "/classes", "/commissions", "/about", "/contact", "/exhibitions", "/press", "/surfboards", "/books", "/policies"];
   return [
     ...statics.map((p) => ({ url: `${site.url}${p}`, lastModified: now, changeFrequency: "weekly" as const, priority: p === "" ? 1 : 0.8 })),
     ...collections.map((c) => ({ url: `${site.url}/collections/${c.slug}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 })),

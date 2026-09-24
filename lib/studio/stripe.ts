@@ -7,6 +7,8 @@ import Stripe from "stripe";
 import type { StudioInvoice } from "./invoice-shared";
 import type { OrderItem } from "./types";
 import { packPurchase, type Buyer, type CartLine } from "./purchase";
+import { packBooking, type Guest } from "./bookings";
+import { CLASS, classDayYear, classTime, type StudioClass } from "@/lib/classes";
 
 // Only a real Stripe secret counts; anything else pasted in the env var is ignored.
 const key = (process.env.STRIPE_SECRET_KEY || "").trim();
@@ -54,14 +56,39 @@ export async function createOrderCheckout(p: { buyer: Buyer; lines: CartLine[]; 
   return session.url;
 }
 
+/** Hosted Checkout for seats at a class: one line, quantity = seats. The booking is recorded only after payment. */
+export async function createClassCheckout(p: { guest: Guest; cls: StudioClass; qty: number }, baseUrl: string): Promise<string | null> {
+  if (!stripe) return null;
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: p.guest.email || undefined,
+    line_items: [
+      {
+        quantity: p.qty,
+        price_data: {
+          currency: "usd",
+          unit_amount: Math.round(p.cls.price * 100),
+          product_data: { name: `${p.cls.title} · ${classDayYear(p.cls)}`, description: `${classTime(p.cls)} · ${CLASS.venue.street}, ${CLASS.venue.city} · All materials included`, images: [`${baseUrl}${CLASS.photo}`] },
+        },
+      },
+    ],
+    metadata: packBooking(p.guest, p.cls.id, p.qty),
+    payment_intent_data: { description: `Carol Calicchio Art Studio · ${p.cls.title}, ${classDayYear(p.cls)} × ${p.qty}` },
+    success_url: `${baseUrl}/classes/reserved?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${baseUrl}/classes?cancelled=1#reserve`,
+  });
+  return session.url;
+}
+
 /** After Stripe sends the buyer back: did that session actually pay, and what for? */
-export async function paidSession(sessionId: string): Promise<{ kind: "invoice"; id: string } | { kind: "order"; metadata: Record<string, string> } | null> {
+export async function paidSession(sessionId: string): Promise<{ kind: "invoice"; id: string } | { kind: "order" | "class"; metadata: Record<string, string> } | null> {
   if (!stripe) return null;
   try {
     const s = await stripe.checkout.sessions.retrieve(sessionId);
     if (s.payment_status !== "paid") return null;
     const m = (s.metadata || {}) as Record<string, string>;
     if (m.kind === "order") return { kind: "order", metadata: m };
+    if (m.kind === "class") return { kind: "class", metadata: m };
     if (m.invoiceId) return { kind: "invoice", id: m.invoiceId };
     return null;
   } catch {

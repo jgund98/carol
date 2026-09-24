@@ -11,6 +11,7 @@ import { calendarDate } from "./time";
 import { fmtMoney, type StudioInvoice } from "./invoice-shared";
 import { buyer } from "./texts";
 import type { StudioOrder } from "./types";
+import { CLASS, calendarUrl, classDayYear, classTime, type StudioClass } from "@/lib/classes";
 
 const first = (name: string) => name.trim().split(/\s+/)[0] || "";
 const dear = (name: string) => `<p>Dear ${esc(first(name) || "friend")},</p>`;
@@ -73,5 +74,26 @@ export async function sendInvoiceReminder(inv: StudioInvoice): Promise<{ email: 
     <p style="margin-top:18px">If it has already been taken care of, please ignore this note, and thank you.</p>`);
   const email = inv.email ? await sendMail({ to: inv.email, name: inv.name, subject: t.subject, html }) : false;
   const sms = inv.phone ? (await sendSms(inv.phone, t.sms)).ok : false;
+  return { email, sms };
+}
+
+/** Seats reserved at a class: everything they need for the evening, email and text. */
+export async function sendClassConfirmation(o: StudioOrder, c: StudioClass, qty: number): Promise<{ email: boolean; sms: boolean }> {
+  const t = buyer.classConfirmed(o, c, qty);
+  const html = shell(`
+    ${dear(o.name)}
+    <p>You're in. ${qty === 1 ? "Your seat is" : `Your ${qty} seats are`} reserved for <strong>${esc(c.title)}</strong> with Carol.</p>
+    <table style="width:100%;border-collapse:collapse;margin-top:14px;font-size:15px">
+      <tr><td style="padding:7px 14px 7px 0;color:#7a7f8e;font-weight:600;white-space:nowrap;vertical-align:top">When</td><td style="padding:7px 0"><strong>${esc(classDayYear(c))}</strong><br>${esc(classTime(c))}. Doors open ten minutes early.</td></tr>
+      <tr><td style="padding:7px 14px 7px 0;color:#7a7f8e;font-weight:600;white-space:nowrap;vertical-align:top">Where</td><td style="padding:7px 0">${esc(CLASS.venue.name)}<br>${esc(CLASS.venue.street)}, ${esc(CLASS.venue.city)}</td></tr>
+      <tr><td style="padding:7px 14px 7px 0;color:#7a7f8e;font-weight:600;white-space:nowrap;vertical-align:top">Seats</td><td style="padding:7px 0">${qty}</td></tr>
+      ${totalRows("Total paid", money(o.subtotal), `Order ${esc(o.ref)}, paid by card`)}
+    </table>
+    ${button(calendarUrl(c), "Add to my calendar")}
+    <p style="margin-top:22px"><strong>Bring nothing.</strong> A canvas, brushes, paints and an apron will be waiting at your easel, and light refreshments are served. Wear something you would not mind a fleck of paint on.</p>
+    <p>Change of plans? Reply to this email or call the studio at least 48 hours ahead and Carol will move you to the next evening.</p>
+    <p>See you in the studio.</p>`);
+  const email = o.email ? await sendMail({ to: o.email, name: o.name, subject: t.subject, html }) : false;
+  const sms = o.phone ? (await sendSms(o.phone, t.sms)).ok : false;
   return { email, sms };
 }

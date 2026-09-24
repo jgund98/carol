@@ -8,6 +8,7 @@ import Cursor from "@/components/Cursor";
 import PaintTrail from "@/components/PaintTrail";
 import { CartProvider } from "@/components/cart/CartProvider";
 import CartDrawer from "@/components/cart/CartDrawer";
+import ClassPopup from "@/components/classes/ClassPopup";
 import { getCatalog, getCollectionViews } from "@/lib/store";
 
 const jsonLd = {
@@ -68,6 +69,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <main id="main">{children}</main>
         <Footer />
         <CartDrawer />
+        <ClassPopup />
       </CartProvider>
     </>
   );
