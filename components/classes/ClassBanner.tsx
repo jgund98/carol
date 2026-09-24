@@ -44,13 +44,13 @@ export default function ClassBanner() {
 
   return (
     <div className="relative z-[121] flex items-center bg-hibiscus text-white" style={{ height: BANNER_H }} role="region" aria-label="Upcoming class">
-      <Link href="/classes" className="wrap flex h-full items-center justify-center gap-3 pr-12 text-center text-[0.86rem] font-semibold tracking-[0.01em] transition-opacity hover:opacity-90 sm:text-[0.92rem]">
+      <Link href="/classes" className="wrap flex h-full items-center justify-center gap-3 pr-12 text-center text-[0.86rem] font-normal tracking-[0.01em] text-white/90 transition-opacity hover:opacity-90 sm:text-[0.92rem]">
         <span aria-hidden className="hidden sm:inline">✦</span>
         <span className="hidden sm:inline">
-          {CLASS.title} with Carol, {classDay(next)}.
+          {CLASS.title} with Carol, <strong className="font-bold text-white">{classDay(next)}</strong>.
         </span>
-        <span className="sm:hidden">Paint with Carol, {classShort(next)}.</span>
-        <span className="underline decoration-white/60 underline-offset-4 whitespace-nowrap">Reserve a seat →</span>
+        <span className="sm:hidden">Paint with Carol, <strong className="font-bold text-white">{classShort(next)}</strong>.</span>
+        <strong className="font-bold text-white underline decoration-white/60 underline-offset-4 whitespace-nowrap">Reserve a seat →</strong>
       </Link>
       <button type="button" onClick={dismiss} aria-label="Hide this notice" className="absolute right-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-white/85 transition hover:bg-white/15 hover:text-white">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>

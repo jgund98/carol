@@ -16,7 +16,7 @@ const STOP = "Reply STOP to opt out.";
 
 /* ───────── helpers ───────── */
 
-export const siteHost = () => (process.env.OFFICE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://carol.epicdevsolutions.com").replace(/^https?:\/\//, "").replace(/\/$/, "");
+export const siteHost = () => (process.env.OFFICE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://carolcalicchioart.com").replace(/^https?:\/\//, "").replace(/\/$/, "");
 
 /** Short public link, host only (no https://) so it reads cleanly and stays short. */
 export const shortLink = (path: string) => `${siteHost()}${path}`;

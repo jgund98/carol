@@ -1,35 +1,32 @@
 // An Evening in the Studio: the guided painting class, with reservations.
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { CLASS, classDay, classDayYear, classTime } from "@/lib/classes";
 import { classAvailability } from "@/lib/studio/classes-server";
 import { site } from "@/lib/site";
 import ClassBooking from "@/components/classes/ClassBooking";
+import ReserveBar from "@/components/classes/ReserveBar";
 import Reveal from "@/components/Reveal";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "An Evening in the Studio, a guided painting class | Carol Calicchio Art Studio, Delray Beach",
-  description: "Paint your own abstract floral beside Carol Calicchio in her Delray Beach studio. One evening, all materials included, light refreshments served. $100 per seat. Reserve online.",
+  description: "Paint your own abstract floral beside Carol Calicchio in her Delray Beach studio. All materials included, light refreshments served. $100 per seat. Reserve online.",
   alternates: { canonical: "/classes" },
   openGraph: { title: "An Evening in the Studio with Carol Calicchio", description: "A guided painting class in Delray Beach. All materials included. Reserve your seat.", images: [{ url: CLASS.photo }] },
 };
 
 const STEPS = [
-  { n: "01", title: "Arrive at seven.", text: "A stretched canvas, brushes, a palette of Carol's colors and an apron are already waiting at your easel. Find your seat, say hello, settle in." },
-  { n: "02", title: "Watch, then paint.", text: "Carol shows the floating-flower technique behind her collections, stroke by stroke, then walks the room while you make it your own. No experience needed. Most guests have never held a brush." },
-  { n: "03", title: "Leave with a painting.", text: "Sixty minutes later you carry out an original abstract floral, signed by you, dry enough to hang that night. And a very good story." },
+  { n: "01", title: "Arrive.", text: "Canvas, brushes, paints and an apron are waiting at your easel." },
+  { n: "02", title: "Paint with Carol.", text: "She shows her floating-flower technique, then helps you make it yours. No experience needed." },
+  { n: "03", title: "Take it home.", text: "An original abstract floral, painted by you, dry enough to hang tonight." },
 ];
 
 const FAQ = [
-  { q: "I have never painted in my life.", a: "Then you are exactly who this evening is for. Carol's method is built for first-timers. You will be surprised what comes off your brush." },
-  { q: "What should I wear?", a: "Something you would not mind a fleck of paint on. Aprons are provided, but paint has a mind of its own." },
-  { q: "Can I bring friends?", a: "Please do. Reserve several seats in one go and you will be seated together. It makes a wonderful birthday, girls' night or date night." },
-  { q: "Is this a gift?", a: "A very good one. Reserve the seat, put their name in the note, and Carol will have their canvas waiting with a card." },
-  { q: "What if my plans change?", a: "Seats are transferable. Call or email the studio at least 48 hours ahead and Carol will move you to the next evening." },
-  { q: "What is included?", a: "Everything. Canvas, paints, brushes, apron, Carol's instruction, and light refreshments through the evening." },
+  { q: "I have never painted.", a: "Most guests haven't. Carol's method is built for first-timers." },
+  { q: "Coming with friends, or giving a seat as a gift?", a: "Reserve several seats and you're seated together. For a gift, put their name in the note and Carol will have a card at their easel." },
+  { q: "Plans change?", a: "Seats are transferable. Call or email at least 48 hours ahead and Carol will move you to the next evening." },
 ];
 
 export default async function ClassesPage() {
@@ -52,121 +49,92 @@ export default async function ClassesPage() {
         organizer: { "@type": "Organization", name: CLASS.venue.name, url: site.url },
       }
     : null;
+  const cta = next && next.left > 0 ? `Reserve your seat · $${CLASS.price}` : "See the next dates";
 
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      <ReserveBar label={cta} />
 
       {/* hero */}
       <section className="relative overflow-hidden">
-        <div className="wrap grid items-center gap-10 pb-16 pt-[calc(var(--header-h)+2.5rem)] lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-24 lg:pt-[calc(var(--header-h)+4rem)]">
+        <div className="wrap grid items-center gap-8 pb-12 pt-[calc(var(--header-h)+2rem)] lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-20 lg:pt-[calc(var(--header-h)+4rem)]">
           <div>
             <p className="display-light text-[1.05rem] italic text-ink/60">{CLASS.kicker}</p>
             <h1 className="display mt-4 text-[clamp(2.9rem,7vw,6rem)] leading-[0.94]">
               An evening <em>in the studio.</em>
             </h1>
-            <p className="pretty mt-6 max-w-lg text-[1.08rem] leading-relaxed text-ink/75">
-              One evening, one canvas, and Carol at your shoulder. Paint your own abstract floral in the room where her collections are born, then carry it home the same night. Nothing to bring but yourself.
+            <p className="pretty mt-5 max-w-lg text-[1.08rem] leading-relaxed text-ink/75">
+              Paint your own abstract floral beside Carol, in the room where her collections are born, and carry it home the same night.
             </p>
             {next && (
-              <ul className="mt-7 grid gap-2.5 text-[0.98rem]">
+              <ul className="mt-6 grid gap-2.5 text-[0.98rem]">
                 <li className="flex items-start gap-3"><span className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-hibiscus" /><span>{next.left > 0 ? <><strong>{classDayYear(next)}</strong>{`, ${classTime(next)}`}</> : "Next date coming soon"}</span></li>
-                <li className="flex items-start gap-3"><span className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-hibiscus" /><span>{CLASS.venue.street}, {CLASS.venue.city}</span></li>
-                <li className="flex items-start gap-3"><span className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-hibiscus" /><span><strong>${CLASS.price} per seat.</strong> All materials and light refreshments included.</span></li>
+                <li className="flex items-start gap-3"><span className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-hibiscus" /><span>{CLASS.venue.street}, Delray Beach</span></li>
+                <li className="flex items-start gap-3"><span className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-hibiscus" /><span><strong>${CLASS.price} per seat.</strong> Everything included, light refreshments served.</span></li>
               </ul>
             )}
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a href="#reserve" className="btn btn-pink">Reserve your seat</a>
-              <a href="#how" className="btn btn-line">How the evening goes</a>
+            <div className="mt-7 hidden sm:block">
+              <a href="#reserve" className="btn btn-pink">{cta}</a>
             </div>
             {next && next.left > 0 && next.left <= 6 && <p className="mt-4 text-[0.88rem] font-semibold text-hibiscus">Only {next.left} {next.left === 1 ? "seat" : "seats"} left for {classDay(next)}.</p>}
-            {next && next.left > 6 && <p className="mt-4 text-[0.88rem] text-ink/55">Space is limited to {next.seats} guests so Carol can work with every one of you.</p>}
+            {next && next.left > 6 && <p className="mt-4 text-[0.88rem] text-ink/55">Limited to {next.seats} guests.</p>}
           </div>
-          <Reveal className="relative">
+          <div className="relative">
             <div className="wrap-edge relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-linen shadow-[0_40px_90px_rgba(18,23,43,0.18)]">
               <Image src={CLASS.photo} alt="Carol Calicchio seated in her Delray Beach studio" fill priority sizes="(min-width:1024px) 45vw, 100vw" className="object-cover object-[50%_25%]" />
             </div>
-            <div className="absolute -bottom-6 -left-4 max-w-[260px] rounded-2xl bg-gallery p-5 shadow-[0_20px_50px_rgba(18,23,43,0.15)] sm:-left-8">
-              <p className="display text-[1.15rem] leading-snug">&ldquo;Leave the paints, the easel and the evening to us. Just bring yourself.&rdquo;</p>
-              <p className="mt-2 text-[0.8rem] text-ink/55">Carol</p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* how it goes */}
-      <section id="how" className="bg-paper">
-        <div className="wrap section">
-          <div className="max-w-2xl">
-            <p className="display-light text-[1.05rem] italic text-ink/60">How the evening goes</p>
-            <h2 className="display mt-3 text-[clamp(2rem,4vw,3.6rem)]">Sixty minutes. One painting. Yours.</h2>
           </div>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {STEPS.map((s, i) => (
-              <Reveal key={s.n} delay={i * 90} className="rounded-3xl bg-gallery p-7">
-                <p className="display text-[2.4rem] leading-none text-hibiscus">{s.n}</p>
-                <h3 className="display mt-4 text-[1.5rem]">{s.title}</h3>
-                <p className="pretty mt-3 text-[0.98rem] leading-relaxed text-ink/72">{s.text}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* the room */}
-      <section className="wrap section grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-        <Reveal className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-linen lg:order-2">
-          <Image src={CLASS.photoWide} alt="Carol Calicchio at her easel" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover object-[50%_20%]" />
-        </Reveal>
-        <div>
-          <p className="display-light text-[1.05rem] italic text-ink/60">The room</p>
-          <h2 className="display mt-3 text-[clamp(2rem,4vw,3.6rem)]">Painted where the paintings happen.</h2>
-          <p className="pretty mt-5 text-[1.02rem] leading-relaxed text-ink/75">
-            This is not a rented hall with a projector. It is Carol&rsquo;s working studio in Delray Beach, white walls, north light, her canvases on the racks and the collection on the walls around you. Twelve easels, one artist, and a room that smells faintly of fresh paint.
-          </p>
-          <p className="pretty mt-4 text-[1.02rem] leading-relaxed text-ink/75">
-            Carol keeps the group small on purpose. She wants to stand at every easel, see what you are reaching for, and help you get there.
-          </p>
-          <ul className="mt-6 space-y-2.5 text-[0.95rem] text-ink/75">
-            {["Canvas, paints, brushes and apron at your easel", "Carol's floating-flower technique, taught live", "Light refreshments through the evening", "Your finished painting to take home"].map((x) => (
-              <li key={x} className="flex gap-3"><span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-hibiscus" />{x}</li>
-            ))}
-          </ul>
         </div>
       </section>
 
       {/* reserve */}
-      <section id="reserve" className="bg-gallery scroll-mt-[calc(var(--header-h)+1rem)]">
-        <div className="wrap section">
+      <section id="reserve" className="bg-paper scroll-mt-[calc(var(--header-h)+0.5rem)]">
+        <div className="wrap py-14 sm:py-20">
           <div className="max-w-2xl">
             <p className="display-light text-[1.05rem] italic text-ink/60">Reserve</p>
             <h2 className="display mt-3 text-[clamp(2rem,4vw,3.6rem)]">Save your easel.</h2>
-            <p className="pretty mt-4 text-[1.02rem] leading-relaxed text-ink/75">Pick your evening, tell us how many are coming, and pay securely by card. Your seat is confirmed the moment it goes through.</p>
           </div>
-          <div className="mt-10">
+          <div className="mt-8">
             <ClassBooking dates={dates} />
           </div>
         </div>
       </section>
 
-      {/* faq */}
+      {/* three steps */}
+      <section className="wrap py-14 sm:py-20">
+        <div className="grid gap-6 md:grid-cols-3 md:gap-8">
+          {STEPS.map((s, i) => (
+            <Reveal key={s.n} delay={i * 80} className="rounded-3xl bg-paper p-6 sm:p-7">
+              <p className="display text-[2rem] leading-none text-hibiscus">{s.n}</p>
+              <h3 className="display mt-3 text-[1.4rem]">{s.title}</h3>
+              <p className="pretty mt-2 text-[0.96rem] leading-relaxed text-ink/72">{s.text}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* good to know */}
       <section className="bg-paper">
-        <div className="wrap section grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="wrap grid gap-8 py-14 sm:py-20 lg:grid-cols-[0.7fr_1.3fr]">
           <div>
-            <p className="display-light text-[1.05rem] italic text-ink/60">Good to know</p>
-            <h2 className="display mt-3 text-[clamp(2rem,4vw,3.4rem)]">Questions, answered.</h2>
-            <p className="pretty mt-4 text-[1rem] text-ink/70">Anything else? Call the studio at <a href={site.phoneHref} className="font-semibold text-ink whitespace-nowrap">{site.phone}</a> or <Link href="/contact" className="font-semibold text-ink underline underline-offset-4">send a note</Link>.</p>
+            <h2 className="display text-[clamp(1.8rem,3.5vw,3rem)]">Good to know.</h2>
+            <p className="mt-3 text-[0.98rem] text-ink/70">Questions? <a href={site.phoneHref} className="font-semibold text-ink whitespace-nowrap">{site.phone}</a></p>
           </div>
           <dl className="grid gap-3">
             {FAQ.map((f) => (
-              <div key={f.q} className="rounded-2xl bg-gallery p-5 sm:p-6">
-                <dt className="display text-[1.2rem]">{f.q}</dt>
-                <dd className="pretty mt-2 text-[0.96rem] leading-relaxed text-ink/72">{f.a}</dd>
+              <div key={f.q} className="rounded-2xl bg-gallery p-5">
+                <dt className="display text-[1.15rem]">{f.q}</dt>
+                <dd className="pretty mt-1.5 text-[0.95rem] leading-relaxed text-ink/72">{f.a}</dd>
               </div>
             ))}
           </dl>
+          <div className="lg:col-span-2">
+            <a href="#reserve" className="btn btn-pink">{cta}</a>
+          </div>
         </div>
       </section>
+      <div className="h-20 sm:hidden" aria-hidden />
     </>
   );
 }

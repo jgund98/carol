@@ -6,7 +6,7 @@ import { brevoKey } from "./brevo";
 
 export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
 
-export const officeBase = () => process.env.OFFICE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://carol.epicdevsolutions.com";
+export const officeBase = () => process.env.OFFICE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://carolcalicchioart.com";
 
 /** The money line at the foot of an itemised table: short label, amount that never wraps, an optional quiet note beneath (date, method). */
 export function totalRows(label: string, amount: string, note?: string): string {

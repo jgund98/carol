@@ -78,7 +78,7 @@ export default function ClassBooking({ dates }: { dates: DateOption[] }) {
                   <input type="radio" name="classId" value={d.id} checked={on} disabled={soldOut} onChange={() => setClassId(d.id)} className="accent-ink" />
                   <span className="min-w-0 flex-1">
                     <span className="display block text-[1.35rem] leading-tight">{classDay(d)}</span>
-                    <span className="mt-0.5 block text-[0.9rem] text-ink/65">{classTime(d)} · {CLASS.venue.street}</span>
+                    <span className="mt-0.5 block text-[0.9rem] text-ink/65">{classTime(d)} · Delray Beach</span>
                   </span>
                   <span className={`shrink-0 rounded-full px-3 py-1 text-[0.72rem] font-bold tracking-[0.14em] ${soldOut ? "bg-ink/10 text-ink/60" : d.left <= 4 ? "bg-hibiscus text-white" : "bg-paper text-ink/70"}`}>
                     {soldOut ? "SOLD OUT" : d.left <= 4 ? `${d.left} LEFT` : "OPEN"}
@@ -113,7 +113,13 @@ export default function ClassBooking({ dates }: { dates: DateOption[] }) {
       <aside className="h-max rounded-3xl bg-paper p-6 sm:p-8 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
         <p className="display-light text-[1rem] italic text-ink/60">Your reservation</p>
         <p className="display mt-2 text-[1.7rem] leading-tight">{chosen ? classDay(chosen) : "Choose a date"}</p>
-        {chosen && <p className="mt-1 text-[0.95rem] text-ink/70">{classTime(chosen)} · {CLASS.venue.street}, {CLASS.venue.city}</p>}
+        {chosen && (
+          <p className="mt-1 text-[0.95rem] text-ink/70">
+            {classTime(chosen)}
+            <br />
+            {CLASS.venue.street}, Delray Beach
+          </p>
+        )}
         <dl className="mt-6 grid gap-2 border-t border-ink/10 pt-5 text-[0.95rem]">
           <div className="flex justify-between"><dt className="text-ink/65">{qty} {qty === 1 ? "seat" : "seats"} × ${CLASS.price}</dt><dd className="font-semibold">${CLASS.price * qty}</dd></div>
           <div className="flex justify-between"><dt className="text-ink/65">Canvas, paints, brushes, apron</dt><dd className="font-semibold">Included</dd></div>
