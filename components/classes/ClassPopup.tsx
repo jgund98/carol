@@ -58,8 +58,8 @@ export default function ClassPopup() {
         <button type="button" onClick={close} aria-label="Close" className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-ink shadow-sm transition hover:bg-white">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
-        <div className="relative aspect-[16/10] sm:aspect-auto sm:min-h-[420px]">
-          <Image src={CLASS.photo} alt="Carol Calicchio in her Delray Beach studio" fill sizes="(min-width:640px) 40vw, 100vw" className="object-cover object-[50%_18%]" priority />
+        <div className="relative aspect-[4/3] sm:aspect-auto sm:min-h-[420px]">
+          <Image src={CLASS.photo} alt="Carol Calicchio in her Delray Beach studio" fill sizes="(min-width:640px) 40vw, 100vw" className="object-cover object-[50%_42%] sm:object-[50%_18%]" priority />
         </div>
         <div className="p-6 sm:flex sm:flex-col sm:justify-center sm:p-10">
           <p className="display-light text-[0.98rem] italic text-ink/60">You&rsquo;re invited</p>
