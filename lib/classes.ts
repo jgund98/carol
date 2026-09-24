@@ -19,7 +19,7 @@ export type StudioClass = {
 };
 
 export const CLASSES: StudioClass[] = [
-  { id: "2026-10-09", date: "2026-10-09", start: "17:00", end: "20:00", title: "An Evening in the Studio", price: 100, seats: 12 },
+  { id: "2026-10-09", date: "2026-10-09", start: "17:30", end: "20:00", title: "An Evening in the Studio", price: 100, seats: 18 },
 ];
 
 export const CLASS = {
